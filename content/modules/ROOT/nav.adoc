@@ -63,7 +63,7 @@
 // ** xref:mlbparks-binary-build.adoc#using_binary_deployment[Exercise: Using Binary Deployment]
 // *** xref:mlbparks-binary-build.adoc#clone_source[Clone source]
 // *** xref:mlbparks-binary-build.adoc#setup_the_build_of_the_war_file[Setup the Build of the WAR file]
-// *** xref:mlbparks-binary-build.adoc#clone_change[Clone change]
+// *** xref:mlbparks-binary-build.adoc#code_change[Code change]
 // *** xref:mlbparks-binary-build.adoc#doing_the_binary_build[Doing the Binary Build]
 // * xref:mlbparks-debugging.adoc[Debugging Apps]
 // ** xref:mlbparks-debugging.adoc#port_forwading_and_debugging[Background: Port Forwarding and Debugging]
