@@ -81,7 +81,7 @@ that you have on Gitea by clicking the *Gitea* tab on the right side of this pag
 
 Sign in using the button on the top right of the screen.
 
-If you prefer link to open it in a new browser tab:{ocp4_starter_gitea_url}/{ocp4_starter_gitea_user}/nationalparks[Gitea Repository,window='_blank']
+If you prefer link to open it in a new browser tab link:{ocp4_starter_gitea_url}/{ocp4_starter_gitea_user}/nationalparks[Gitea Repository,window='_blank']
 
 Your Gitea credentials are:
 
