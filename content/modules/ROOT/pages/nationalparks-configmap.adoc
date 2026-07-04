@@ -3,14 +3,14 @@
 
 include::vars.adoc[]
 
-앞서 ``nationalparks`` Deployment에 ``MONGODB_SERVER_HOST``와 ``MONGODB_DATABASE`` 값을 환경 변수로 직접 입력했고, 민감한 자격 증명은 ``mongodb-credentials`` **Secret**에서 가져왔습니다. 그런데 **+Add from ConfigMap or Secret** 대화 상자를 자세히 보면 리소스 종류로 **Secret** 뿐만 아니라 **ConfigMap**도 선택할 수 있었습니다 -- 지금까지는 한 번도 사용하지 않은 옵션입니다.
+앞서 ``nationalparks`` Deployment에 ``MONGODB_SERVER_HOST``와 ``MONGODB_DATABASE`` 값을 환경 변수로 직접 입력했고, 민감한 자격 증명은 ``mongodb-credentials`` **Secret**에서 가져왔습니다. 그런데 **+Add from ConfigMap or Secret** 대화 상자를 자세히 보면 리소스 종류로 **Secret** 뿐만 아니라 **ConfigMap**도 선택할 수 있었습니다. 지금까지는 한 번도 사용하지 않은 옵션입니다.
 
 민감하지 않은 설정값(호스트 이름, 데이터베이스 이름 등)을 Deployment 스펙에 직접 하드코딩하는 것은 좋은 습관이 아닙니다. 값을 바꾸려면 Deployment 자체를 수정해야 하고, 같은 값을 여러 Deployment에서 재사용하기도 어렵습니다. 이번 섹션에서는 이 두 값을 **ConfigMap**으로 옮겨 이 문제를 해결합니다.
 
 [#configmaps_vs_secrets]
 == 배경 지식: ConfigMap과 Secret
 
-**ConfigMap**과 **Secret**은 API 상으로 거의 같은 모양을 가진 오브젝트입니다. 둘 다 key-value 쌍의 목록을 저장하고, 둘 다 환경 변수나 볼륨으로 Pod에 주입할 수 있습니다. 차이는 딱 하나입니다 -- **민감한 데이터인가, 아닌가**입니다.
+**ConfigMap**과 **Secret**은 API 상으로 거의 같은 모양을 가진 오브젝트입니다. 둘 다 key-value 쌍의 목록을 저장하고, 둘 다 환경 변수나 볼륨으로 Pod에 주입할 수 있습니다. 차이는 딱 하나입니다: **민감한 데이터인가, 아닌가**입니다.
 
 * **ConfigMap**은 데이터베이스 호스트 이름, 기능 플래그, 로그 레벨처럼 유출되어도 큰 문제가 없는 설정값에 사용합니다.
 * **Secret**은 비밀번호, 토큰, 인증서처럼 노출되면 안 되는 값에 사용합니다. Secret의 값은 base64로 인코딩되어 저장되지만, 이는 암호화가 아니라 단순 인코딩이라는 점에 유의해야 합니다. 대신 OpenShift는 Secret에 대해 더 제한적인 RBAC 접근 제어를 적용할 수 있습니다.
@@ -23,12 +23,12 @@ include::vars.adoc[]
 **Workloads** → **ConfigMaps**에서 오른쪽 상단의 **Create** 버튼을 클릭하고 **From YAML**을 선택합니다.
 
 [.bordershadow]
-image::nationalparks-configmap-create.png[link="self",window=_blank]
+image::nationalparks-configmap-create.png[ConfigMap Create From YAML 다이얼로그,link="self",window=_blank]
 // TODO: 스크린샷 필요 - ConfigMap Create From YAML 다이얼로그
 
 에디터에 다음 YAML을 붙여넣습니다:
 
-[source,role="copypaste",subs="attributes"]
+[source,yaml,role="copypaste",subs="attributes"]
 ----
 apiVersion: v1
 kind: ConfigMap
@@ -54,19 +54,19 @@ data:
 다시 **+Add from ConfigMap or Secret**을 클릭하고 이름으로 ``MONGODB_DATABASE``를 입력합니다. 값으로는 resource로 ``nationalparks-config``를, key로 ``MONGODB_DATABASE``를 선택합니다.
 
 [.bordershadow]
-image::nationalparks-configmap-env-wire.png[link="self",window=_blank]
+image::nationalparks-configmap-env-wire.png[Edit Deployment 대화 상자에서 ConfigMap을 참조하는 환경 변수 추가 화면,link="self",window=_blank]
 // TODO: 스크린샷 필요 - Edit Deployment 대화 상자에서 +Add from ConfigMap or Secret (resource=ConfigMap)
 
 대화 상자 하단의 **Save** 버튼을 클릭합니다. 새 **ReplicaSet**이 롤아웃되는 것을 확인할 수 있습니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc get rs -l app=nationalparks
 ----
 
 값이 리터럴 문자열이든 ConfigMap 참조든, 컨테이너 안에서 보이는 환경 변수는 동일합니다. 애플리케이션이 여전히 정상 동작하는지 확인해 보세요:
 
-[source,role="copypaste",subs="attributes"]
+[source,text,role="copypaste",subs="attributes"]
 ----
 https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/data/all
 ----
@@ -80,7 +80,7 @@ ConfigMap은 환경 변수 외에 **볼륨**으로도 Pod에 마운트할 수 �
 
 **Workloads** → **ConfigMaps** → **Create** → **From YAML**로 이동해 다음 YAML을 붙여넣습니다:
 
-[source,role="copypaste",subs="attributes"]
+[source,yaml,role="copypaste",subs="attributes"]
 ----
 apiVersion: v1
 kind: ConfigMap
@@ -102,12 +102,12 @@ data:
 * Mount path: ``/etc/motd``
 
 [.bordershadow]
-image::nationalparks-configmap-volume-mount.png[link="self",window=_blank]
+image::nationalparks-configmap-volume-mount.png[Edit Deployment에서 ConfigMap을 볼륨으로 추가하는 다이얼로그,link="self",window=_blank]
 // TODO: 스크린샷 필요 - Edit Deployment에서 ConfigMap을 볼륨으로 추가하는 다이얼로그
 
 **Save**를 클릭합니다. 새 Pod가 준비되면, 터미널에 접속해 파일이 실제로 마운트되었는지 확인합니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 POD=$(oc get pod -l app=nationalparks -o jsonpath='{.items[0].metadata.name}')
 oc rsh $POD cat /etc/motd/message

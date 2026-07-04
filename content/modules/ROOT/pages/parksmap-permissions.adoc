@@ -19,12 +19,12 @@ account의 권한을 변경하면 추가 기능을 활성화할 수 있습니다
 웹 콘솔에서 현재 권한을 확인하려면 **OCP Console** 탭의 **Topology** 화면으로 이동하여 ``parksmap`` 항목을 클릭하고, **Details** 탭으로 이동한 후 **Namespace**를 클릭합니다.
 
 [.bordershadow]
-image::parksmap-permissions-namespace.png[link="self",window=_blank]
+image::parksmap-permissions-namespace.png[parksmap Details 탭에 표시된 Namespace 링크 화면,link="self",window=_blank]
 
 **Role Bindings** 탭을 선택하고 **Namespace Role Binding**으로 필터링하면 선택한 project에 대한 모든 권한을 확인할 수 있습니다.
 
 [.bordershadow]
-image::parksmap-permissions-membership.png[link="self",window=_blank]
+image::parksmap-permissions-membership.png[Namespace Role Binding으로 필터링한 Role Bindings 목록,link="self",window=_blank]
 
 [#grant_serviceaccount_view_permissions]
 == Service Account에 View 권한 부여하기
@@ -40,7 +40,7 @@ parksmap 애플리케이션은 클러스터에서 여러분의 project 내 **Ser
 
 . **Home** -> **Projects** -> **{ocp4_starter_project}**로 이동한 후 **Role Bindings**로 이동하여 **Create Binding** 버튼을 클릭합니다.
 +
-image::parksmap-permissions-membership-serviceaccount-list.png[link="self",window=_blank]
+image::parksmap-permissions-membership-serviceaccount-list.png[Role Bindings 페이지에서 Create Binding 버튼을 클릭하는 화면,link="self",window=_blank]
 +
 . 다음 필드를 구성합니다:
   * Role Binding Name: **view**
@@ -49,24 +49,24 @@ image::parksmap-permissions-membership-serviceaccount-list.png[link="self",windo
   * Subject Namespace: **{ocp4_starter_project}**
   * Subject Name: **default**.
 +
-image::parksmap-permissions-membership-serviceaccount-edit.png[link="self",window=_blank]
+image::parksmap-permissions-membership-serviceaccount-edit.png[view Role Binding 생성에 필요한 필드를 입력하는 화면,link="self",window=_blank]
 +
 . 권한 편집이 끝나면 **Create** 버튼을 클릭합니다. 그러면 ``{ocp4_starter_project}`` project의 **RoleBindings** 목록에서 새로 생긴 ``view`` 항목을 확인할 수 있습니다.
 +
-image::parksmap-permissions-membership-serviceaccount-done.png[link="self",window=_blank]
+image::parksmap-permissions-membership-serviceaccount-done.png[생성 완료 후 RoleBindings 목록에 표시된 view 항목,link="self",window=_blank]
 
 **옵션 B: ``oc`` 명령줄:**
 
 먼저 올바른 project 컨텍스트에 있는지 확인합니다:
 
-[source,role="copypaste",subs="attributes"]
+[source,bash,role="copypaste",subs="attributes"]
 ----
 oc project {ocp4_starter_project}
 ----
 
 그런 다음 ``oc policy add-role-to-user`` 명령을 사용하여 미리 정의된 ``view`` role을 service account에 부여합니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc policy add-role-to-user view -z default
 ----
@@ -94,7 +94,7 @@ NOTE: ``-z`` 플래그는 **현재** project 내의 service account에 대해서
 
 ``oc rollout`` 명령을 사용하여 ``parksmap`` 애플리케이션을 재시작합니다. 이렇게 하면 새 Pod가 생성됩니다.
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc rollout restart deployment/parksmap
 ----
@@ -102,6 +102,6 @@ oc rollout restart deployment/parksmap
 새로운 배포가 즉시 시작됩니다. Topology 화면으로 돌아가 ``parksmap`` 항목을 다시 클릭하여 그 과정을 지켜보세요. 배포는 빠르게 진행되지만, **ReplicaSet** 번호가 변경되는 것을 확인할 수 있습니다. 또한 ``oc get pods`` 명령을 사용하면 새 Pod의 나이(age)가 불과 몇 초밖에 되지 않은 것을 확인할 수 있습니다.
 
 [.bordershadow]
-image::parksmap-permissions-redeployed.png[link="self",window=_blank]
+image::parksmap-permissions-redeployed.png[재배포 후 새로운 ReplicaSet과 Pod가 생성된 Topology 화면,link="self",window=_blank]
 
 애플리케이션 로그를 확인하면 오류가 없어야 합니다.

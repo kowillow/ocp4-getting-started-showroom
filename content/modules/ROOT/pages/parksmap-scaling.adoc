@@ -8,7 +8,7 @@ include::vars.adoc[]
 
 **Service**는 생성되고 사라지기를 반복할 수 있는 **Pod**에 대한 라우팅과 로드 밸런싱을 제공하는 반면, **ReplicaSet**(RS)과 **ReplicationController**(RC)는 원하는 개수의 **Pod**(레플리카)가 실행되도록 지정하고 보장하는 역할을 합니다. 예를 들어 애플리케이션 서버가 항상 3개의 **Pod**(인스턴스)를 실행하도록 하려면 **ReplicaSet**이 필요합니다. RS가 없으면 종료되거나 죽은 **Pod**는 자동으로 다시 시작되지 않습니다. **ReplicaSet**과 **ReplicationController**는 OpenShift에서 자가 치유(self-healing) 기능을 제공합니다. **Deployment**는 **ReplicaSet**을 제어하고, **ReplicationController**는 **DeploymentConfig**가 제어합니다.
 
-link:{ocp4_starter_openshift_docs}/html/building_applications/deployments[Deployment 문서,window='_blank']에 따르면 다음과 같습니다:
+link:{ocp4_starter_openshift_docs}/html/building_applications/deployments[Deployment 문서^]에 따르면 다음과 같습니다:
 
 [quote]
 __
@@ -24,7 +24,7 @@ Kubernetes에서 **Deployment**는 무언가가 어떻게 배포되어야 하는
 
 **ReplicaSet**과 **Deployment**의 배경 지식을 알았으니, 이제 이들이 어떻게 함께 작동하는지 살펴보겠습니다. OpenShift에 ``parksmap`` 이미지를 배포하도록 지시했을 때 생성된 **Deployment**를 확인해 보세요:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc get deployment
 ----
@@ -38,7 +38,7 @@ parksmap   1/1     1            1           20m
 
 더 자세한 내용을 확인하려면 **ReplicaSet**(RS)을 살펴봅니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc get rs
 ----
@@ -52,14 +52,14 @@ parksmap-65c4f8b676   1         1         1       21m
 
 이 출력은 현재 하나의 **Pod**가 배포되기를 기대하고 있고(``Desired``), 실제로 하나의 **Pod**가 배포되어 있음을(``Current``) 보여줍니다. 원하는 개수를 변경하면 OpenShift에 더 많거나 더 적은 **Pod**를 원한다고 알릴 수 있습니다.
 
-TIP: OpenShift의 **HorizontalPodAutoscaler(HPA)**는 여러 Pod의 CPU 및 메모리 사용량을 모니터링하고, 더 많은 인스턴스를 추가하여 애플리케이션 안정성을 보장하도록 RC를 업데이트할 수 있습니다. link:{ocp4_starter_openshift_docs}/html/nodes/working-with-pods#nodes-pods-autoscaling[문서에서 Horizontal Pod Autoscaler에 대해,window='_blank'] 더 자세히 알아볼 수 있습니다.
+TIP: OpenShift의 **HorizontalPodAutoscaler(HPA)**는 여러 Pod의 CPU 및 메모리 사용량을 모니터링하고, 더 많은 인스턴스를 추가하여 애플리케이션 안정성을 보장하도록 RC를 업데이트할 수 있습니다. link:{ocp4_starter_openshift_docs}/html/nodes/working-with-pods#nodes-pods-autoscaling[문서에서 Horizontal Pod Autoscaler에 대해^] 더 자세히 알아볼 수 있습니다.
 
 [#scaling_the_application]
 == 실습: 애플리케이션 스케일링하기
 
 이 실습에서는 parksmap 애플리케이션을 2개의 인스턴스로 스케일링합니다. ``oc scale`` 명령을 사용하거나 OpenShift 웹 콘솔에서 Desired Count를 늘려서 수행할 수 있습니다. 원하는 방법을 선택하세요.
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc scale --replicas=2 deployment/parksmap
 ----
@@ -67,16 +67,16 @@ oc scale --replicas=2 deployment/parksmap
 또는 **Developer Perspective**에서 Pod를 2개로 스케일링할 수도 있습니다. Topology 화면에서 ``parksmap`` Deployment config를 클릭하고 **Details** 탭을 선택합니다:
 
 [.bordershadow]
-image::parksmap-details.png[link="self",window=_blank]
+image::parksmap-details.png[parksmap Deployment의 Details 탭에 표시된 Pod 시각화 화면,link="self",window=_blank]
 
 다음으로, Pod 시각화 옆의 **^** 아이콘을 클릭하여 Pod를 2개로 스케일링합니다.
 
 [.bordershadow]
-image::parksmap-scaleup.png[link="self",window=_blank]
+image::parksmap-scaleup.png[Pod 개수를 2개로 늘리는 스케일 업 조작 화면,link="self",window=_blank]
 
 레플리카 개수가 변경되었는지 확인하려면 다음 명령을 실행합니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc get rs
 ----
@@ -90,7 +90,7 @@ parksmap-65c4f8b676   2         2         2       23m
 
 이제 레플리카가 2개인 것을 확인할 수 있습니다. ``oc get pods`` 명령으로 Pod 개수를 확인해 보세요:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc get pods
 ----
@@ -105,7 +105,7 @@ parksmap-65c4f8b676-k5gkk   1/1     Running   0          24m
 
 마지막으로, **Service**가 두 개의 엔드포인트를 정확히 반영하고 있는지 확인합니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc describe svc parksmap
 ----
@@ -136,7 +136,7 @@ Events:            <none>
 
 **Service**의 엔드포인트를 확인하는 또 다른 방법은 다음과 같습니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc get endpoints parksmap
 ----
@@ -155,9 +155,9 @@ parksmap   10.128.2.90:8080,10.131.0.40:8080   45m
 Developer Perspective에서도 두 **Pod**가 모두 실행 중인 것을 확인할 수 있습니다:
 
 [.bordershadow]
-image::parksmap-scaled.png[link="self",window=_blank]
+image::parksmap-scaled.png[Developer Perspective에서 확인한 실행 중인 Pod 2개 현황,link="self",window=_blank]
 
-전반적으로, 애플리케이션을 스케일링하는 것은 이렇게 간단합니다. OpenShift는 기존 이미지의 새 인스턴스를 실행하는 것이므로 애플리케이션 스케일링은 매우 빠르게 이루어질 수 있으며, 특히 새 Pod가 https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/[스케줄링된, window="_blank"] 노드에 이미지가 캐시되어 있다면 더욱 그렇습니다.
+전반적으로, 애플리케이션을 스케일링하는 것은 이렇게 간단합니다. OpenShift는 기존 이미지의 새 인스턴스를 실행하는 것이므로 애플리케이션 스케일링은 매우 빠르게 이루어질 수 있으며, 특히 새 Pod가 https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/[스케줄링된^] 노드에 이미지가 캐시되어 있다면 더욱 그렇습니다.
 
 [#application_self_healing]
 == 애플리케이션 "자가 치유(Self Healing)"
@@ -166,7 +166,7 @@ OpenShift의 **RS**는 원하는 개수의 **Pod**가 실행되고 있는지 지
 
 현재 두 개의 **Pod**가 실행 중이므로, "실수로" 하나를 죽이면 어떤 일이 일어나는지 확인해 볼 수 있습니다. ``oc get pods`` 명령을 다시 실행하고 **Pod** 이름 하나를 선택합니다. 그런 다음 다음을 수행합니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc delete pod parksmap-7dfd599cd7-vgc7z && oc get pods
 ----
@@ -187,7 +187,7 @@ parksmap-65c4f8b676-fxcrq   1/1     Running             0          4m48s
 이러한 health check를 바탕으로, OpenShift가 ``parksmap`` 애플리케이션 인스턴스가 정상 상태가 아니라고 판단하면 해당 인스턴스를 삭제하고 그 자리에 새 인스턴스를 생성하여, 항상 원하는 개수의 레플리카가 유지되도록 합니다.
 
 애플리케이션 프로빙(probing)에 대한 더 자세한 내용은 문서의
-link:{ocp4_starter_openshift_docs}/html/building_applications/application-health[Application Health,window='_blank']
+link:{ocp4_starter_openshift_docs}/html/building_applications/application-health[Application Health^]
 섹션과 이 가이드의 뒷부분에서 확인할 수 있습니다.
 
 [#scale_down]

@@ -12,7 +12,7 @@ include::vars.adoc[]
 
 문서의
 link:{ocp4_starter_openshift_docs}/html/building_applications/application-health[Application
-Health,window='_blank'] 섹션에는 다음과 같이 정의되어 있습니다:
+Health^] 섹션에는 다음과 같이 정의되어 있습니다:
 
 [glossary]
 Liveness Probe::
@@ -45,11 +45,11 @@ Readiness Probe::
 **Topology** 화면에서 ``nationalparks``를 클릭합니다. 사이드 패널에서 **Actions** 드롭다운 메뉴를 클릭하고 **Add Health Checks**를 선택합니다.
 
 [.bordershadow]
-image::nationalparks-application-health-menu.png[link="self",window=_blank]
+image::nationalparks-application-health-menu.png[Actions 드롭다운 메뉴에서 Add Health Checks 선택 화면,link="self",window=_blank]
 
 **Add Readiness Probe**를 클릭하고 **Path** 필드에 다음을 추가합니다:
 
-[source,role=copypaste]
+[source,text,role=copypaste]
 ----
 /ws/healthz/
 ----
@@ -57,11 +57,11 @@ image::nationalparks-application-health-menu.png[link="self",window=_blank]
 **Port** 8080, **Type** HTTP GET 같은 나머지 기본 설정은 그대로 둡니다. 오른쪽 하단의 작은 회색 체크 표시를 클릭하여 확정합니다:
 
 [.bordershadow]
-image::nationalparks-application-health-settings.png[link="self",window=_blank]
+image::nationalparks-application-health-settings.png[Readiness Probe의 Path/Port/Type 설정 화면,link="self",window=_blank]
 
 Liveness Probe에 대해서도 동일한 과정을 반복합니다. **Add Liveness Probe**를 클릭하고 **Path** 필드에 다음을 추가합니다:
 
-[source,role=copypaste]
+[source,text,role=copypaste]
 ----
 /ws/healthz/
 ----
@@ -71,10 +71,10 @@ Liveness Probe에 대해서도 동일한 과정을 반복합니다. **Add Livene
 마지막으로 **Add**를 클릭하여 모든 새 변경 사항을 확정합니다:
 
 [.bordershadow]
-image::nationalparks-application-health-add.png[link="self",window=_blank]
+image::nationalparks-application-health-add.png[Readiness와 Liveness Probe가 추가된 후 Add 버튼을 클릭하는 화면,link="self",window=_blank]
 
 
-이러한 변경 사항이 새로운 배포를 유발한 것을 확인할 수 있습니다 -- 설정 변경으로
+이러한 변경 사항이 새로운 배포를 유발한 것을 확인할 수 있습니다. 설정 변경으로
 간주되었기 때문입니다.
 
 [#add_startup_probe]
@@ -88,7 +88,7 @@ Startup probe가 설정되어 있으면, 다른 모든 probe는 startup probe가
 
 **Add Startup Probe**를 클릭하고 **Path** 필드에 다음을 추가합니다:
 
-[source,role=copypaste]
+[source,text,role=copypaste]
 ----
 /ws/healthz/
 ----
@@ -96,12 +96,12 @@ Startup probe가 설정되어 있으면, 다른 모든 probe는 startup probe가
 **Port** 8080, **Type** HTTP GET은 그대로 두되, **Failure Threshold**를 ``30``, **Period Seconds**를 ``10``처럼 넉넉하게 설정합니다. 이렇게 하면 애플리케이션이 최대 5분(30회 x 10초)까지 시작 시간을 확보할 수 있습니다. 오른쪽 하단의 작은 회색 체크 표시를 클릭하여 확정한 후, **Add**를 클릭해 변경 사항을 저장합니다.
 
 [.bordershadow]
-image::nationalparks-application-health-startup-probe.png[link="self",window=_blank]
+image::nationalparks-application-health-startup-probe.png[Add Startup Probe 설정 화면,link="self",window=_blank]
 // TODO: 스크린샷 필요 - Add Startup Probe 설정 화면
 
 새 Pod가 뜬 후, ``oc describe pod``로 ``Startup:`` 항목이 새로 추가된 것을 확인합니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc describe pod -l app=nationalparks | grep -A 1 Startup:
 ----

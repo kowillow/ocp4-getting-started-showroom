@@ -6,7 +6,7 @@ include::vars.adoc[]
 이 섹션에서는 ``parksmap``이라고도 알려진 ParksMap 애플리케이션의 웹 구성 요소를 배포합니다. 이 구성 요소는 OpenShift의 서비스 디스커버리(service discovery) 메커니즘을 사용하여 백엔드 Service를 검색하고 해당 데이터를 지도에 표시합니다.
 
 [.bordershadow]
-image::roadshow-app-architecture-parksmap-1.png[link="self",window=_blank]
+image::roadshow-app-architecture-parksmap-1.png[ParksMap 프런트엔드와 백엔드 서비스 디스커버리 아키텍처 다이어그램,link="self",window=_blank]
 
 [#deploy_your_first_image]
 == 실습: 첫 번째 컨테이너 이미지 배포하기
@@ -19,11 +19,11 @@ image::roadshow-app-architecture-parksmap-1.png[link="self",window=_blank]
 왼쪽 상단의 **+** 아이콘을 클릭합니다. OpenShift에 애플리케이션을 배포할 수 있는 여러 옵션이 있는 메뉴가 표시됩니다. 배포하려는 이미지의 정보를 지정할 수 있는 대화 상자를 열려면 **Container images**를 클릭합니다.
 
 [.bordershadow]
-image::openshift-console-add-container.png[link="self",window=_blank]
+image::openshift-console-add-container.png[Container images 배포 옵션을 입력하는 대화 상자,link="self",window=_blank]
 
 **Image Name** 필드에 다음을 복사하여 붙여넣습니다:
 
-[source,role="copypaste",subs="attributes"]
+[source,bash,role="copypaste",subs="attributes"]
 ----
 {ocp4_starter_parksmap_image}
 ----
@@ -33,20 +33,20 @@ image::openshift-console-add-container.png[link="self",window=_blank]
 화면은 다음과 같은 모습이 됩니다:
 
 [.bordershadow]
-image::parksmap-image.png[link="self",window=_blank]
+image::parksmap-image.png[이미지 이름 입력 후 표시되는 parksmap 이미지 세부 정보 화면,link="self",window=_blank]
 
 **Runtime Icon**에서 OpenShift Topology 화면에 표시할 아이콘을 선택합니다. 이 프런트엔드는 Spring Boot로 만들어졌으므로 **spring-boot**를 선택합니다.
 
 다음 값이 설정되어 있는지 확인합니다:
 
 **Application Name** :
-[source,role=copypaste]
+[source,text,role=copypaste]
 ----
 workshop
 ----
 
 **Name** :
-[source,role=copypaste]
+[source,text,role=copypaste]
 ----
 parksmap
 ----
@@ -63,37 +63,37 @@ NOTE: **Resource type**에 대해서는 이후 챕터에서 자세히 다룹니�
 
 레이블 3개를 추가합니다. 각 레이블에 대해 name=value 쌍을 입력한 후 다음 레이블을 입력하기 전에 kbd:[Return] 키(키보드에 따라 kbd:[Enter] 키)를 누릅니다. 첫 번째 레이블은 애플리케이션의 이름입니다.
 
-[source,role=copypaste]
+[source,text,role=copypaste]
 ----
 app=workshop
 ----
 
 다음은 이 배포의 이름입니다.
 
-[source,role=copypaste]
+[source,text,role=copypaste]
 ----
 component=parksmap
 ----
 
 마지막으로, 이 구성 요소가 전체 애플리케이션에서 수행하는 역할입니다.
 
-[source,role=copypaste]
+[source,text,role=copypaste]
 ----
 role=frontend
 ----
 
 [.bordershadow]
-image::parksmap-image-options.png[width=600,link="self",window=_blank]
+image::parksmap-image-options.png[Runtime Icon과 이름 및 레이블을 설정하는 이미지 배포 옵션 화면,width=600,link="self",window=_blank]
 
 [.bordershadow]
-image::parksmap-advanced-image-options.png[width=600,link="self",window=_blank]
+image::parksmap-advanced-image-options.png[Create a route 체크 해제 등 고급 옵션과 레이블 입력 화면,width=600,link="self",window=_blank]
 
 이제 파란색 **Create** 버튼을 클릭합니다. **Topology** 페이지로 이동하며, ``workshop`` 애플리케이션 내 ``parksmap`` 배포 구성에 대한 시각화를 확인할 수 있습니다.
 
 [.bordershadow]
-image::parksmap-dc-topology.png[width=400,link="self",window=_blank]
+image::parksmap-dc-topology.png[Topology 화면에 표시된 workshop 애플리케이션의 parksmap 배포 아이콘,width=400,link="self",window=_blank]
 
-OpenShift에서 컨테이너 이미지를 배포하는 데 필요한 단계는 이것이 전부입니다. EXPOSE 포트를 정의하는 것, **root 사용자**나 다른 사용자 이름으로 실행할 필요가 없는 것, 시작 시 실행할 종료되지 않는 단일 CMD를 갖는 것과 같은 모범 사례를 따르는 모든 컨테이너 이미지에서 이 방식이 동작합니다. 이러한 내용은 이 애플리케이션의 https://github.com/openshift-roadshow/parksmap-web/blob/master/Dockerfile[Dockerfile, window="_blank"]에서 확인할 수 있습니다.
+OpenShift에서 컨테이너 이미지를 배포하는 데 필요한 단계는 이것이 전부입니다. EXPOSE 포트를 정의하는 것, **root 사용자**나 다른 사용자 이름으로 실행할 필요가 없는 것, 시작 시 실행할 종료되지 않는 단일 CMD를 갖는 것과 같은 모범 사례를 따르는 모든 컨테이너 이미지에서 이 방식이 동작합니다. 이러한 내용은 이 애플리케이션의 https://github.com/openshift-roadshow/parksmap-web/blob/master/Dockerfile[Dockerfile^]에서 확인할 수 있습니다.
 
 NOTE: 애플리케이션을 대규모로 배포할 때는 적절한 레이블을 지정하는 것이 중요합니다. OpenShift는 Overview 페이지에서 구성 요소를 정의하고 그룹화하기 위해 **app** 레이블을 사용합니다. 명시적으로 지정하지 않으면 OpenShift가 기본값으로 이 레이블을 생성합니다.
 
@@ -102,7 +102,7 @@ NOTE: 애플리케이션을 대규모로 배포할 때는 적절한 레이블을
 
 본격적으로 시작하기 전에, 컨테이너와 **Pod**가 어떻게 연관되어 있는지 이해하는 것이 중요합니다. 이 워크숍에서는 이러한 기술의 배경 지식을 자세히 다루지 않지만, 궁금한 점이 있다면 진행자에게 문의해 주세요. 대신 바로 실습을 통해 사용해 보겠습니다.
 
-OpenShift(및 Kubernetes)에서 배포 가능한 가장 작은 단위는 **Pod**입니다. **Pod**는 함께 배포되고 동일한 호스트에서 실행되는 것이 보장되는 하나 이상의 https://opencontainers.org/[OCI 컨테이너, window="_blank"] 그룹입니다.
+OpenShift(및 Kubernetes)에서 배포 가능한 가장 작은 단위는 **Pod**입니다. **Pod**는 함께 배포되고 동일한 호스트에서 실행되는 것이 보장되는 하나 이상의 https://opencontainers.org/[OCI 컨테이너^] 그룹입니다.
 OpenShift 공식 문서에 따르면 다음과 같습니다:
 
 [quote]
@@ -123,26 +123,26 @@ __
 Topology 화면에서 ``parksmap`` 항목을 클릭하면 배포에 대한 정보가 표시됩니다. 기본적으로 **Resources** 탭이 표시될 수 있습니다. 이 경우 **Details** 탭을 클릭합니다.
 
 [.bordershadow]
-image::switchtoresources.png[link="self",window=_blank]
+image::switchtoresources.png[Pod 상세 정보를 보기 위해 Details 탭으로 전환하는 화면,link="self",window=_blank]
 
 해당 패널에서 여러분의 작업으로 생성된 하나의 **Pod**가 있는 것을 확인할 수 있습니다.
 
 [.bordershadow]
-image::parksmap-overview.png[link="self",window=_blank]
+image::parksmap-overview.png[Details 탭에 표시된 parksmap Pod 1개 현황,link="self",window=_blank]
 
 NOTE: 이 화면에서 애플리케이션에 Health check를 추가하라고 제안하는 정보 상자를 볼 수 있습니다. 이는 나중에 처리할 것이므로, 지금은 오른쪽 상단의 X 아이콘을 클릭해서 이 정보 상자를 닫으면 됩니다.
 
 웹 콘솔에서 **Workloads -> Pods**로 이동하면 여러분의 **Project** 내에 생성된 모든 **Pod** 목록도 확인할 수 있습니다.
 
 [.bordershadow]
-image::parksmap-podlist.png[link="self",window=_blank]
+image::parksmap-podlist.png[Workloads > Pods 메뉴의 프로젝트 내 전체 Pod 목록,link="self",window=_blank]
 
 이 **Pod**는 단일 컨테이너를 포함하며, 이는 간단한 Spring Boot/Java 애플리케이션인
 ``parksmap`` 애플리케이션입니다.
 
 명령줄에서도 **Pod**를 확인할 수 있습니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc get pods
 ----
@@ -217,15 +217,15 @@ metadata:
 세부 정보 페이지로 이동합니다. 또는 *Topology* 페이지에서 `parksmap` Deployment를 클릭하고 *Resources*를 선택한 후 *Pod* 이름을 클릭해도 이동할 수 있습니다.
 
 [.bordershadow]
-image::parksmap-dc-resources.png[link="self",window=_blank]
+image::parksmap-dc-resources.png[parksmap Deployment의 Resources 탭에 표시된 Pod 목록,link="self",window=_blank]
 
 여기에서 설정, 메트릭, 환경 변수, 로그, 이벤트를 확인할 수 있고, 실행 중인 Pod에 대한 터미널 셸도 얻을 수 있습니다.
 
 [.bordershadow]
-image::parksmap-pod.png[link="self",window=_blank]
+image::parksmap-pod.png[설정/메트릭/로그/터미널을 확인할 수 있는 Pod 세부 정보 페이지,link="self",window=_blank]
 
 [.bordershadow]
-image::parksmap-pod-events.png[link="self",window=_blank]
+image::parksmap-pod-events.png[Pod 세부 정보 페이지의 Events 탭에 표시된 이벤트 목록,link="self",window=_blank]
 
 `parksmap` 이미지를 실행하는 데 다소 시간이 걸릴 수 있습니다. 이미지를 실행하도록 요청받은 각
 OpenShift 노드는, 로컬에 캐시되어 있지 않다면 이미지를 pull(다운로드)해야
@@ -238,7 +238,7 @@ OpenShift 노드는, 로컬에 캐시되어 있지 않다면 이미지를 pull(�
 OpenShift가 노드의 CRI(Container Runtime Interface) 런타임(Docker 데몬 또는 CRI-O)에 이미지를 실행하도록 요청할 때마다, 런타임은 실행할 올바른 버전의 이미지를 가지고 있는지 확인합니다.
 가지고 있지 않다면 지정된 레지스트리에서 이미지를 pull합니다.
 
-이 동작을 커스터마이징하는 방법은 여러 가지가 있으며, link:{ocp4_starter_openshift_docs}/html/images/managing-images[OpenShift 공식 문서,window='_blank']에 정리되어 있습니다.
+이 동작을 커스터마이징하는 방법은 여러 가지가 있으며, link:{ocp4_starter_openshift_docs}/html/images/managing-images[OpenShift 공식 문서^]에 정리되어 있습니다.
 
 [#services]
 == 배경 지식: Service
@@ -258,12 +258,12 @@ OpenShift에 이미지를 실행하도록 요청했을 때, OpenShift는 자동�
 *Service*는 *Selector*를 사용하여 여러 *Pod*와 매핑됩니다. *Selector*는 *Labels*를 사용하여 어떤 Pod가 트래픽을 받아야 하는지 결정합니다.
 
 직접 YAML 형식으로 작성하는 방법을 포함하여
-link:{ocp4_starter_openshift_docs}/html/networking_overview[Service,window='_blank']에 대한 더 많은 정보는, OpenShift 공식 문서에서 확인할 수 있습니다.
+link:{ocp4_starter_openshift_docs}/html/networking_overview[Service^]에 대한 더 많은 정보는, OpenShift 공식 문서에서 확인할 수 있습니다.
 
 이제 *Service*가 무엇인지 기본 개념을 이해했으니, 방금 배포한 이미지에 대해 생성된
 *Service*를 살펴보겠습니다. 여러분의 *Project*에 정의된 *Service*를 확인하려면 다음 명령을 입력합니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc get services
 ----
@@ -285,12 +285,12 @@ IP는 고정되며 해당 *Service*가 존재하는 동안 절대 변경되지 �
 *Topology* 화면에서는 `parksmap` Deployment를 클릭한 후 *Resources*를 클릭하면 Service 정보를 확인할 수 있습니다.
 
 [.bordershadow]
-image::parksmap-serviceslist.png[link="self",window=_blank]
+image::parksmap-serviceslist.png[Resources 탭에서 확인한 parksmap Service 연결 정보,link="self",window=_blank]
 
 다음 명령을 사용하여 YAML 형식으로 데이터를 표시함으로써
 *Service*에 대한 더 자세한 정보를 확인할 수도 있습니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc get service parksmap -o yaml
 ----
@@ -339,12 +339,12 @@ status:
 또는 이전 화면에서 *Service*를 클릭하여 웹 콘솔로 정보를 확인할 수도 있습니다.
 
 [.bordershadow]
-image::parksmap-service.png[link="self",window=_blank]
+image::parksmap-service.png[웹 콘솔에서 확인한 parksmap Service 상세 정보 화면,link="self",window=_blank]
 
 `parksmap` *Pod*의 YAML을 확인하여 *Service*
 가 *Selector*를 어떻게 사용하는지 이해해 보세요. 다음 명령을 실행하여 Pod 정보를 확인합니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc describe pods
 ----
@@ -364,7 +364,7 @@ NOTE: *Labels*는 단순한 key-value 쌍입니다. 동일한 *Project*(*Namespa
 일치하는 레이블을 가진 모든 *Pod*는 해당 *Service*와 연결됩니다. 이를 직접 확인하려면 다음
 명령을 실행하세요:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc describe service parksmap
 ----

@@ -13,7 +13,7 @@ OpenShift 콘솔은 Project, 애플리케이션, 클러스터 리소스를 관�
 === OpenShift 웹 콘솔 접속하기
 
 [.bordershadow]
-image::openshift-console-login.png[width=500,link="self",window=_blank]
+image::openshift-console-login.png[OpenShift 웹 콘솔 로그인 화면,width=500,link="self",window=_blank]
 
 OpenShift 콘솔에 접속하려면 이 페이지 오른쪽의 **OCP Console** 탭을 클릭한 후 제공된 자격 증명으로 로그인합니다:
 
@@ -21,12 +21,12 @@ OpenShift 콘솔에 접속하려면 이 페이지 오른쪽의 **OCP Console** �
 
 **비밀번호:** ``{ocp4_starter_password}``
 
-새 브라우저 탭에서 열고 싶다면: link:{ocp4_starter_console_url}[{ocp4_starter_console_url},window='_blank']
+새 브라우저 탭에서 열고 싶다면: link:{ocp4_starter_console_url}[{ocp4_starter_console_url}^]
 
 로그인하면 Project를 확인하고 플랫폼의 기능을 탐색할 수 있는 기본 대시보드가 표시됩니다.
 
 [.bordershadow]
-image::openshift-console-dashboard.png[link="self",window=_blank]
+image::openshift-console-dashboard.png[로그인 후 표시되는 OpenShift 웹 콘솔 기본 대시보드,link="self",window=_blank]
 
 [#command_line_interface]
 == 명령줄 인터페이스
@@ -37,7 +37,7 @@ image::openshift-console-dashboard.png[link="self",window=_blank]
 
 CLI는 워크숍 환경에 미리 설치되어 있습니다. 사용 가능한지 확인하고 버전을 확인해 보세요:
 
-[source,role="copypaste",subs="attributes"]
+[source,bash,role="copypaste",subs="attributes"]
 ----
 oc version
 ----
@@ -56,7 +56,7 @@ Kubernetes Version: v1.33.x
 
 명령줄을 사용하여 OpenShift 클러스터에 인증합니다:
 
-[source,role="copypaste",subs="attributes"]
+[source,bash,role="copypaste",subs="attributes"]
 ----
 {ocp4_starter_login}
 ----
@@ -71,14 +71,14 @@ NOTE: "certificate signed by unknown authority"라는 메시지가 표시되면 
 TIP: 또는 토큰을 사용하여 인증할 수도 있습니다. 토큰을 얻으려면 아래와 같이 OpenShift 웹 콘솔에서 **Copy login command** 옵션을 사용하세요.
 
 [.bordershadow]
-image::openshift-console-login-command.png[link="self",window=_blank]
+image::openshift-console-login-command.png[웹 콘솔의 Copy login command 옵션 화면,link="self",window=_blank]
 
 === 접근 권한 확인하기
 
 인증이 제대로 되었는지, 그리고 할당된 리소스에 접근할 수 있는지 확인해 보겠습니다.
 
 먼저 로그인 자격 증명을 확인합니다:
-[source,role="copypaste",subs="attributes"]
+[source,bash,role="copypaste",subs="attributes"]
 ----
 oc whoami
 ----
@@ -92,7 +92,7 @@ oc whoami
 ----
 
 다음으로 할당된 Project를 볼 수 있는지 확인합니다:
-[source,role="copypaste",subs="attributes"]
+[source,bash,role="copypaste",subs="attributes"]
 ----
 oc projects
 ----

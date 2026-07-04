@@ -6,7 +6,7 @@ include::vars.adoc[]
 이 워크숍 섹션에서는 애플리케이션을 외부 사용자가 접근할 수 있도록 만듭니다.
 
 [.bordershadow]
-image::roadshow-app-architecture-parksmap-2.png[link="self",window=_blank]
+image::roadshow-app-architecture-parksmap-2.png[Route를 통해 외부 사용자에게 노출되는 ParksMap 애플리케이션 구조도,link="self",window=_blank]
 
 [#routes]
 == 배경 지식: Route
@@ -16,7 +16,7 @@ image::roadshow-app-architecture-parksmap-2.png[link="self",window=_blank]
 애플리케이션에 접근해야 하는 경우가 있습니다. 외부 클라이언트는 **Route** 오브젝트로 구성할 수 있는
 OpenShift 라우팅 계층을 통해 OpenShift에서 실행 중인 애플리케이션에 접근합니다.
 
-기본 OpenShift 라우터(https://www.haproxy.org/[HAProxy, window="_blank"])는 들어오는
+기본 OpenShift 라우터(https://www.haproxy.org/[HAProxy^])는 들어오는
 요청의 HTTP 헤더를 사용하여 연결을 어디로 프록시할지 결정합니다. 선택적으로 **Route**에
 TLS 같은 보안 설정을 정의할 수 있습니다. **Service**, 그리고 나아가
 **Pod**를 외부 세계에서 접근 가능하게 하려면 **Route**를
@@ -27,7 +27,7 @@ TLS 같은 보안 설정을 정의할 수 있습니다. **Service**, 그리고 �
 
 Kubernetes를 먼저 접해봤다면 **Route** 대신 **Ingress**라는 이름이 익숙할 수 있습니다. 둘은 같은 문제(외부 트래픽을 클러스터 내부 **Service**로 전달하는 것)를 해결하지만, 등장한 배경과 기능 범위가 다릅니다.
 
-**Route**는 OpenShift가 Kubernetes보다 먼저 갖추고 있던 네이티브 오브젝트입니다. Kubernetes 커뮤니티는 이후 벤더 중립적인 표준으로 **Ingress**를 도입했습니다. 오늘날 OpenShift는 두 가지를 모두 지원하며, 클러스터 내부의 OpenShift Router가 **Ingress** 오브젝트를 자동으로 감지해 **Route**로 동기화해 줍니다 -- 즉 **Ingress**를 만들어도 동작하지만, **Route**가 제공하는 몇 가지 기능은 **Ingress** API만으로는 표현할 수 없습니다.
+**Route**는 OpenShift가 Kubernetes보다 먼저 갖추고 있던 네이티브 오브젝트입니다. Kubernetes 커뮤니티는 이후 벤더 중립적인 표준으로 **Ingress**를 도입했습니다. 오늘날 OpenShift는 두 가지를 모두 지원하며, 클러스터 내부의 OpenShift Router가 **Ingress** 오브젝트를 자동으로 감지해 **Route**로 동기화해 줍니다. 즉 **Ingress**를 만들어도 동작하지만, **Route**가 제공하는 몇 가지 기능은 **Ingress** API만으로는 표현할 수 없습니다.
 
 [cols="1,2,2",options="header"]
 |===
@@ -70,7 +70,7 @@ Route는 OpenShift 콘솔에서 생성하거나 ``oc`` CLI를 사용하여 생�
 . **Security** 섹션에서 **Secure route**를 체크합니다. **TLS Termination** 목록에서 **Edge**를 선택합니다.
 . 나머지 필드는 비워두고 **Create**를 클릭합니다:
 +
-image::parksmap-route-create-1.png[link="self",window=_blank]
+image::parksmap-route-create-1.png[Name/Service/TLS Termination 등을 입력하는 Route 생성 화면,link="self",window=_blank]
 
 TIP: 클러스터 Apps 도메인에 대한 TLS 인증서가 기본적으로 사용되므로 별도의 인증서를 추가할 필요가 없습니다. OpenShift 클러스터로 연결되는 커스텀 도메인을 사용하고 싶다면 route별로 인증서를 추가할 수 있습니다.
 
@@ -80,7 +80,7 @@ TIP: 클러스터 Apps 도메인에 대한 TLS 인증서가 기본적으로 사�
 
 **Service**를 ``expose``하려면 먼저 기존에 생성된 **Route**가 없는지 확인합니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc get routes
 ----
@@ -93,7 +93,7 @@ No resources found.
 
 이제 노출할 **Service** 이름을 확인해야 합니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc get services
 ----
@@ -107,7 +107,7 @@ parksmap   172.30.169.213   <none>        8080/TCP   5h
 
 **Service** 이름을 알고 나면 **Route**를 생성하는 것은 간단한 명령 한 번으로 끝나는 작업입니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc create route edge parksmap --service=parksmap
 ----
@@ -122,12 +122,12 @@ route.route.openshift.io/parksmap created
 
 다음 명령으로 **Route**가 생성되었는지 확인합니다:
 
-[source,role="copypaste"]
+[source,bash,role="copypaste"]
 ----
 oc get route
 ----
 
-[source,role="copypaste",subs="attributes"]
+[source,bash,role="copypaste",subs="attributes"]
 ----
 NAME       HOST/PORT                                                           PATH   SERVICES   PORT       TERMINATION   WILDCARD
 parksmap   parksmap-{ocp4_starter_project}.{ocp4_starter_apps_domain}          parksmap   8080-tcp   edge          None
@@ -136,11 +136,11 @@ parksmap   parksmap-{ocp4_starter_project}.{ocp4_starter_apps_domain}          p
 ``parksmap`` Deployment의 **Topology** 화면에서 **Resources** 탭 아래로도 **Route**를 확인할 수 있습니다. Topology에서 ``parksmap`` 노드에 화살표 아이콘이 생긴 것을 확인하세요. 이를 클릭하면 브라우저에서 **Route**의 URL이 열립니다.
 
 [.bordershadow]
-image::parksmap-route-created.png[link="self",window=_blank]
+image::parksmap-route-created.png[생성된 Route로 연결되는 화살표 아이콘이 표시된 Topology 화면,link="self",window=_blank]
 
 이제 Developer Perspective에 표시된 URL에서 애플리케이션을 사용할 수 있습니다. 링크를 클릭하면 확인할 수 있습니다.
 
 NOTE: 이 페이지를 처음 여는 경우, 브라우저가 위치 정보 접근 권한을 요청할 수 있습니다. 이는 프런트엔드 앱이 세계 지도를 여러분의 위치로 중앙 정렬하기 위해 필요합니다. 허용하지 않으면 앱은 기본 위치를 사용합니다.
 
 [.bordershadow]
-image::parksmap-route-empty-map.png[link="self",window=_blank]
+image::parksmap-route-empty-map.png[Route URL로 접속한 parksmap 애플리케이션의 빈 지도 화면,link="self",window=_blank]
