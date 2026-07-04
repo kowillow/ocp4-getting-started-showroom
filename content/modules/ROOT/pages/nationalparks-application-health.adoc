@@ -76,3 +76,40 @@ image::nationalparks-application-health-add.png[link="self",window=_blank]
 
 이러한 변경 사항이 새로운 배포를 유발한 것을 확인할 수 있습니다 -- 설정 변경으로
 간주되었기 때문입니다.
+
+[#add_startup_probe]
+== 실습: Startup Probe 추가하기
+
+Readiness probe와 liveness probe만으로는 부족한 경우가 있습니다. 시작하는 데 시간이 오래 걸리는 애플리케이션이라면, liveness probe가 애플리케이션이 미처 다 시작하기도 전에 "죽었다"고 판단해 컨테이너를 재시작해 버릴 수 있습니다. 이 문제를 막아주는 것이 *Startup Probe*입니다.
+
+Startup probe가 설정되어 있으면, 다른 모든 probe는 startup probe가 성공할 때까지 비활성화됩니다. 즉, 애플리케이션이 충분히 여유 있게 시작할 시간을 벌어준 다음에야 liveness/readiness probe가 정상적으로 동작하기 시작합니다.
+
+*Topology* 화면에서 `nationalparks`를 클릭합니다. 사이드 패널에서 *Actions* 드롭다운 메뉴를 클릭하고 *Add Health Checks*를 선택합니다.
+
+*Add Startup Probe*를 클릭하고 *Path* 필드에 다음을 추가합니다:
+
+[source,role=copypaste]
+----
+/ws/healthz/
+----
+
+*Port* 8080, *Type* HTTP GET은 그대로 두되, *Failure Threshold*를 `30`, *Period Seconds*를 `10`처럼 넉넉하게 설정합니다. 이렇게 하면 애플리케이션이 최대 5분(30회 x 10초)까지 시작 시간을 확보할 수 있습니다. 오른쪽 하단의 작은 회색 체크 표시를 클릭하여 확정한 후, *Add*를 클릭해 변경 사항을 저장합니다.
+
+[.bordershadow]
+image::nationalparks-application-health-startup-probe.png[link="self",window=_blank]
+// TODO: 스크린샷 필요 - Add Startup Probe 설정 화면
+
+새 Pod가 뜬 후, `oc describe pod`로 `Startup:` 항목이 새로 추가된 것을 확인합니다:
+
+[source,role="copypaste"]
+----
+oc describe pod -l app=nationalparks | grep -A 1 Startup:
+----
+
+[.console-output]
+[source]
+----
+    Startup:      http-get http://:8080/ws/healthz/ delay=0s timeout=1s period=10s #success=1 #failure=30
+----
+
+이제 `nationalparks`는 readiness, liveness, startup 세 종류의 probe를 모두 갖추게 되었습니다.
