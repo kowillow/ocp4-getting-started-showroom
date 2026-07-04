@@ -3,7 +3,7 @@
 
 include::vars.adoc[]
 
-OpenShift에 내장된 구성 요소 외에도, OpenShift Pipelines는 link:https://tekton.dev/docs/triggers/[*Tekton Triggers*,window='_blank'] 덕분에 파이프라인에 추가적인 트리거와 자동화 기능을 제공합니다.
+OpenShift에 내장된 구성 요소 외에도, OpenShift Pipelines는 link:https://tekton.dev/docs/triggers/[**Tekton Triggers**,window='_blank'] 덕분에 파이프라인에 추가적인 트리거와 자동화 기능을 제공합니다.
 
 [#webhooks]
 == 배경 지식: Web Hook
@@ -17,45 +17,45 @@ OpenShift는 빌드를 트리거하기 위해 원격 시스템으로부터 hook�
 [#adding_triggers_to_your_pipeline]
 == 파이프라인에 트리거 추가하기
 
-Tekton *Trigger*를 사용하면 Web Hook 같은 외부 이벤트(Git push 이벤트, pull request 등)에 반응하도록 Pipeline을 구성할 수 있습니다.
+Tekton **Trigger**를 사용하면 Web Hook 같은 외부 이벤트(Git push 이벤트, pull request 등)에 반응하도록 Pipeline을 구성할 수 있습니다.
 
-트리거 지원을 추가하려면 project에 `TriggerTemplate`, `TriggerBinding`, `EventListener`를 생성해야 합니다.
+트리거 지원을 추가하려면 project에 ``TriggerTemplate``, ``TriggerBinding``, ``EventListener``를 생성해야 합니다.
 
 [.bordershadow]
 image::devops-pipeline-triggers.png[link="self",window=_blank]
 
 각 구성 요소를 자세히 살펴보겠습니다:
 
-* *TriggerTemplate*: 새로 생성할 리소스에 대한 템플릿입니다. 파라미터를 지원하여 특정 `PipelineResources`와 `PipelineRuns`를 생성합니다.
-* *TriggerBinding*: 이벤트를 검증하고 페이로드 필드를 추출합니다
-* *EventListener*: `TriggerBinding`과 `TriggerTemplate`을 연결하여 주소 지정이 가능한 엔드포인트(이벤트 싱크)로 만듭니다. 각 TriggerBinding에서 추출된 이벤트 파라미터(및 제공된 정적 파라미터가 있다면 그것도 함께)를 사용하여 해당 TriggerTemplate에 지정된 리소스를 생성합니다. 또한 선택적으로 interceptor 필드를 통해 외부 서비스가 이벤트 페이로드를 사전 처리하도록 할 수도 있습니다.
+* **TriggerTemplate**: 새로 생성할 리소스에 대한 템플릿입니다. 파라미터를 지원하여 특정 ``PipelineResources``와 ``PipelineRuns``를 생성합니다.
+* **TriggerBinding**: 이벤트를 검증하고 페이로드 필드를 추출합니다
+* **EventListener**: ``TriggerBinding``과 ``TriggerTemplate``을 연결하여 주소 지정이 가능한 엔드포인트(이벤트 싱크)로 만듭니다. 각 TriggerBinding에서 추출된 이벤트 파라미터(및 제공된 정적 파라미터가 있다면 그것도 함께)를 사용하여 해당 TriggerTemplate에 지정된 리소스를 생성합니다. 또한 선택적으로 interceptor 필드를 통해 외부 서비스가 이벤트 페이로드를 사전 처리하도록 할 수도 있습니다.
 
 이제 Pipeline을 위해 이들을 한 번에 생성해 보겠습니다.
 // Depending on which language you chose, you can use the following YAML files:
 
 // ====
-// *Java*
+// **Java**
 
 [source,role="copypaste",subs="attributes"]
 ----
 oc create -f {ocp4_starter_gitea_url}/{ocp4_starter_gitea_user}/nationalparks/raw/branch/master/pipeline/nationalparks-triggers.yaml -n {ocp4_starter_project}
 ----
 
-// *.NET*
+// **.NET**
 
 // [source,role="copypaste",subs="attributes"]
 // ----
 // oc create -f {ocp4_starter_gitea_url}/{ocp4_starter_gitea_user}/nationalparks-dotnet/master/Pipelines/nationalparks-triggers-all.yaml -n {ocp4_starter_project}
 // ----
 
-// *Javascript*:
+// **Javascript**:
 
 // [source,role="copypaste",subs="attributes"]
 // ----
 // oc create -f {ocp4_starter_gitea_url}/{ocp4_starter_gitea_user}/nationalparks-js/master/pipelines/nationalparks-triggers-all.yaml -n {ocp4_starter_project}
 // ----
 
-// *Python*
+// **Python**
 
 // [source,role="copypaste",subs="attributes"]
 // ----
@@ -65,7 +65,7 @@ oc create -f {ocp4_starter_gitea_url}/{ocp4_starter_gitea_user}/nationalparks/ra
 
 이렇게 하면 GitHub에 Webhook을 설정하여 Pipeline의 자동 시작을 트리거하는 데 사용할 수 있는 Route가 있는 새 Pod가 생성됩니다.
 
-*Topology* 화면에서 `EventListener`를 위한 새 Deployment *el-nationalparks*가 생성되었는지 확인합니다:
+**Topology** 화면에서 ``EventListener``를 위한 새 Deployment **el-nationalparks**가 생성되었는지 확인합니다:
 
 [.bordershadow]
 image::devops-pipeline-triggers-eventlistener.png[width=500,link="self",window=_blank]
@@ -75,8 +75,8 @@ image::devops-pipeline-triggers-eventlistener.png[width=500,link="self",window=_
 
 이 섹션에서는 nationalparks Gitea 저장소에 변경이 있을 때마다 파이프라인 실행을 트리거하는 빌드 webhook을 사용해 봅니다.
 
-URL을 클립보드에 복사한 후, 이 페이지 오른쪽의 *Gitea* 탭을 클릭하여 Gitea에 있는
-코드 저장소로 이동한 다음 `nationalparks` 저장소를 엽니다.
+URL을 클립보드에 복사한 후, 이 페이지 오른쪽의 **Gitea** 탭을 클릭하여 Gitea에 있는
+코드 저장소로 이동한 다음 ``nationalparks`` 저장소를 엽니다.
 
 화면 오른쪽 상단의 버튼을 사용하여 로그인합니다.
 
@@ -95,13 +95,13 @@ password: {ocp4_starter_gitea_password}
 [.bordershadow]
 image::nationalparks-codechanges-settings.png[link="self",window=_blank]
 
-*Webhooks*를 클릭한 후 *Add Webhook* 버튼을 클릭하고, 마지막으로 *Gitea*를 선택합니다.
+**Webhooks**를 클릭한 후 **Add Webhook** 버튼을 클릭하고, 마지막으로 **Gitea**를 선택합니다.
 
 [.bordershadow]
 image::nationalparks-codechanges-add-webhook.png[link="self",window=_blank]
 
 이전 섹션에서 생성한 EventListener를 사용하여 Gitea에 webhook을 구성합니다.
-`EventListener`에는 webhook의 URL로 사용할 OpenShift `Route`가 노출되어 있습니다.
+``EventListener``에는 webhook의 URL로 사용할 OpenShift ``Route``가 노출되어 있습니다.
 
 [source,role=copypaste,subs=attributes]
 ----
@@ -110,9 +110,9 @@ http://el-nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/
 
 복사한 링크를 "Payload URL" 필드에 붙여넣습니다.
 
-`Content Type`을 `application/json`으로 변경합니다.
+``Content Type``을 ``application/json``으로 변경합니다.
 
-마지막으로 *Update Webhook*을 클릭합니다.
+마지막으로 **Update Webhook**을 클릭합니다.
 
 [.bordershadow]
 image::nationalparks-codechanges-config-webhook.png[link="self",window=_blank]
@@ -126,7 +126,7 @@ OpenShift에서 새로운 빌드와 배포가 발생합니다. 직접 시도해
 
 다음으로, Gitea를 사용하여 파일을 수정하고 변경 사항을 커밋 및 push해 보겠습니다.
 
-*Gitea* 탭에서 `nationalparks` 저장소를 열고 `src/main/java/com/openshift/evg/roadshow/parks/rest`로 이동하여 `BackendController.java` 파일을 찾습니다.
+**Gitea** 탭에서 ``nationalparks`` 저장소를 열고 ``src/main/java/com/openshift/evg/roadshow/parks/rest``로 이동하여 ``BackendController.java`` 파일을 찾습니다.
 
 화면에 파일이 표시되면, 여기에 보이는 것처럼 오른쪽 상단의 편집 버튼을
 클릭합니다:
@@ -150,11 +150,11 @@ return new Backend("nationalparks","Amazing National Parks", new Coordinates("47
 화면 하단의 Commit changes를 클릭합니다. 원하는 커밋 메시지를 자유롭게
 입력하세요.
 
-변경 사항을 커밋하면 새로운 *PipelineRun*이 자동으로 트리거됩니다.
+변경 사항을 커밋하면 새로운 **PipelineRun**이 자동으로 트리거됩니다.
 
-이전 실습에서 PipelineRun을 확인해 보았습니다. 이는 새로운 *Build*를 생성하고 애플리케이션을 OpenShift에 배포합니다. 확인해 봅시다!
+이전 실습에서 PipelineRun을 확인해 보았습니다. 이는 새로운 **Build**를 생성하고 애플리케이션을 OpenShift에 배포합니다. 확인해 봅시다!
 
-*Topology* 화면에서 `nationalparks`를 클릭하고 *Resources* 탭의 *Builds* 섹션을 살펴보거나, 다음
+**Topology** 화면에서 ``nationalparks``를 클릭하고 **Resources** 탭의 **Builds** 섹션을 살펴보거나, 다음
 명령을 실행하여 확인합니다:
 
 [source,role="copypaste"]

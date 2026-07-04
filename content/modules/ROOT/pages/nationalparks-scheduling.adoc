@@ -3,22 +3,22 @@
 
 include::vars.adoc[]
 
-방금 Redis에 영구 저장소를 연결하면서 Pod의 "신원"이 중요해졌습니다. 그렇다면 이 Pod들은 실제로 클러스터의 *어느 노드*에서 실행되고 있을까요? 이번 섹션에서는 스케줄러가 Pod를 노드에 배치하는 원리와, 이를 제어하는 몇 가지 방법을 알아봅니다.
+방금 Redis에 영구 저장소를 연결하면서 Pod의 "신원"이 중요해졌습니다. 그렇다면 이 Pod들은 실제로 클러스터의 **어느 노드**에서 실행되고 있을까요? 이번 섹션에서는 스케줄러가 Pod를 노드에 배치하는 원리와, 이를 제어하는 몇 가지 방법을 알아봅니다.
 
-WARNING: 이 실습 환경의 클러스터는 **여러 학습자가 함께 사용하는 공유 클러스터**입니다. `oc adm taint`, `oc label node`, `oc adm cordon`처럼 노드 자체를 변경하는 명령은 다른 학습자의 워크로드에 영향을 줄 수 있으므로 이 모듈에서는 사용하지 않습니다. 이 실습은 (1) 노드를 읽기 전용으로 조회하는 것과, (2) 자신의 namespace 안에 있는 Pod의 배치 규칙만 변경하는 것으로 제한합니다.
+WARNING: 이 실습 환경의 클러스터는 **여러 학습자가 함께 사용하는 공유 클러스터**입니다. ``oc adm taint``, ``oc label node``, ``oc adm cordon``처럼 노드 자체를 변경하는 명령은 다른 학습자의 워크로드에 영향을 줄 수 있으므로 이 모듈에서는 사용하지 않습니다. 이 실습은 (1) 노드를 읽기 전용으로 조회하는 것과, (2) 자신의 namespace 안에 있는 Pod의 배치 규칙만 변경하는 것으로 제한합니다.
 
 [#node_scheduling_concepts]
 == 배경 지식: 노드, nodeSelector, Affinity
 
-*Node*는 Pod가 실제로 실행되는 물리 서버 또는 가상 머신입니다. 스케줄러는 다음과 같은 정보를 바탕으로 어떤 노드에 Pod를 배치할지 결정합니다:
+**Node**는 Pod가 실제로 실행되는 물리 서버 또는 가상 머신입니다. 스케줄러는 다음과 같은 정보를 바탕으로 어떤 노드에 Pod를 배치할지 결정합니다:
 
-* *Label*: 모든 노드는 `kubernetes.io/hostname`(노드 이름), `kubernetes.io/os`(운영체제) 같은 라벨을 기본으로 가지고 있고, 관리자가 커스텀 라벨을 추가할 수도 있습니다.
-* *nodeSelector*: Pod spec에 `nodeSelector: {label: value}`를 지정하면, 해당 라벨을 가진 노드에만 스케줄링됩니다. 조건에 맞는 노드가 없으면 Pod는 `Pending` 상태로 남습니다.
-* *Node Affinity*: nodeSelector보다 더 유연한 규칙(예: "가능하면 이런 노드를 선호하지만, 없으면 다른 곳도 괜찮다")을 표현할 수 있습니다.
-* *Pod Affinity/Anti-Affinity*: 특정 노드가 아니라 *다른 Pod와의 관계*를 기준으로 배치합니다. 예를 들어 "같은 앱의 Pod들은 서로 다른 노드에 분산시켜라"처럼 지정할 수 있습니다.
-* *Taint와 Toleration*: 관리자가 노드에 "이 노드는 특별한 워크로드만 받는다"는 표시(taint)를 남기고, 그 워크로드의 Pod에는 이를 허용하는 표시(toleration)를 붙이는 방식입니다.
+* **Label**: 모든 노드는 ``kubernetes.io/hostname``(노드 이름), ``kubernetes.io/os``(운영체제) 같은 라벨을 기본으로 가지고 있고, 관리자가 커스텀 라벨을 추가할 수도 있습니다.
+* **nodeSelector**: Pod spec에 ``nodeSelector: {label: value}``를 지정하면, 해당 라벨을 가진 노드에만 스케줄링됩니다. 조건에 맞는 노드가 없으면 Pod는 ``Pending`` 상태로 남습니다.
+* **Node Affinity**: nodeSelector보다 더 유연한 규칙(예: "가능하면 이런 노드를 선호하지만, 없으면 다른 곳도 괜찮다")을 표현할 수 있습니다.
+* **Pod Affinity/Anti-Affinity**: 특정 노드가 아니라 **다른 Pod와의 관계**를 기준으로 배치합니다. 예를 들어 "같은 앱의 Pod들은 서로 다른 노드에 분산시켜라"처럼 지정할 수 있습니다.
+* **Taint와 Toleration**: 관리자가 노드에 "이 노드는 특별한 워크로드만 받는다"는 표시(taint)를 남기고, 그 워크로드의 Pod에는 이를 허용하는 표시(toleration)를 붙이는 방식입니다.
 
-WARNING: `oc adm taint`, `oc label node`, `oc adm cordon` 등은 클러스터 관리자가 수행하는 작업이며, 공유 클러스터의 모든 학습자에게 영향을 줍니다. 이 워크숍에서는 다루지 않습니다.
+WARNING: ``oc adm taint``, ``oc label node``, ``oc adm cordon`` 등은 클러스터 관리자가 수행하는 작업이며, 공유 클러스터의 모든 학습자에게 영향을 줍니다. 이 워크숍에서는 다루지 않습니다.
 
 [#exploring_nodes]
 == 실습: 노드 살펴보기
@@ -45,14 +45,14 @@ WORKER=$(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0].
 oc describe node $WORKER
 ----
 
-`Capacity`/`Allocatable` 항목에서 이 노드의 전체 CPU/메모리와, 스케줄링 가능한 양을 확인할 수 있습니다.
+``Capacity``/``Allocatable`` 항목에서 이 노드의 전체 CPU/메모리와, 스케줄링 가능한 양을 확인할 수 있습니다.
 
 [#pod_anti_affinity]
 == 실습: Pod Anti-Affinity로 분산 배치하기
 
-`nationalparks` Deployment에 Pod Anti-Affinity 규칙을 추가해, 같은 앱의 Pod들이 서로 다른 노드에 분산되도록 만들어 보겠습니다. 이 규칙은 자신의 namespace 안에서만 동작하며 노드 자체는 변경하지 않습니다.
+``nationalparks`` Deployment에 Pod Anti-Affinity 규칙을 추가해, 같은 앱의 Pod들이 서로 다른 노드에 분산되도록 만들어 보겠습니다. 이 규칙은 자신의 namespace 안에서만 동작하며 노드 자체는 변경하지 않습니다.
 
-*Topology* 화면에서 `nationalparks` Deployment를 클릭하고 _Actions → Edit Deployment_를 선택합니다. YAML에서 `spec.template.spec`에 다음 `affinity` 블록을 추가합니다:
+**Topology** 화면에서 ``nationalparks`` Deployment를 클릭하고 _Actions → Edit Deployment_를 선택합니다. YAML에서 ``spec.template.spec``에 다음 ``affinity`` 블록을 추가합니다:
 
 [source,role="copypaste"]
 ----
@@ -67,9 +67,9 @@ affinity:
           topologyKey: kubernetes.io/hostname
 ----
 
-NOTE: `preferredDuringSchedulingIgnoredDuringExecution`(선호, soft)를 사용했습니다. 이는 "가능하면 지켜라"는 의미로, 노드가 부족해 조건을 만족할 수 없어도 Pod가 `Pending`에 머무르지 않습니다. 이 실습 클러스터가 노드 개수가 적을 수 있다는 점을 감안한 안전한 선택입니다.
+NOTE: ``preferredDuringSchedulingIgnoredDuringExecution``(선호, soft)를 사용했습니다. 이는 "가능하면 지켜라"는 의미로, 노드가 부족해 조건을 만족할 수 없어도 Pod가 ``Pending``에 머무르지 않습니다. 이 실습 클러스터가 노드 개수가 적을 수 있다는 점을 감안한 안전한 선택입니다.
 
-*Save*를 클릭한 후 2개로 스케일링해 실제로 다른 노드에 배치되는지 확인합니다:
+**Save**를 클릭한 후 2개로 스케일링해 실제로 다른 노드에 배치되는지 확인합니다:
 
 [source,role="copypaste"]
 ----
@@ -85,7 +85,7 @@ nationalparks-789c6bc4f4-4x8kq   1/1     Running   0          30s   10.128.2.55 
 nationalparks-789c6bc4f4-9p2wr   1/1     Running   0          10s   10.131.0.62   worker-2
 ----
 
-`NODE` 열을 보면 두 Pod가 서로 다른 노드에 배치된 것을 확인할 수 있습니다(클러스터에 노드가 2개 이상 있는 경우). 실습이 끝나면 replica를 1로 되돌립니다:
+``NODE`` 열을 보면 두 Pod가 서로 다른 노드에 배치된 것을 확인할 수 있습니다(클러스터에 노드가 2개 이상 있는 경우). 실습이 끝나면 replica를 1로 되돌립니다:
 
 [source,role="copypaste"]
 ----
@@ -95,9 +95,9 @@ oc scale deployment/nationalparks --replicas=1
 [#nodeselector_pending]
 == 실습: 잘못된 nodeSelector와 Pending 상태 다루기
 
-이번에는 `nodeSelector`가 잘못 지정되었을 때 어떤 일이 벌어지는지 안전하게 재현해 봅니다. 먼저 모든 노드에서 항상 참인 안전한 값으로 시작합니다.
+이번에는 ``nodeSelector``가 잘못 지정되었을 때 어떤 일이 벌어지는지 안전하게 재현해 봅니다. 먼저 모든 노드에서 항상 참인 안전한 값으로 시작합니다.
 
-`nationalparks` Deployment를 다시 편집해 `spec.template.spec`에 다음을 추가합니다:
+``nationalparks`` Deployment를 다시 편집해 ``spec.template.spec``에 다음을 추가합니다:
 
 [source,role="copypaste"]
 ----
@@ -105,14 +105,14 @@ nodeSelector:
   kubernetes.io/os: linux
 ----
 
-*Save*를 클릭하고 정상적으로 스케줄링되는지 확인합니다:
+**Save**를 클릭하고 정상적으로 스케줄링되는지 확인합니다:
 
 [source,role="copypaste"]
 ----
 oc get pods -l app=nationalparks
 ----
 
-정상적으로 `Running` 상태가 됩니다 -- 모든 OpenShift 노드는 `kubernetes.io/os=linux` 라벨을 가지고 있기 때문입니다. 이번에는 존재하지 않는 값으로 바꿔 의도적으로 실패를 재현합니다:
+정상적으로 ``Running`` 상태가 됩니다 -- 모든 OpenShift 노드는 ``kubernetes.io/os=linux`` 라벨을 가지고 있기 때문입니다. 이번에는 존재하지 않는 값으로 바꿔 의도적으로 실패를 재현합니다:
 
 [source,role="copypaste"]
 ----
@@ -153,7 +153,7 @@ Events:
   Warning  FailedScheduling  10s   default-scheduler  0/3 nodes are available: 3 node(s) didn't match Pod's node affinity/selector.
 ----
 
-`kubernetes.io/os=windows`인 노드는 존재하지 않으므로 스케줄러가 배치할 곳을 찾지 못해 Pod가 `Pending`에 머무릅니다. `nodeSelector`를 원래대로 되돌립니다:
+``kubernetes.io/os=windows``인 노드는 존재하지 않으므로 스케줄러가 배치할 곳을 찾지 못해 Pod가 ``Pending``에 머무릅니다. ``nodeSelector``를 원래대로 되돌립니다:
 
 [source,role="copypaste"]
 ----
@@ -165,4 +165,4 @@ oc patch deployment nationalparks --type='json' -p='[{"op":"remove","path":"/spe
 oc get pods -l app=nationalparks
 ----
 
-Pod가 다시 `Running` 상태로 스케줄링되는 것을 확인하며 실습을 마칩니다.
+Pod가 다시 ``Running`` 상태로 스케줄링되는 것을 확인하며 실습을 마칩니다.

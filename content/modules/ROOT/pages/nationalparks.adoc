@@ -3,7 +3,7 @@
 
 include::vars.adoc[]
 
-이 섹션에서는 시각화 애플리케이션(이전 워크숍 섹션에서 배포한 `parksmap` 웹 구성 요소)에
+이 섹션에서는 시각화 애플리케이션(이전 워크숍 섹션에서 배포한 ``parksmap`` 웹 구성 요소)에
 두 가지 주요 REST 엔드포인트를 노출하는 백엔드 Service를 배포합니다.
 이 애플리케이션은 MongoDB 데이터베이스에 저장된 각 국립공원의 정보(좌표 포함)를
 조회합니다. 또한 이 애플리케이션은 API를 최종 사용자가 직접 사용할 수 있도록
@@ -32,7 +32,7 @@ Source-to-image(S2I)는 재현 가능한 컨테이너 이미지를 빌드하기 
 
 OpenShift는 Dockerfile의 지시어를 사용한 이미지 빌드나 "custom" 빌드 외에도, S2I를 빌드 메커니즘 중 하나로 사용할 수 있습니다.
 
-OpenShift는 S2I 프로세스를 Build Pod라고 하는 특별한 *Pod* 내부에서
+OpenShift는 S2I 프로세스를 Build Pod라고 하는 특별한 **Pod** 내부에서
 실행하므로, 빌드 역시 쿼터, 제한, 리소스 스케줄링 등 OpenShift의
 다른 요소들과 마찬가지로 이러한 제약을 받습니다.
 
@@ -44,14 +44,14 @@ link:{ocp4_starter_openshift_github}/source-to-image[GitHub,window='_blank']에�
 [#creating_a_application]
 == 실습: 백엔드 애플리케이션 생성하기
 
-이 실습에서 배포할 백엔드 Service는 `nationalparks`라고 합니다. 이 애플리케이션은
+이 실습에서 배포할 백엔드 Service는 ``nationalparks``라고 합니다. 이 애플리케이션은
 MongoDB 데이터베이스에 대해 2D 지리공간 쿼리를 수행하여 전 세계 국립공원의 지도
 좌표를 찾아 반환합니다. 조금 어렵게 표현했지만, 결국 장소 목록을 JSON으로
 반환하는 웹 서비스를 배포한다는 뜻입니다.
 
 [#add_to_project]
 === Project에 추가하기
-`nationalparks` 구성 요소는 기존 프런트엔드(parksmap)가 사용할 데이터를 제공하는
+``nationalparks`` 구성 요소는 기존 프런트엔드(parksmap)가 사용할 데이터를 제공하는
 백엔드이기 때문에, 지금까지 사용해 온 기존 project 안에 빌드하고 배포하게 됩니다.
 
 [#using_application_code_on_git_server]
@@ -68,16 +68,16 @@ Git 서버에 webhook을 등록하여 애플리케이션 코드가 업데이트�
 [#deploying_the_backend_service]
 === 백엔드 Service 배포하기
 
-이전에 기존 이미지를 사용할 때 *+* 버튼을 사용했던 것처럼, 소스 코드
+이전에 기존 이미지를 사용할 때 **+** 버튼을 사용했던 것처럼, 소스 코드
 저장소를 지정할 때도 동일하게 할 수 있습니다.
 간단한 link:{ocp4_starter_openshift_roadshow}/nationalparks.git[Java,window='_blank'] S2I 이미지를 사용해 봅시다.
 
-Topology 화면에서 헤더의 *+* 버튼을 클릭하고 *Import from Git*을 선택합니다.
+Topology 화면에서 헤더의 **+** 버튼을 클릭하고 **Import from Git**을 선택합니다.
 
 [.bordershadow]
 image::nationalparks-show-add-options.png[link="self",window=_blank]
 
-*Import from Git* 워크플로우는 몇 가지 선택 사항을 통해 앱 배포 과정을 안내해 줍니다.
+**Import from Git** 워크플로우는 몇 가지 선택 사항을 통해 앱 배포 과정을 안내해 줍니다.
 
 Git Repo URL에 다음을 입력합니다:
 
@@ -86,49 +86,49 @@ Git Repo URL에 다음을 입력합니다:
 {ocp4_starter_openshift_roadshow}/nationalparks.git
 ----
 
-OpenShift가 소스 코드에서 사용된 프로그래밍 언어를 자동으로 감지합니다. *Import Strategy*를 선택할 수 있는 옵션이 있습니다.
+OpenShift가 소스 코드에서 사용된 프로그래밍 언어를 자동으로 감지합니다. **Import Strategy**를 선택할 수 있는 옵션이 있습니다.
 
-*Edit Import Strategy*를 클릭합니다.
+**Edit Import Strategy**를 클릭합니다.
 
 [.bordershadow]
 image::nationalparks-import-strategy.png[width=500,link="self",window=_blank]
 
 세 가지 옵션이 있습니다:
 
-* *Devfile*: link:{ocp4_starter_devfile_docs}[devfile,window='_blank'] 스펙을 사용하여 애플리케이션 스택을 생성합니다. 저장소에는 devfile 형식의 `devfile.yaml` 파일이 있어야 합니다.
-* *Dockerfile*: 소스 Git 저장소에 있는 기존 Dockerfile로 컨테이너 이미지를 생성합니다.
-* *Builder Image*: Source-to-Image라는 메커니즘을 사용하여 소스 코드로부터 직접 컨테이너 이미지를 자동으로 생성합니다 - Dockerfile이 필요하지 않습니다.
+* **Devfile**: link:{ocp4_starter_devfile_docs}[devfile,window='_blank'] 스펙을 사용하여 애플리케이션 스택을 생성합니다. 저장소에는 devfile 형식의 ``devfile.yaml`` 파일이 있어야 합니다.
+* **Dockerfile**: 소스 Git 저장소에 있는 기존 Dockerfile로 컨테이너 이미지를 생성합니다.
+* **Builder Image**: Source-to-Image라는 메커니즘을 사용하여 소스 코드로부터 직접 컨테이너 이미지를 자동으로 생성합니다 - Dockerfile이 필요하지 않습니다.
 
-다음 섹션에서 다룰 내용처럼 소스 코드로부터 컨테이너 이미지를 생성할 것이므로 *Builder Image*를 선택합니다.
+다음 섹션에서 다룰 내용처럼 소스 코드로부터 컨테이너 이미지를 생성할 것이므로 **Builder Image**를 선택합니다.
 
 [.bordershadow]
 image::nationalparks-import-strategy-build.png[link="self",window=_blank]
 
 TIP: 저장소에는 멀티 스테이지 Dockerfile도 포함되어 있으므로 Dockerfile을 사용할 수도 있습니다. 이 실습의 목표는 OpenShift의 Builder Image 기능을 경험해 보는 것입니다.
 
-Builder Image로 *Java*가 선택되었는지 확인하고, OpenJDK 11을 사용하도록 버전 *openjdk-11-ubi8*이 선택되어 있는지 확인하세요.
+Builder Image로 **Java**가 선택되었는지 확인하고, OpenJDK 11을 사용하도록 버전 **openjdk-11-ubi8**이 선택되어 있는지 확인하세요.
 
-아래로 스크롤하여 *General* 섹션으로 이동합니다. 다음을 추가합니다:
+아래로 스크롤하여 **General** 섹션으로 이동합니다. 다음을 추가합니다:
 
-*Application Name* :
+**Application Name** :
 [source,role=copypaste]
 ----
 workshop
 ----
 
-*Name* :
+**Name** :
 [source,role=copypaste]
 ----
 nationalparks
 ----
 
-*Build* 섹션에서 *BuildConfig*를 선택합니다.
+**Build** 섹션에서 **BuildConfig**를 선택합니다.
 
-*Deploy* 섹션에서 *Deployment*를 선택합니다.
+**Deploy** 섹션에서 **Deployment**를 선택합니다.
 
-*Advanced Options* 아래에서 *Create a route*가 *체크*되어 있는지 확인합니다. 이번에는 이 화면에서 직접 또 다른 *Secure Route*를 생성하게 됩니다.
+**Advanced Options** 아래에서 **Create a route**가 **체크**되어 있는지 확인합니다. 이번에는 이 화면에서 직접 또 다른 **Secure Route**를 생성하게 됩니다.
 
-*Show advanced Routing options*를 클릭합니다. 기본 옵션은 그대로 두고 *Security* 섹션으로 이동합니다. *Secure Route* 옵션을 체크합니다. *TLS termination* 아래에서 *Edge*를 선택합니다.
+**Show advanced Routing options**를 클릭합니다. 기본 옵션은 그대로 두고 **Security** 섹션으로 이동합니다. **Secure Route** 옵션을 체크합니다. **TLS termination** 아래에서 **Edge**를 선택합니다.
 
 [.bordershadow]
 image::nationalparks-configure-service1.png[link="self",window=_blank]
@@ -136,7 +136,7 @@ image::nationalparks-configure-service1.png[link="self",window=_blank]
 [.bordershadow]
 image::nationalparks-configure-service2.png[link="self",window=_blank]
 
-아래로 스크롤하여 *Labels* 섹션을 펼쳐 레이블 3개를 추가합니다.
+아래로 스크롤하여 **Labels** 섹션을 펼쳐 레이블 3개를 추가합니다.
 
 [.bordershadow]
 image::nationalparks-configure-service4.png[link="self",window=_blank]
@@ -165,19 +165,19 @@ component=nationalparks
 role=backend
 ----
 
-*Create*를 클릭하여 제출합니다.
+**Create**를 클릭하여 제출합니다.
 
 [#monitoring-the-build]
 === 빌드 모니터링하기
 
-빌드 로그를 확인하려면 Topology 화면에서 `nationalparks` 항목을 클릭한 후, *Resources* 탭의 *Builds* 섹션에서 *View Logs*를 클릭합니다.
+빌드 로그를 확인하려면 Topology 화면에서 ``nationalparks`` 항목을 클릭한 후, **Resources** 탭의 **Builds** 섹션에서 **View Logs**를 클릭합니다.
 
 [.bordershadow]
 image::nationalparks-java-new-java-build.png[link="self",window=_blank]
 
 애플리케이션의 언어에 따라 빌드 프로세스는 다르게 진행됩니다. 다만 종속성을 다운로드하는 초기 빌드는 몇 분 정도 걸립니다. 이 모든 과정을 실시간으로 확인할 수 있습니다!
 
-명령줄에서도 *Build*를 확인할 수 있습니다:
+명령줄에서도 **Build**를 확인할 수 있습니다:
 
 [.console-input]
 [source,role="copypaste"]
@@ -205,13 +205,13 @@ oc logs -f builds/nationalparks-1
 빌드가 성공적으로 완료되면:
 
 * S2I 프로세스가 결과 이미지를 내부 OpenShift 이미지 레지스트리에 푸시합니다
-* *Deployment*(D)가 이미지가 변경된 것을 감지하고, 이로 인해
+* **Deployment**(D)가 이미지가 변경된 것을 감지하고, 이로 인해
   새로운 배포가 발생합니다.
-* 이 새 배포를 위한 *ReplicaSet*(RS)이 생성됩니다.
-* 기본 레플리카 개수가 1이므로, RS는 실행 중인 *Pod*가 없음을 감지하고 하나를 배포합니다.
+* 이 새 배포를 위한 **ReplicaSet**(RS)이 생성됩니다.
+* 기본 레플리카 개수가 1이므로, RS는 실행 중인 **Pod**가 없음을 감지하고 하나를 배포합니다.
 
-결국 `oc get pods` 명령을 실행하면, 빌드 Pod는
-완료(종료)되었고 애플리케이션 *Pod*는 준비되어 실행 중인 상태인 것을 확인할 수 있습니다:
+결국 ``oc get pods`` 명령을 실행하면, 빌드 Pod는
+완료(종료)되었고 애플리케이션 **Pod**는 준비되어 실행 중인 상태인 것을 확인할 수 있습니다:
 
 [.console-output]
 [source]
@@ -222,7 +222,7 @@ nationalparks-1-build       0/1       Completed   0          3m
 parksmap-57df75c46d-xltcs   1/1       Running     0          2h
 ----
 
-다시 OpenShift 웹 콘솔을 살펴보세요. 애플리케이션을 생성할 때 활성화했기 때문에 *Route*가 생성된 것을 확인할 수 있습니다. 웹 콘솔에서 URL을 확인하거나 명령줄에서 확인할 수 있습니다:
+다시 OpenShift 웹 콘솔을 살펴보세요. 애플리케이션을 생성할 때 활성화했기 때문에 **Route**가 생성된 것을 확인할 수 있습니다. 웹 콘솔에서 URL을 확인하거나 명령줄에서 확인할 수 있습니다:
 
 [.console-input]
 [source,role="copypaste"]
@@ -250,7 +250,7 @@ https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}
 
 이는 백엔드 애플리케이션이므로 실제 웹 인터페이스는 없습니다.
 그러나 브라우저로도 사용해 볼 수 있습니다. parksmap 프런트엔드와 함께 동작하는 모든 백엔드는
-`/ws/info/` 엔드포인트를 구현해야 합니다. 테스트하려면 브라우저에서 다음 URL을 방문하세요:
+``/ws/info/`` 엔드포인트를 구현해야 합니다. 테스트하려면 브라우저에서 다음 URL을 방문하세요:
 
 link:https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/info/[National Parks Info Page,window='_blank']
 

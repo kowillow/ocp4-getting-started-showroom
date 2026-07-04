@@ -3,7 +3,7 @@
 include::vars.adoc[]
 :experimental:
 
-이 섹션에서는 `parksmap`이라고도 알려진 ParksMap 애플리케이션의 웹 구성 요소를 배포합니다. 이 구성 요소는 OpenShift의 서비스 디스커버리(service discovery) 메커니즘을 사용하여 백엔드 Service를 검색하고 해당 데이터를 지도에 표시합니다.
+이 섹션에서는 ``parksmap``이라고도 알려진 ParksMap 애플리케이션의 웹 구성 요소를 배포합니다. 이 구성 요소는 OpenShift의 서비스 디스커버리(service discovery) 메커니즘을 사용하여 백엔드 Service를 검색하고 해당 데이터를 지도에 표시합니다.
 
 [.bordershadow]
 image::roadshow-app-architecture-parksmap-1.png[link="self",window=_blank]
@@ -14,14 +14,14 @@ image::roadshow-app-architecture-parksmap-1.png[link="self",window=_blank]
 가장 간단한 방법부터 시작해 보겠습니다 - 평범한 Docker 형식 이미지를 OpenShift에서 실행해 보는 것입니다.
 이 작업은 매우 간단하며, OpenShift에서는 웹 콘솔에서 직접 수행할 수 있습니다.
 
-*OCP Console* 탭에서 *{ocp4_starter_project}* Project의 *Topology* 화면으로 이동합니다.
+**OCP Console** 탭에서 **{ocp4_starter_project}** Project의 **Topology** 화면으로 이동합니다.
 
-왼쪽 상단의 *+* 아이콘을 클릭합니다. OpenShift에 애플리케이션을 배포할 수 있는 여러 옵션이 있는 메뉴가 표시됩니다. 배포하려는 이미지의 정보를 지정할 수 있는 대화 상자를 열려면 *Container images*를 클릭합니다.
+왼쪽 상단의 **+** 아이콘을 클릭합니다. OpenShift에 애플리케이션을 배포할 수 있는 여러 옵션이 있는 메뉴가 표시됩니다. 배포하려는 이미지의 정보를 지정할 수 있는 대화 상자를 열려면 **Container images**를 클릭합니다.
 
 [.bordershadow]
 image::openshift-console-add-container.png[link="self",window=_blank]
 
-*Image Name* 필드에 다음을 복사하여 붙여넣습니다:
+**Image Name** 필드에 다음을 복사하여 붙여넣습니다:
 
 [source,role="copypaste",subs="attributes"]
 ----
@@ -35,31 +35,31 @@ image::openshift-console-add-container.png[link="self",window=_blank]
 [.bordershadow]
 image::parksmap-image.png[link="self",window=_blank]
 
-*Runtime Icon*에서 OpenShift Topology 화면에 표시할 아이콘을 선택합니다. 이 프런트엔드는 Spring Boot로 만들어졌으므로 *spring-boot*를 선택합니다.
+**Runtime Icon**에서 OpenShift Topology 화면에 표시할 아이콘을 선택합니다. 이 프런트엔드는 Spring Boot로 만들어졌으므로 **spring-boot**를 선택합니다.
 
 다음 값이 설정되어 있는지 확인합니다:
 
-*Application Name* :
+**Application Name** :
 [source,role=copypaste]
 ----
 workshop
 ----
 
-*Name* :
+**Name** :
 [source,role=copypaste]
 ----
 parksmap
 ----
 
-NOTE: *Application Name*은 전체 애플리케이션의 이름이며, *Name* 필드는 개별 구성 요소에 부여된 이름을 나타냅니다. 이 경우 `parksmap` 구성 요소가 배포할 컨테이너입니다.
+NOTE: **Application Name**은 전체 애플리케이션의 이름이며, **Name** 필드는 개별 구성 요소에 부여된 이름을 나타냅니다. 이 경우 ``parksmap`` 구성 요소가 배포할 컨테이너입니다.
 
-*Resource type* 섹션에서 *Deployment*가 선택되어 있는지 확인합니다.
+**Resource type** 섹션에서 **Deployment**가 선택되어 있는지 확인합니다.
 
-NOTE: *Resource type*에 대해서는 이후 챕터에서 자세히 다룹니다.
+NOTE: **Resource type**에 대해서는 이후 챕터에서 자세히 다룹니다.
 
-*"Advanced options"* 아래에 있는 *Create a route* 옆의 체크박스를 *해제*합니다. 학습을 위해 이 워크숍의 나중 단계에서 애플리케이션용 *Route*를 직접 생성해 볼 것입니다.
+**"Advanced options"** 아래에 있는 **Create a route** 옆의 체크박스를 **해제**합니다. 학습을 위해 이 워크숍의 나중 단계에서 애플리케이션용 **Route**를 직접 생성해 볼 것입니다.
 
-페이지 하단의 Advanced Options 섹션에서 *Labels*를 클릭하고, 나중에 이 배포를 식별하는 데 사용할 수 있는 레이블을 추가합니다. 레이블은 웹 콘솔과 명령줄에서 구성 요소를 식별하고 필터링하는 데 도움이 됩니다.
+페이지 하단의 Advanced Options 섹션에서 **Labels**를 클릭하고, 나중에 이 배포를 식별하는 데 사용할 수 있는 레이블을 추가합니다. 레이블은 웹 콘솔과 명령줄에서 구성 요소를 식별하고 필터링하는 데 도움이 됩니다.
 
 레이블 3개를 추가합니다. 각 레이블에 대해 name=value 쌍을 입력한 후 다음 레이블을 입력하기 전에 kbd:[Return] 키(키보드에 따라 kbd:[Enter] 키)를 누릅니다. 첫 번째 레이블은 애플리케이션의 이름입니다.
 
@@ -88,59 +88,59 @@ image::parksmap-image-options.png[width=600,link="self",window=_blank]
 [.bordershadow]
 image::parksmap-advanced-image-options.png[width=600,link="self",window=_blank]
 
-이제 파란색 *Create* 버튼을 클릭합니다. *Topology* 페이지로 이동하며, `workshop` 애플리케이션 내 `parksmap` 배포 구성에 대한 시각화를 확인할 수 있습니다.
+이제 파란색 **Create** 버튼을 클릭합니다. **Topology** 페이지로 이동하며, ``workshop`` 애플리케이션 내 ``parksmap`` 배포 구성에 대한 시각화를 확인할 수 있습니다.
 
 [.bordershadow]
 image::parksmap-dc-topology.png[width=400,link="self",window=_blank]
 
-OpenShift에서 컨테이너 이미지를 배포하는 데 필요한 단계는 이것이 전부입니다. EXPOSE 포트를 정의하는 것, *root 사용자*나 다른 사용자 이름으로 실행할 필요가 없는 것, 시작 시 실행할 종료되지 않는 단일 CMD를 갖는 것과 같은 모범 사례를 따르는 모든 컨테이너 이미지에서 이 방식이 동작합니다. 이러한 내용은 이 애플리케이션의 https://github.com/openshift-roadshow/parksmap-web/blob/master/Dockerfile[Dockerfile, window="_blank"]에서 확인할 수 있습니다.
+OpenShift에서 컨테이너 이미지를 배포하는 데 필요한 단계는 이것이 전부입니다. EXPOSE 포트를 정의하는 것, **root 사용자**나 다른 사용자 이름으로 실행할 필요가 없는 것, 시작 시 실행할 종료되지 않는 단일 CMD를 갖는 것과 같은 모범 사례를 따르는 모든 컨테이너 이미지에서 이 방식이 동작합니다. 이러한 내용은 이 애플리케이션의 https://github.com/openshift-roadshow/parksmap-web/blob/master/Dockerfile[Dockerfile, window="_blank"]에서 확인할 수 있습니다.
 
-NOTE: 애플리케이션을 대규모로 배포할 때는 적절한 레이블을 지정하는 것이 중요합니다. OpenShift는 Overview 페이지에서 구성 요소를 정의하고 그룹화하기 위해 *app* 레이블을 사용합니다. 명시적으로 지정하지 않으면 OpenShift가 기본값으로 이 레이블을 생성합니다.
+NOTE: 애플리케이션을 대규모로 배포할 때는 적절한 레이블을 지정하는 것이 중요합니다. OpenShift는 Overview 페이지에서 구성 요소를 정의하고 그룹화하기 위해 **app** 레이블을 사용합니다. 명시적으로 지정하지 않으면 OpenShift가 기본값으로 이 레이블을 생성합니다.
 
 [#containers_and_pods]
 == 배경 지식: 컨테이너와 Pod
 
-본격적으로 시작하기 전에, 컨테이너와 *Pod*가 어떻게 연관되어 있는지 이해하는 것이 중요합니다. 이 워크숍에서는 이러한 기술의 배경 지식을 자세히 다루지 않지만, 궁금한 점이 있다면 진행자에게 문의해 주세요. 대신 바로 실습을 통해 사용해 보겠습니다.
+본격적으로 시작하기 전에, 컨테이너와 **Pod**가 어떻게 연관되어 있는지 이해하는 것이 중요합니다. 이 워크숍에서는 이러한 기술의 배경 지식을 자세히 다루지 않지만, 궁금한 점이 있다면 진행자에게 문의해 주세요. 대신 바로 실습을 통해 사용해 보겠습니다.
 
-OpenShift(및 Kubernetes)에서 배포 가능한 가장 작은 단위는 *Pod*입니다. *Pod*는 함께 배포되고 동일한 호스트에서 실행되는 것이 보장되는 하나 이상의 https://opencontainers.org/[OCI 컨테이너, window="_blank"] 그룹입니다.
+OpenShift(및 Kubernetes)에서 배포 가능한 가장 작은 단위는 **Pod**입니다. **Pod**는 함께 배포되고 동일한 호스트에서 실행되는 것이 보장되는 하나 이상의 https://opencontainers.org/[OCI 컨테이너, window="_blank"] 그룹입니다.
 OpenShift 공식 문서에 따르면 다음과 같습니다:
 
 [quote]
 __
-각 *Pod*는 고유한 IP 주소를 가지므로 전체 포트 공간을 독점적으로 사용하며, Pod 내의
-컨테이너들은 스토리지를 공유할 수 있습니다. *Pod*는 하나 이상의 레이블로 "태그"될
-수 있으며, 이 레이블은 한 번의 작업으로 *Pod* 그룹을 선택하고 관리하는 데
+각 **Pod**는 고유한 IP 주소를 가지므로 전체 포트 공간을 독점적으로 사용하며, Pod 내의
+컨테이너들은 스토리지를 공유할 수 있습니다. **Pod**는 하나 이상의 레이블로 "태그"될
+수 있으며, 이 레이블은 한 번의 작업으로 **Pod** 그룹을 선택하고 관리하는 데
 사용됩니다.
 __
 
-*Pod*는 여러 개의 OCI 컨테이너를 포함할 수 있습니다. 일반적인 개념은 *Pod*가
-"메인 프로세스"와 그 프로세스와 함께 실행하고자 하는 보조 서비스들을 포함하는 것입니다. *Pod*에 넣을 수 있는 컨테이너의 예로는 Apache HTTPD
+**Pod**는 여러 개의 OCI 컨테이너를 포함할 수 있습니다. 일반적인 개념은 **Pod**가
+"메인 프로세스"와 그 프로세스와 함께 실행하고자 하는 보조 서비스들을 포함하는 것입니다. **Pod**에 넣을 수 있는 컨테이너의 예로는 Apache HTTPD
 서버, 로그 분석기, 업로드된 파일을 관리하는 파일 서비스 등이 있습니다.
 
 [#examining_the_pod]
 == 실습: Pod 살펴보기
 
-Topology 화면에서 `parksmap` 항목을 클릭하면 배포에 대한 정보가 표시됩니다. 기본적으로 *Resources* 탭이 표시될 수 있습니다. 이 경우 *Details* 탭을 클릭합니다.
+Topology 화면에서 ``parksmap`` 항목을 클릭하면 배포에 대한 정보가 표시됩니다. 기본적으로 **Resources** 탭이 표시될 수 있습니다. 이 경우 **Details** 탭을 클릭합니다.
 
 [.bordershadow]
 image::switchtoresources.png[link="self",window=_blank]
 
-해당 패널에서 여러분의 작업으로 생성된 하나의 *Pod*가 있는 것을 확인할 수 있습니다.
+해당 패널에서 여러분의 작업으로 생성된 하나의 **Pod**가 있는 것을 확인할 수 있습니다.
 
 [.bordershadow]
 image::parksmap-overview.png[link="self",window=_blank]
 
 NOTE: 이 화면에서 애플리케이션에 Health check를 추가하라고 제안하는 정보 상자를 볼 수 있습니다. 이는 나중에 처리할 것이므로, 지금은 오른쪽 상단의 X 아이콘을 클릭해서 이 정보 상자를 닫으면 됩니다.
 
-웹 콘솔에서 *Workloads -> Pods*로 이동하면 여러분의 *Project* 내에 생성된 모든 *Pod* 목록도 확인할 수 있습니다.
+웹 콘솔에서 **Workloads -> Pods**로 이동하면 여러분의 **Project** 내에 생성된 모든 **Pod** 목록도 확인할 수 있습니다.
 
 [.bordershadow]
 image::parksmap-podlist.png[link="self",window=_blank]
 
-이 *Pod*는 단일 컨테이너를 포함하며, 이는 간단한 Spring Boot/Java 애플리케이션인
-`parksmap` 애플리케이션입니다.
+이 **Pod**는 단일 컨테이너를 포함하며, 이는 간단한 Spring Boot/Java 애플리케이션인
+``parksmap`` 애플리케이션입니다.
 
-명령줄에서도 *Pod*를 확인할 수 있습니다:
+명령줄에서도 **Pod**를 확인할 수 있습니다:
 
 [source,role="copypaste"]
 ----
@@ -156,14 +156,14 @@ NAME                        READY   STATUS    RESTARTS   AGE
 parksmap-6444cdcd46-hp9st   1/1     Running   0          50s
 ----
 
-위 출력은 현재 *Project*에 있는 모든 *Pod*를 나열하며, *Pod* 이름, 상태,
+위 출력은 현재 **Project**에 있는 모든 **Pod**를 나열하며, **Pod** 이름, 상태,
 재시작 횟수, 가동 시간을 포함합니다.
 
-*Pod*의 이름을 알고 나면 `oc get` 명령을
-사용하여 해당 *Pod*에 대한 더 자세한 정보를 얻을 수 있습니다.
-다음 구문을 사용하여 출력 형식을 *YAML*로 변경합니다:
+**Pod**의 이름을 알고 나면 ``oc get`` 명령을
+사용하여 해당 **Pod**에 대한 더 자세한 정보를 얻을 수 있습니다.
+다음 구문을 사용하여 출력 형식을 **YAML**로 변경합니다:
 
-NOTE: 위의 `oc get pods` 출력에서 올바른 *Pod* 이름을 사용해야 합니다.
+NOTE: 위의 ``oc get pods`` 출력에서 올바른 **Pod** 이름을 사용해야 합니다.
 
 [source]
 ----

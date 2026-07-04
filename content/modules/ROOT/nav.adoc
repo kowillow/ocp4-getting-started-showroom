@@ -29,6 +29,7 @@
 ** xref:parksmap-resources.adoc#quota_in_action[실습: 쿼터 한도에서 스케일링해보기]
 * xref:parksmap-routes.adoc[Route]
 ** xref:parksmap-routes.adoc#routes[배경 지식: Route]
+** xref:parksmap-routes.adoc#route_vs_ingress[배경 지식: OpenShift Route와 Kubernetes Ingress]
 ** xref:parksmap-routes.adoc#creating_a_route[실습: Route 생성하기]
 * xref:parksmap-logging.adoc[로깅]
 ** xref:parksmap-logging.adoc#container_logs[배경 지식: 컨테이너 로그]

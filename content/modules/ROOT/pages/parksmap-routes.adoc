@@ -11,44 +11,74 @@ image::roadshow-app-architecture-parksmap-2.png[link="self",window=_blank]
 [#routes]
 == 배경 지식: Route
 
-*Service*는 OpenShift 환경 내부에서 추상화와 로드 밸런싱을 제공하지만,
+**Service**는 OpenShift 환경 내부에서 추상화와 로드 밸런싱을 제공하지만,
 때로는 OpenShift **외부**의 클라이언트(사용자, 시스템, 디바이스 등)가
-애플리케이션에 접근해야 하는 경우가 있습니다. 외부 클라이언트는 *Route* 오브젝트로 구성할 수 있는
+애플리케이션에 접근해야 하는 경우가 있습니다. 외부 클라이언트는 **Route** 오브젝트로 구성할 수 있는
 OpenShift 라우팅 계층을 통해 OpenShift에서 실행 중인 애플리케이션에 접근합니다.
 
 기본 OpenShift 라우터(https://www.haproxy.org/[HAProxy, window="_blank"])는 들어오는
-요청의 HTTP 헤더를 사용하여 연결을 어디로 프록시할지 결정합니다. 선택적으로 *Route*에
-TLS 같은 보안 설정을 정의할 수 있습니다. *Service*, 그리고 나아가
-*Pod*를 외부 세계에서 접근 가능하게 하려면 *Route*를
+요청의 HTTP 헤더를 사용하여 연결을 어디로 프록시할지 결정합니다. 선택적으로 **Route**에
+TLS 같은 보안 설정을 정의할 수 있습니다. **Service**, 그리고 나아가
+**Pod**를 외부 세계에서 접근 가능하게 하려면 **Route**를
 생성해야 합니다.
+
+[#route_vs_ingress]
+== 배경 지식: OpenShift Route와 Kubernetes Ingress
+
+Kubernetes를 먼저 접해봤다면 **Route** 대신 **Ingress**라는 이름이 익숙할 수 있습니다. 둘은 같은 문제(외부 트래픽을 클러스터 내부 **Service**로 전달하는 것)를 해결하지만, 등장한 배경과 기능 범위가 다릅니다.
+
+**Route**는 OpenShift가 Kubernetes보다 먼저 갖추고 있던 네이티브 오브젝트입니다. Kubernetes 커뮤니티는 이후 벤더 중립적인 표준으로 **Ingress**를 도입했습니다. 오늘날 OpenShift는 두 가지를 모두 지원하며, 클러스터 내부의 OpenShift Router가 **Ingress** 오브젝트를 자동으로 감지해 **Route**로 동기화해 줍니다 -- 즉 **Ingress**를 만들어도 동작하지만, **Route**가 제공하는 몇 가지 기능은 **Ingress** API만으로는 표현할 수 없습니다.
+
+[cols="1,2,2",options="header"]
+|===
+|항목 |OpenShift Route |Kubernetes Ingress
+
+|표준 여부
+|OpenShift 전용(비표준)
+|Kubernetes 표준(모든 배포판에서 동작)
+
+|TLS Termination 옵션
+|Edge, Passthrough, Re-encrypt를 세밀하게 선택 가능
+|TLS 활성화 여부만 지정, 세부 termination 방식은 Ingress Controller 구현에 따라 다름
+
+|트래픽 분산(카나리, 블루/그린)
+|여러 Route를 동일 호스트에 연결하고 ``weight``로 비율 조정 가능
+|Ingress Controller가 어노테이션으로 지원하는 경우에만 가능(표준 API에는 없음)
+
+|생성 방법
+|``oc expose``, ``oc create route``, 웹 콘솔에서 바로 생성
+|``Ingress`` 오브젝트 작성 + 클러스터에 Ingress Controller 필요(OpenShift는 기본 내장)
+|===
+
+이 워크숍에서는 OpenShift 네이티브 기능인 **Route**를 사용합니다. 다른 Kubernetes 배포판으로 옮겨야 하는 애플리케이션이라면 **Ingress**를 선택해 이식성을 높일 수 있습니다.
 
 [#creating_a_route]
 == 실습: Route 생성하기
 
-`parksmap` 애플리케이션을 배포할 때 *Route*를 생성하는 체크박스를 해제했던 것을
-기억하실 겁니다. 원래는 자동으로 생성되었을 것입니다. 다행히 *Route*를 생성하는 것은
+``parksmap`` 애플리케이션을 배포할 때 **Route**를 생성하는 체크박스를 해제했던 것을
+기억하실 겁니다. 원래는 자동으로 생성되었을 것입니다. 다행히 **Route**를 생성하는 것은
 간단한 과정입니다.
 
-Route는 OpenShift 콘솔에서 생성하거나 `oc` CLI를 사용하여 생성할 수 있습니다. 아래 옵션 중 원하는 방식을 선택하여 route를 추가하세요.
+Route는 OpenShift 콘솔에서 생성하거나 ``oc`` CLI를 사용하여 생성할 수 있습니다. 아래 옵션 중 원하는 방식을 선택하여 route를 추가하세요.
 
 ====
-*옵션 A: OpenShift 콘솔:*
+**옵션 A: OpenShift 콘솔:**
 
-. *Networking -> Routes*를 클릭한 후 *Create Route* 버튼을 클릭합니다.
-. *Name* 필드에 *parksmap*을 입력합니다.
-. *Service* 필드에서 *parksmap*을 선택합니다. *Target Port*는 *8080*을 선택합니다.
-. *Security* 섹션에서 *Secure route*를 체크합니다. *TLS Termination* 목록에서 *Edge*를 선택합니다.
-. 나머지 필드는 비워두고 *Create*를 클릭합니다:
+. **Networking -> Routes**를 클릭한 후 **Create Route** 버튼을 클릭합니다.
+. **Name** 필드에 **parksmap**을 입력합니다.
+. **Service** 필드에서 **parksmap**을 선택합니다. **Target Port**는 **8080**을 선택합니다.
+. **Security** 섹션에서 **Secure route**를 체크합니다. **TLS Termination** 목록에서 **Edge**를 선택합니다.
+. 나머지 필드는 비워두고 **Create**를 클릭합니다:
 +
 image::parksmap-route-create-1.png[link="self",window=_blank]
 
 TIP: 클러스터 Apps 도메인에 대한 TLS 인증서가 기본적으로 사용되므로 별도의 인증서를 추가할 필요가 없습니다. OpenShift 클러스터로 연결되는 커스텀 도메인을 사용하고 싶다면 route별로 인증서를 추가할 수 있습니다.
 
-*Route*를 생성할 때 호스트 이름, *Route*의 경로 또는 추가 TLS 설정 같은 다른 옵션도 지정할 수 있습니다.
+**Route**를 생성할 때 호스트 이름, **Route**의 경로 또는 추가 TLS 설정 같은 다른 옵션도 지정할 수 있습니다.
 
-*옵션 B: `oc` 명령줄:*
+**옵션 B: ``oc`` 명령줄:**
 
-*Service*를 `expose`하려면 먼저 기존에 생성된 *Route*가 없는지 확인합니다:
+**Service**를 ``expose``하려면 먼저 기존에 생성된 **Route**가 없는지 확인합니다:
 
 [source,role="copypaste"]
 ----
@@ -61,7 +91,7 @@ oc get routes
 No resources found.
 ----
 
-이제 노출할 *Service* 이름을 확인해야 합니다:
+이제 노출할 **Service** 이름을 확인해야 합니다:
 
 [source,role="copypaste"]
 ----
@@ -75,7 +105,7 @@ NAME       CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
 parksmap   172.30.169.213   <none>        8080/TCP   5h
 ----
 
-*Service* 이름을 알고 나면 *Route*를 생성하는 것은 간단한 명령 한 번으로 끝나는 작업입니다:
+**Service** 이름을 알고 나면 **Route**를 생성하는 것은 간단한 명령 한 번으로 끝나는 작업입니다:
 
 [source,role="copypaste"]
 ----
@@ -90,7 +120,7 @@ route.route.openshift.io/parksmap created
 
 ====
 
-다음 명령으로 *Route*가 생성되었는지 확인합니다:
+다음 명령으로 **Route**가 생성되었는지 확인합니다:
 
 [source,role="copypaste"]
 ----
@@ -103,7 +133,7 @@ NAME       HOST/PORT                                                           P
 parksmap   parksmap-{ocp4_starter_project}.{ocp4_starter_apps_domain}          parksmap   8080-tcp   edge          None
 ----
 
-`parksmap` Deployment의 *Topology* 화면에서 *Resources* 탭 아래로도 *Route*를 확인할 수 있습니다. Topology에서 `parksmap` 노드에 화살표 아이콘이 생긴 것을 확인하세요. 이를 클릭하면 브라우저에서 *Route*의 URL이 열립니다.
+``parksmap`` Deployment의 **Topology** 화면에서 **Resources** 탭 아래로도 **Route**를 확인할 수 있습니다. Topology에서 ``parksmap`` 노드에 화살표 아이콘이 생긴 것을 확인하세요. 이를 클릭하면 브라우저에서 **Route**의 URL이 열립니다.
 
 [.bordershadow]
 image::parksmap-route-created.png[link="self",window=_blank]

@@ -3,25 +3,25 @@
 
 include::vars.adoc[]
 
-지금까지 MongoDB는 Deployment로 잘 동작했습니다. 하지만 매번 데이터베이스를 조회하는 대신, 자주 조회되는 응답을 캐시하면 `nationalparks` API가 더 빨라질 수 있습니다. 이런 캐시 계층에는 흔히 Redis 같은 인메모리 데이터 저장소를 사용합니다. 이번 섹션에서는 Redis를 *StatefulSet*으로 배포해 봅니다.
+지금까지 MongoDB는 Deployment로 잘 동작했습니다. 하지만 매번 데이터베이스를 조회하는 대신, 자주 조회되는 응답을 캐시하면 ``nationalparks`` API가 더 빨라질 수 있습니다. 이런 캐시 계층에는 흔히 Redis 같은 인메모리 데이터 저장소를 사용합니다. 이번 섹션에서는 Redis를 **StatefulSet**으로 배포해 봅니다.
 
 NOTE: MongoDB는 Deployment로도 이 워크숍의 목적에는 충분합니다. 다만 Pod의 신원(identity)과 저장 공간이 유지되어야 하는 워크로드(캐시, 데이터베이스 등)에는 일반적으로 Deployment 대신 StatefulSet이 더 적합합니다. 이 모듈에서는 그 차이를 Redis를 통해 직접 확인합니다.
 
 [#statefulsets]
 == 배경 지식: StatefulSet과 PersistentVolume
 
-*Deployment*가 관리하는 Pod는 서로 완전히 동일하고 교체 가능하다고 가정합니다 -- 어떤 Pod가 죽어도 새 Pod가 대신 그 자리를 채우면 그만입니다. 하지만 일부 워크로드는 다음과 같은 특성이 필요합니다:
+**Deployment**가 관리하는 Pod는 서로 완전히 동일하고 교체 가능하다고 가정합니다 -- 어떤 Pod가 죽어도 새 Pod가 대신 그 자리를 채우면 그만입니다. 하지만 일부 워크로드는 다음과 같은 특성이 필요합니다:
 
-* *안정적인 네트워크 식별자*: Pod 이름이 `redis-0`, `redis-1`처럼 예측 가능하고 재시작 후에도 유지됩니다.
-* *순서 있는 배포/스케일링*: Pod가 0번부터 순서대로 생성되고, 스케일 다운 시에는 역순으로 종료됩니다.
-* *영구 저장소*: 각 Pod가 자신만의 `PersistentVolumeClaim`(PVC)을 가지며, Pod가 재시작되어도 같은 볼륨에 다시 연결됩니다.
+* **안정적인 네트워크 식별자**: Pod 이름이 ``redis-0``, ``redis-1``처럼 예측 가능하고 재시작 후에도 유지됩니다.
+* **순서 있는 배포/스케일링**: Pod가 0번부터 순서대로 생성되고, 스케일 다운 시에는 역순으로 종료됩니다.
+* **영구 저장소**: 각 Pod가 자신만의 ``PersistentVolumeClaim``(PVC)을 가지며, Pod가 재시작되어도 같은 볼륨에 다시 연결됩니다.
 
-*StatefulSet*의 `volumeClaimTemplates` 필드는 Pod마다 독립된 PVC를 자동으로 생성해 줍니다 -- Deployment에서는 지원하지 않는 기능입니다. 클러스터에 동적 프로비저닝 스토리지가 설정되어 있다면(`common-environment.adoc`에서 확인한 내용입니다), `storageClassName`을 지정하지 않아도 PVC가 자동으로 바인딩됩니다.
+**StatefulSet**의 ``volumeClaimTemplates`` 필드는 Pod마다 독립된 PVC를 자동으로 생성해 줍니다 -- Deployment에서는 지원하지 않는 기능입니다. 클러스터에 동적 프로비저닝 스토리지가 설정되어 있다면(``common-environment.adoc``에서 확인한 내용입니다), ``storageClassName``을 지정하지 않아도 PVC가 자동으로 바인딩됩니다.
 
 [#deploy_redis_statefulset]
 == 실습: Redis를 StatefulSet으로 배포하기
 
-StatefulSet은 Pod에 안정적인 네트워크 이름을 부여하기 위해 *Headless Service*(ClusterIP가 없는 Service)가 필요합니다. 먼저 Service를 만듭니다. *Networking* → *Services*에서 *Create Service* → *From YAML*을 선택합니다:
+StatefulSet은 Pod에 안정적인 네트워크 이름을 부여하기 위해 **Headless Service**(ClusterIP가 없는 Service)가 필요합니다. 먼저 Service를 만듭니다. **Networking** → **Services**에서 **Create Service** → **From YAML**을 선택합니다:
 
 [source,role="copypaste",subs="attributes"]
 ----
@@ -39,7 +39,7 @@ spec:
       targetPort: 6379
 ----
 
-*Create*를 클릭합니다. 이제 *Workloads* → *StatefulSets*에서 *Create* → *From YAML*을 선택하고 다음 YAML을 붙여넣습니다:
+**Create**를 클릭합니다. 이제 **Workloads** → **StatefulSets**에서 **Create** → **From YAML**을 선택하고 다음 YAML을 붙여넣습니다:
 
 [source,role="copypaste",subs="attributes"]
 ----
@@ -83,7 +83,7 @@ spec:
 image::nationalparks-redis-statefulset-create.png[link="self",window=_blank]
 // TODO: 스크린샷 필요 - StatefulSet Create From YAML 다이얼로그
 
-*Create*를 클릭합니다. Pod와 PVC가 생성되는 것을 확인합니다:
+**Create**를 클릭합니다. Pod와 PVC가 생성되는 것을 확인합니다:
 
 [source,role="copypaste"]
 ----
@@ -105,12 +105,12 @@ redis-data-redis-0    Bound    pvc-3a2f...                                1Gi   
 image::nationalparks-redis-pvc.png[link="self",window=_blank]
 // TODO: 스크린샷 필요 - Storage > PersistentVolumeClaims 목록에서 redis-data-redis-0 Bound 상태
 
-Pod 이름이 `redis-0`처럼 순번을 가지고 있고, 전용 PVC `redis-data-redis-0`이 자동으로 만들어져 `Bound`된 것을 확인할 수 있습니다.
+Pod 이름이 ``redis-0``처럼 순번을 가지고 있고, 전용 PVC ``redis-data-redis-0``이 자동으로 만들어져 ``Bound``된 것을 확인할 수 있습니다.
 
 [#verifying_persistence]
 == 실습: 영속성 검증하기
 
-`parksmap-scaling.adoc`에서 Pod를 강제로 삭제했을 때 새 Pod가 즉시 대신 생성되는 "자가 치유"를 확인했습니다. 이번에는 한 걸음 더 나아가, *데이터도 함께* 살아남는지 확인해 보겠습니다.
+``parksmap-scaling.adoc``에서 Pod를 강제로 삭제했을 때 새 Pod가 즉시 대신 생성되는 "자가 치유"를 확인했습니다. 이번에는 한 걸음 더 나아가, **데이터도 함께** 살아남는지 확인해 보겠습니다.
 
 먼저 Redis에 값을 하나 저장합니다:
 
@@ -148,7 +148,7 @@ NAME      READY   STATUS    RESTARTS   AGE
 redis-0   1/1     Running   0          8s
 ----
 
-같은 이름 `redis-0`으로 새 Pod가 다시 생성되었습니다. 저장했던 값이 남아있는지 확인합니다:
+같은 이름 ``redis-0``으로 새 Pod가 다시 생성되었습니다. 저장했던 값이 남아있는지 확인합니다:
 
 [source,role="copypaste"]
 ----
@@ -167,4 +167,4 @@ oc rsh redis-0 redis-cli GET greeting
 image::nationalparks-redis-topology.png[link="self",window=_blank]
 // TODO: 스크린샷 필요 - Topology 화면에서 redis-0 Pod와 연결된 볼륨 표시
 
-NOTE: 실제로 `nationalparks` 코드가 이 Redis를 캐시로 사용하려면 애플리케이션 코드 수정이 필요합니다. 이 모듈은 애플리케이션 코드 변경 없이 StatefulSet 자체의 동작(안정적인 이름, 영구 저장소)을 보여주는 것이 목적입니다.
+NOTE: 실제로 ``nationalparks`` 코드가 이 Redis를 캐시로 사용하려면 애플리케이션 코드 수정이 필요합니다. 이 모듈은 애플리케이션 코드 변경 없이 StatefulSet 자체의 동작(안정적인 이름, 영구 저장소)을 보여주는 것이 목적입니다.

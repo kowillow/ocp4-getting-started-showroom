@@ -15,11 +15,11 @@ OpenShift 콘솔은 Project, 애플리케이션, 클러스터 리소스를 관�
 [.bordershadow]
 image::openshift-console-login.png[width=500,link="self",window=_blank]
 
-OpenShift 콘솔에 접속하려면 이 페이지 오른쪽의 *OCP Console* 탭을 클릭한 후 제공된 자격 증명으로 로그인합니다:
+OpenShift 콘솔에 접속하려면 이 페이지 오른쪽의 **OCP Console** 탭을 클릭한 후 제공된 자격 증명으로 로그인합니다:
 
-*사용자 이름:* `{user}`
+**사용자 이름:** ``{user}``
 
-*비밀번호:* `{ocp4_starter_password}`
+**비밀번호:** ``{ocp4_starter_password}``
 
 새 브라우저 탭에서 열고 싶다면: link:{ocp4_starter_console_url}[{ocp4_starter_console_url},window='_blank']
 
@@ -31,7 +31,7 @@ image::openshift-console-dashboard.png[link="self",window=_blank]
 [#command_line_interface]
 == 명령줄 인터페이스
 
-웹 콘솔이 시각적 관리에 훌륭한 도구이긴 하지만, OpenShift CLI(`oc`)는 자동화 기능과 고급 기능에 대한 접근을 제공합니다. 이 CLI는 Go로 작성된 단일 실행 파일이며 Microsoft Windows, macOS, Linux에서 사용할 수 있습니다.
+웹 콘솔이 시각적 관리에 훌륭한 도구이긴 하지만, OpenShift CLI(``oc``)는 자동화 기능과 고급 기능에 대한 접근을 제공합니다. 이 CLI는 Go로 작성된 단일 실행 파일이며 Microsoft Windows, macOS, Linux에서 사용할 수 있습니다.
 
 === CLI 설치 확인하기
 

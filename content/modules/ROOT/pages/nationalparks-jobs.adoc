@@ -3,22 +3,22 @@
 
 include::vars.adoc[]
 
-지금까지 `/ws/data/load`를 브라우저에서 직접 열어 데이터를 적재했습니다. 이런 일회성 작업을 사람이 매번 브라우저를 열어 수행하는 대신, Kubernetes 오브젝트로 자동화해 보겠습니다. 앞선 모듈에서 배운 `/ws/healthz/` 상태 확인 경로도 CronJob으로 주기적으로 확인하도록 만들어 보겠습니다.
+지금까지 ``/ws/data/load``를 브라우저에서 직접 열어 데이터를 적재했습니다. 이런 일회성 작업을 사람이 매번 브라우저를 열어 수행하는 대신, Kubernetes 오브젝트로 자동화해 보겠습니다. 앞선 모듈에서 배운 ``/ws/healthz/`` 상태 확인 경로도 CronJob으로 주기적으로 확인하도록 만들어 보겠습니다.
 
 [#jobs_and_cronjobs]
 == 배경 지식: Job과 CronJob
 
-*Deployment*는 Pod가 항상 실행 중인 상태를 유지하도록 설계되었습니다. 하지만 "한 번 실행하고 끝나는" 작업, 예를 들어 데이터 마이그레이션이나 배치 처리에는 어울리지 않습니다. 이런 작업을 위한 오브젝트가 *Job*입니다.
+**Deployment**는 Pod가 항상 실행 중인 상태를 유지하도록 설계되었습니다. 하지만 "한 번 실행하고 끝나는" 작업, 예를 들어 데이터 마이그레이션이나 배치 처리에는 어울리지 않습니다. 이런 작업을 위한 오브젝트가 **Job**입니다.
 
-* *Job*은 지정된 완료 조건(기본은 1회 성공)을 만족할 때까지 Pod를 실행합니다. 실패하면 `restartPolicy`와 `backoffLimit` 설정에 따라 재시도합니다.
-* *CronJob*은 cron 표현식으로 지정한 일정에 따라 Job을 반복 생성합니다.
+* **Job**은 지정된 완료 조건(기본은 1회 성공)을 만족할 때까지 Pod를 실행합니다. 실패하면 ``restartPolicy``와 ``backoffLimit`` 설정에 따라 재시도합니다.
+* **CronJob**은 cron 표현식으로 지정한 일정에 따라 Job을 반복 생성합니다.
 
 Deployment(상시 실행, 재시작하면 안 됨)와 Job(완료되면 끝, 재시작 대신 재시도)의 차이를 기억해 두면 어떤 상황에 무엇을 쓸지 결정하기 쉬워집니다.
 
 [#automate_data_load]
 == 실습: 데이터 적재를 Job으로 자동화하기
 
-*Workloads* → *Jobs*에서 *Create* → *From YAML*을 선택하고 다음 YAML을 붙여넣습니다:
+**Workloads** → **Jobs**에서 **Create** → **From YAML**을 선택하고 다음 YAML을 붙여넣습니다:
 
 [source,role="copypaste",subs="attributes"]
 ----
@@ -45,7 +45,7 @@ spec:
 image::nationalparks-job-create.png[link="self",window=_blank]
 // TODO: 스크린샷 필요 - Job Create From YAML 다이얼로그
 
-*Create*를 클릭합니다. Job 상태를 확인합니다:
+**Create**를 클릭합니다. Job 상태를 확인합니다:
 
 [source,role="copypaste"]
 ----
@@ -70,12 +70,12 @@ oc logs job/nationalparks-data-load
 image::nationalparks-job-topology.png[link="self",window=_blank]
 // TODO: 스크린샷 필요 - Topology 화면에서 완료된 Job Pod
 
-NOTE: 이미 데이터가 적재되어 있다면 애플리케이션이 중복 삽입을 방지할 수도 있습니다. 로그 내용은 `nationalparks` 애플리케이션의 구현에 따라 달라집니다.
+NOTE: 이미 데이터가 적재되어 있다면 애플리케이션이 중복 삽입을 방지할 수도 있습니다. 로그 내용은 ``nationalparks`` 애플리케이션의 구현에 따라 달라집니다.
 
 [#scheduled_healthcheck]
 == 실습: CronJob으로 상태 확인 자동화하기
 
-이번에는 앞선 모듈에서 다룬 `/ws/healthz/` 경로를 2분마다 자동으로 확인하는 CronJob을 만들어 보겠습니다. *Workloads* → *CronJobs*에서 *Create* → *From YAML*을 선택합니다:
+이번에는 앞선 모듈에서 다룬 ``/ws/healthz/`` 경로를 2분마다 자동으로 확인하는 CronJob을 만들어 보겠습니다. **Workloads** → **CronJobs**에서 **Create** → **From YAML**을 선택합니다:
 
 [source,role="copypaste",subs="attributes"]
 ----
@@ -104,7 +104,7 @@ spec:
 image::nationalparks-cronjob-create.png[link="self",window=_blank]
 // TODO: 스크린샷 필요 - CronJob Create From YAML 다이얼로그
 
-*Create*를 클릭합니다. CronJob이 등록되었는지 확인합니다:
+**Create**를 클릭합니다. CronJob이 등록되었는지 확인합니다:
 
 [source,role="copypaste"]
 ----
