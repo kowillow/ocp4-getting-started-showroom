@@ -1,37 +1,36 @@
-= Connecting to a Database
-:navtitle: Connecting to a Database
+= 데이터베이스에 접속하기
+:navtitle: 데이터베이스에 접속하기
 
 include::vars.adoc[]
 
-In this section, you will deploy and connect a MongoDB database that the
-`nationalparks` application will use to store location information.
+이 섹션에서는 `nationalparks` 애플리케이션이 위치 정보를 저장하는 데 사용할
+MongoDB 데이터베이스를 배포하고 연결합니다.
 
-Finally, you will mark the `nationalparks` application as a backend for the map
-visualization tool, so that it can be dynamically discovered by the `parksmap`
-component using the OpenShift discovery mechanism and map data will be displayed
-automatically.
+마지막으로, `nationalparks` 애플리케이션을 지도 시각화 도구의 백엔드로 지정하여,
+OpenShift 디스커버리 메커니즘을 통해 `parksmap` 구성 요소가 이를 동적으로 검색하고
+지도 데이터가 자동으로 표시되도록 합니다.
 
 [.bordershadow]
 image::roadshow-app-architecture-nationalparks-2.png[link="self",window=_blank]
 
 [#storage]
-== Background: Storage
+== 배경 지식: 스토리지
 
-Most useful applications are "stateful" or "dynamic" in some way, and this is
-usually achieved with a database or other form of data storage. In this workshop section, you are
-going to add MongoDB to your application architecture, and then configure the `nationalparks` Deployment to
-connect to the database. The connection parameters are provided to the Deployment using environment variables using a https://kubernetes.io/docs/concepts/configuration/secret/[Secret, window="_blank"].
+유용한 애플리케이션 대부분은 어떤 식으로든 "상태를 가지거나(stateful)" "동적(dynamic)"이며,
+이는 보통 데이터베이스나 다른 형태의 데이터 저장소로 구현됩니다. 이 워크숍 섹션에서는
+애플리케이션 아키텍처에 MongoDB를 추가하고, `nationalparks` Deployment가 이
+데이터베이스에 연결하도록 구성합니다. 연결 파라미터는 https://kubernetes.io/docs/concepts/configuration/secret/[Secret, window="_blank"]을 사용하여 환경 변수 형태로 Deployment에 전달됩니다.
 
 [#create_mongodb_instance]
-== Exercise: Deploy MongoDB
+== 실습: MongoDB 배포하기
 
-The first step is to create a *Secret* which is used to store sensitive information such as database connection credentials.
-In *Workloads* → *Secrets*, click the *Create* button in the upper right and select *From YAML*.
+첫 번째 단계는 데이터베이스 연결 자격 증명 같은 민감한 정보를 저장하는 데 사용할 *Secret*을 생성하는 것입니다.
+*Workloads* → *Secrets*에서 오른쪽 상단의 *Create* 버튼을 클릭하고 *From YAML*을 선택합니다.
 
 [.bordershadow]
 image::mongodb_create_secret.png[link="self",window=_blank]
 
-In the editor, paste the following YAML:
+에디터에 다음 YAML을 붙여넣습니다:
 
 [source,role="copypaste",subs="attributes"]
 ----
@@ -51,56 +50,56 @@ stringData:
 [.bordershadow]
 image::mongodb_create_secret_dialog.png[link="self",window=_blank]
 
-Click the *Create* button at the bottom of the form.
+폼 하단의 *Create* 버튼을 클릭합니다.
 
-With the Secret in place, click the *+* icon in the upper right, as done previously for adding the other applications. Choose the *Container images* option. Fill in the following details:
+Secret이 준비되었으니, 이전에 다른 애플리케이션을 추가할 때처럼 오른쪽 상단의 *+* 아이콘을 클릭합니다. *Container images* 옵션을 선택합니다. 다음 세부 정보를 입력합니다:
 
-* Image section:
+* Image 섹션:
     - Image name from external registry → `mongo:6.0.4`
-    - Runtime icon → choose `mongodb`
+    - Runtime icon → `mongodb` 선택
 
-* General section:
+* General 섹션:
     - Application → `workshop`
     - Name → `mongodb`
 
 [.bordershadow]
 image::mongodb_deploy_image_image.png[link="self",window=_blank]
 
-* Make sure that the drop-down for resource type is set to the *Deployment* option.
+* Resource type 드롭다운이 *Deployment* 옵션으로 설정되어 있는지 확인합니다.
 
-* Click *Show advanced Deployment options*.
-    - Here, you'll add the following two environment variables which will be sourced from the previously created secret named `mongodb-credentials`.
-    - Click *+Add from ConfigMap or Secret* and enter `MONGO_INITDB_ROOT_USERNAME` as the name. For the value, choose `mongodb-credentials` as resource and `admin-usr` as key.
-    - Again, click *+Add from ConfigMap or Secret* and enter `MONGO_INITDB_ROOT_PASSWORD` as the name. For the value, choose `mongodb-credentials` as resource and `admin-pwd` as key.
+* *Show advanced Deployment options*를 클릭합니다.
+    - 여기에서 앞서 생성한 `mongodb-credentials` Secret에서 값을 가져오는 두 개의 환경 변수를 추가합니다.
+    - *+Add from ConfigMap or Secret*을 클릭하고 이름으로 `MONGO_INITDB_ROOT_USERNAME`을 입력합니다. 값으로는 resource로 `mongodb-credentials`를, key로 `admin-usr`을 선택합니다.
+    - 다시 *+Add from ConfigMap or Secret*을 클릭하고 이름으로 `MONGO_INITDB_ROOT_PASSWORD`를 입력합니다. 값으로는 resource로 `mongodb-credentials`를, key로 `admin-pwd`를 선택합니다.
 
 * Advanced options:
-    - Create a route → *uncheck* because the database will not be accessed by clients outside the OpenShift cluster.
+    - Create a route → 데이터베이스는 OpenShift 클러스터 외부의 클라이언트가 접근하지 않을 것이므로 *체크 해제*합니다.
 
 [.bordershadow]
 image::mongodb_deploy_image_general.png[link="self",window=_blank]
 
-Finally, click the *Create* button at the bottom of the page to deploy a MongoDB container.
+마지막으로, 페이지 하단의 *Create* 버튼을 클릭하여 MongoDB 컨테이너를 배포합니다.
 
-The next step is to create a specific user in this MongoDB instance which the nationalparks application will use to create a connection. For this, click the *MongoDB Deployment* in the Topology view, then click on the corresponding *Pod* shown in the right view pane.
+다음 단계는 nationalparks 애플리케이션이 연결을 생성하는 데 사용할 특정 사용자를 이 MongoDB 인스턴스에 생성하는 것입니다. 이를 위해 Topology 화면에서 *MongoDB Deployment*를 클릭한 후, 오른쪽 화면에 표시되는 해당 *Pod*를 클릭합니다.
 
 [.bordershadow]
 image::mongodb_deployment_topology_pod.png[link="self",window=_blank]
 
-You will end up in the Pod details view where you can click *Terminal* to start a terminal session in the underlying container.
+Pod 세부 정보 화면으로 이동하며, 여기에서 *Terminal*을 클릭하면 해당 컨테이너에서 터미널 세션을 시작할 수 있습니다.
 
 [.bordershadow]
 image::mongodb_pod_details_terminal.png[link="self",window=_blank]
 
-Copy and paste the following snippet into the terminal window to create a database user with the proper settings and roles:
+다음 스니펫을 복사하여 터미널 창에 붙여넣어, 올바른 설정과 역할을 가진 데이터베이스 사용자를 생성합니다:
 
 [source,role=copypaste]
 ----
 mongosh -u admin -p secret --authenticationDatabase admin --eval 'use parksapp' --eval 'db.createUser({user: "parksapp", pwd: "keepsafe", roles: [{ role: "dbAdmin", db: "parksapp" },{ role: "readWrite", db: "parksapp" }]})' --quiet
 ----
 
-NOTE: In production environments you could modify the container entrypoint or use an https://kubernetes.io/docs/concepts/workloads/pods/init-containers/[init container, window="_blank"] to manage database configuration.
+NOTE: 프로덕션 환경에서는 컨테이너 entrypoint를 수정하거나 https://kubernetes.io/docs/concepts/workloads/pods/init-containers/[init container, window="_blank"]를 사용하여 데이터베이스 설정을 관리할 수 있습니다.
 
-If the command is successful, you'll see the output below:
+명령이 성공하면 다음과 같은 출력이 표시됩니다:
 
 [.console-output]
 [source]
@@ -108,73 +107,73 @@ If the command is successful, you'll see the output below:
 { ok: 1 }
 ----
 
-With that, everything regarding the database is prepared and you can switch your focus back to the nationalparks application. Go back to the *Topology* view, click the *nationalparks Deployment* and choose _Actions → Edit Deployment_ from the drop-down in the right view pane.
+이제 데이터베이스와 관련된 모든 준비가 끝났으니 다시 nationalparks 애플리케이션으로 초점을 돌려보겠습니다. *Topology* 화면으로 돌아가서 *nationalparks Deployment*를 클릭하고 오른쪽 화면의 드롭다운에서 _Actions → Edit Deployment_를 선택합니다.
 
 [.bordershadow]
 image::nationalparks_deployment_edit.png[link="self",window=_blank]
 
-In the *Edit Deployment* dialog, scroll down to the *Environment Variables* section and add the following four entries. First, set the server host and the database:
+*Edit Deployment* 대화 상자에서 아래로 스크롤하여 *Environment Variables* 섹션으로 이동하고 다음 네 개의 항목을 추가합니다. 먼저 서버 호스트와 데이터베이스를 설정합니다:
 
     - `MONGODB_SERVER_HOST`: `mongodb`
     - `MONGODB_DATABASE`: `parksapp`
 
-The `MONGODB_SERVER_HOST` value of `mongodb` will be resolved to the MongoDB *Service* that was created when you deployed the MongoDB container image.
+`MONGODB_SERVER_HOST`의 값 `mongodb`는 MongoDB 컨테이너 이미지를 배포할 때 생성된 MongoDB *Service*로 해석됩니다.
 
-The other two are credentials are sourced from the `mongodb-credentials` Secret.
+나머지 두 개의 자격 증명은 `mongodb-credentials` Secret에서 가져옵니다.
 
-Click *+Add from ConfigMap or Secret* and enter `MONGODB_USER` as the name. For the value, choose `mongodb-credentials` as resource and `app-usr` as key.
+*+Add from ConfigMap or Secret*을 클릭하고 이름으로 `MONGODB_USER`를 입력합니다. 값으로는 resource로 `mongodb-credentials`를, key로 `app-usr`을 선택합니다.
 
-Again, click *+Add from ConfigMap or Secret* and enter `MONGODB_PASSWORD` as the name. For the value, choose `mongodb-credentials` as resource and `app-pwd` as key.
+다시 *+Add from ConfigMap or Secret*을 클릭하고 이름으로 `MONGODB_PASSWORD`를 입력합니다. 값으로는 resource로 `mongodb-credentials`를, key로 `app-pwd`를 선택합니다.
 
 [.bordershadow]
 image::nationalparks_deployment_env_vars_secrets.png[link="self",window=_blank]
 
-Finally, click the *Save* button at the bottom of the dialog. This will trigger a rollout of a new version of the application, which will connect the MongoDB instance you just deployed.
+마지막으로 대화 상자 하단의 *Save* 버튼을 클릭합니다. 이렇게 하면 애플리케이션의 새 버전이 롤아웃되면서 방금 배포한 MongoDB 인스턴스와 연결됩니다.
 
 
 [NOTE]
 ====
-You are probably wondering how the database connection magically started
-working? When deploying applications to OpenShift, it is always best to create
-environment variables using Secrets or ConfigMaps to define connection parameters to dependent systems. This allows
-for application portability across different environments without modifying source code. The source file that
-performs the connection as well as creates the database schema can be viewed
-here:
+데이터베이스 연결이 어떻게 마법처럼 동작하기 시작했는지 궁금하실 겁니다.
+OpenShift에 애플리케이션을 배포할 때는, 종속 시스템에 대한 연결 파라미터를 정의할 때
+항상 Secret이나 ConfigMap을 사용하여 환경 변수를 생성하는 것이 좋습니다. 이렇게 하면
+소스 코드를 수정하지 않고도 다양한 환경에서 애플리케이션을 이식할 수 있습니다. 연결을
+수행하고 데이터베이스 스키마를 생성하는 소스 파일은 다음에서 확인할 수
+있습니다:
 
 [source,role="copypaste",subs="attributes"]
 ----
 {ocp4_starter_openshift_roadshow}/nationalparks/blob/master/src/main/java/com/openshift/evg/roadshow/parks/db/MongoDBConnection.java#L44-l48
 ----
 
-Notice that the application catches the exception if the database connection is not defined? This is why you were able to deploy it without it crashing.
+데이터베이스 연결이 정의되지 않은 경우 애플리케이션이 예외를 처리하는 것을 확인해 보세요. 이 덕분에 애플리케이션이 충돌하지 않고 배포될 수 있었던 것입니다.
 
 ====
 
 [#adding_labels]
-== Exercise: Adding Labels
+== 실습: 레이블 추가하기
 
-Next, let's fix the labels assigned to the MongoDB deployment. From the *Topology* view, select the MongoDB deployment and choose _Actions → Edit Labels_.
+이제 MongoDB 배포에 지정된 레이블을 수정해 보겠습니다. *Topology* 화면에서 MongoDB 배포를 선택하고 _Actions → Edit Labels_를 선택합니다.
 
 [.bordershadow]
 image::mongodb_deployment_labels.png[link="self",window=_blank]
 
-Like before, you'll add 3 labels:
+이전과 마찬가지로 레이블 3개를 추가합니다:
 
-The name of the Application group:
+Application 그룹의 이름입니다:
 
 [source,role=copypaste]
 ----
 app=workshop
 ----
 
-Next, the name of this deployment:
+다음은 이 배포의 이름입니다:
 
 [source,role=copypaste]
 ----
 component=nationalparks
 ----
 
-And finally, the role this component plays in the overall application:
+마지막으로, 이 구성 요소가 전체 애플리케이션에서 수행하는 역할입니다:
 
 [source,role=copypaste]
 ----
@@ -182,11 +181,12 @@ role=database
 ----
 
 [#exploring_openshift_magic]
-== Exercise: Exploring OpenShift Magic
+== 실습: OpenShift Magic 살펴보기
 
-After updating the `nationalparks` Deployment with the database connection environment variables, some
-magic happened. OpenShift rolled out a new version of the application that uses the new variables by upating the *ReplicaSet*. You
-can verify this by looking at the output of `oc get rs -l app=nationalparks`:
+데이터베이스 연결 환경 변수로 `nationalparks` Deployment를 업데이트한 후, 약간의
+마법이 일어났습니다. OpenShift는 *ReplicaSet*을 업데이트하여 새 변수를 사용하는 애플리케이션의 새
+버전을 롤아웃했습니다. `oc get rs -l app=nationalparks`의 출력을 확인하여 이를
+검증할 수 있습니다:
 
 [.console-output]
 [source]
@@ -197,22 +197,22 @@ nationalparks-7445576cd9   0         0         0       6m42s
 nationalparks-789c6bc4f4   1         1         1       41s
 ----
 
-You can see the DESIRED and CURRENT number of instances for current a prior ReplicaSets. The desired and current number of the previous instances are 0.
-This means that OpenShift has gracefully replaced your previous application Pod with a new Pod that uses the new configuration.
+현재 ReplicaSet과 이전 ReplicaSet의 DESIRED, CURRENT 인스턴스 수를 확인할 수 있습니다. 이전 인스턴스의 desired와 current 값은 모두 0입니다.
+이는 OpenShift가 이전 애플리케이션 Pod를 새로운 설정을 사용하는 새 Pod로 무중단으로 교체했다는 의미입니다.
 
 
 [#data_data_everywhere]
-== Exercise: Data, Data, Everywhere
+== 실습: 데이터, 데이터, 어디에나
 
-Now that you have a database deployed, you can again visit the `nationalparks` web
-service to query for data:
+이제 데이터베이스가 배포되었으니, `nationalparks` 웹
+서비스를 다시 방문하여 데이터를 조회해 볼 수 있습니다:
 
 [source,role="copypaste",subs="attributes"]
 ----
 https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/data/all
 ----
 
-And the result?
+결과는 어떨까요?
 
 [.console-output]
 [source]
@@ -220,18 +220,18 @@ And the result?
 []
 ----
 
-Where's the data? Think about the process you went through. You deployed the
-application and then deployed the database. Nothing actually loaded data
-*into* the database, though.
+데이터는 어디에 있을까요? 지금까지 진행한 과정을 생각해 보세요. 애플리케이션을
+배포한 다음 데이터베이스를 배포했습니다. 하지만 실제로 데이터베이스
+*안에* 데이터를 로드한 적은 없습니다.
 
-The application provides an endpoint to do just that. Open this URL in your web browser to have make `nationalparks` application insert a sample dataset into MongoDB:
+애플리케이션은 바로 이 작업을 수행하는 엔드포인트를 제공합니다. 웹 브라우저에서 이 URL을 열어 `nationalparks` 애플리케이션이 MongoDB에 샘플 데이터셋을 삽입하도록 해보세요:
 
 [source,role="copypaste",subs="attributes"]
 ----
 https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/data/load
 ----
 
-And the result?
+결과는 어떨까요?
 
 [.console-output]
 [source]
@@ -239,41 +239,40 @@ And the result?
 Items inserted in database: 2893
 ----
 
-If you then go back to `/ws/data/all` you will see tons of JSON data now.
+이제 다시 `/ws/data/all`로 이동하면 엄청난 양의 JSON 데이터를 확인할 수 있습니다.
 
-NOTE: There are some errors reported with browsers like Firefox 54 that don't properly parse the resulting JSON. It's
-a browser problem, and the application is working properly.
+NOTE: Firefox 54 같은 일부 브라우저에서는 결과 JSON을 제대로 파싱하지 못해 오류가 보고되는 경우가 있습니다. 이는
+브라우저 문제이며 애플리케이션은 정상적으로 동작하고 있습니다.
 
 [source,role="copypaste",subs="attributes"]
 ----
 https://parksmap-{ocp4_starter_project}.{ocp4_starter_apps_domain}
 ----
 
-There's just one thing. The main map *still* isn't displaying the parks.
-That's because the frontend only tries to talk to services that have
-the right *Label*.
+한 가지 문제가 있습니다. 메인 지도에는 *여전히* 공원이 표시되지 않습니다.
+이는 프런트엔드가 올바른 *Label*을 가진 service에만 통신을 시도하기 때문입니다.
 
 
 [#working_with_labels]
-== Exercise: Working With Labels
+== 실습: 레이블 다루기
 
-You explored how a *Label* is just a key-value pair earlier when looking at
-*Services* and *Routes* and *Selectors*. In general, a *Label* is simply an
-arbitrary key=value pair, for example:
+앞서 *Service*, *Route*, *Selector*를 살펴볼 때 *Label*이 단순한 key-value 쌍이라는 것을
+알아보았습니다. 일반적으로 *Label*은 단순히 임의의
+key=value 쌍입니다. 예를 들면:
 
 * `pizza=pepperoni`
 * `pet=dog`
 * `openshift=awesome`
 
-In the case of the parksmap, the application is actually querying the OpenShift
-API and asking about the *Routes* and *Services* in the project. If any of them have a
-*Label* that is `type=parksmap-backend`, the application knows to contact
-the endpoints to query for map data.
-You can see the code that does this
-link:{ocp4_starter_openshift_roadshow}/parksmap-web/blob/master/src/main/java/com/openshift/evg/roadshow/rest/RouteWatcher.java#L20[in the RouteWatcher.java file,window='_blank'].
+parksmap의 경우, 애플리케이션은 실제로 OpenShift
+API를 조회하여 project 내의 *Route*와 *Service*에 대해 질의합니다. 그중 어떤 것이
+`type=parksmap-backend`라는 *Label*을 가지고 있다면, 애플리케이션은 지도 데이터를 조회하기 위해
+해당 엔드포인트에 접속해야 한다는 것을 알게 됩니다.
+이 작업을 수행하는 코드는
+link:{ocp4_starter_openshift_roadshow}/parksmap-web/blob/master/src/main/java/com/openshift/evg/roadshow/rest/RouteWatcher.java#L20[RouteWatcher.java 파일,window='_blank']에서 확인할 수 있습니다.
 
-Fortunately, the command line provides a convenient way for you to manipulate
-labels. `describe` the `nationalparks` service:
+다행히 명령줄은 레이블을 조작할 수 있는 편리한 방법을 제공합니다. `nationalparks`
+service를 `describe`해 보세요:
 
 [source,role=copypaste]
 ----
@@ -294,8 +293,8 @@ Labels:                 app=workshop
                         app.openshift.io/runtime=java
                         app.openshift.io/runtime-version=11
                         component=nationalparks
-                        role=backend  
-Annotations:            openshift.io/host.generated=true                          
+                        role=backend
+Annotations:            openshift.io/host.generated=true
 Requested Host:         nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}
                         exposed on router router 2 hours ago
 Path:                   <none>
@@ -308,14 +307,14 @@ Weight:                 100 (100%)
 Endpoints:              10.1.9.8:8080
 ----
 
-You can see that it already has some labels. Use `oc label` to add the label necessary for the RouteWatcher to discover the backend:
+이미 몇 개의 레이블이 지정되어 있는 것을 확인할 수 있습니다. `oc label`을 사용하여 RouteWatcher가 백엔드를 검색하는 데 필요한 레이블을 추가합니다:
 
 [source,role=copypaste]
 ----
 oc label route nationalparks type=parksmap-backend
 ----
 
-You will see something like:
+다음과 같은 결과가 표시됩니다:
 
 [.console-output]
 [source]
@@ -323,7 +322,7 @@ You will see something like:
 route.route.openshift.io/nationalparks labeled
 ----
 
-Check your browser now by visiting the parksmap URL:
+이제 parksmap URL을 방문하여 브라우저에서 확인해 보세요:
 
 [source,role="copypaste",subs="attributes"]
 ----
@@ -333,4 +332,4 @@ https://parksmap-{ocp4_starter_project}.{ocp4_starter_apps_domain}
 [.bordershadow]
 image::nationalparks-databases-new-parks.png[link="self",window=_blank]
 
-You'll notice that the parks suddenly are showing up. That's really cool!
+이제 공원들이 갑자기 나타나는 것을 확인할 수 있습니다. 정말 멋지네요!

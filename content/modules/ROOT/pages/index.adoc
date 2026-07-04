@@ -1,44 +1,44 @@
-= Welcome to the OpenShift Getting Started Workshop
+= OpenShift Getting Started 워크숍에 오신 것을 환영합니다
 :navtitle: Overview
 
 include::vars.adoc[]
 
-== Overview
+== 개요
 
-This workshop provides a hands-on introduction to OpenShift from a developer's perspective. Through practical, interactive exercises, you'll learn how to build, deploy, and manage containerized applications on the OpenShift platform.
+이 워크숍은 개발자의 관점에서 OpenShift를 실습 중심으로 소개합니다. 실제로 손으로 해보는 대화형 실습을 통해, OpenShift 플랫폼에서 컨테이너화된 애플리케이션을 빌드하고 배포하고 관리하는 방법을 배웁니다.
 
-== What You'll Learn
+== 배우게 될 내용
 
-*Getting Started with OpenShift:*
+*OpenShift 시작하기:*
 
-* Use the OpenShift command line client and web console
-* Navigate the OpenShift developer interface and understand key concepts
+* OpenShift 명령줄 클라이언트와 웹 콘솔 사용하기
+* OpenShift 개발자 인터페이스를 살펴보고 핵심 개념 이해하기
 
-*Application Deployment and Management:*
+*애플리케이션 배포와 관리:*
 
-* Deploy applications using pre-existing container images
-* Deploy applications directly from source code in Git repositories
-* Work with application labels to identify and organize components
-* Scale applications to handle varying traffic loads
+* 기존 컨테이너 이미지를 사용하여 애플리케이션 배포하기
+* Git 저장소의 소스 코드로부터 직접 애플리케이션 배포하기
+* 레이블을 사용하여 구성 요소를 식별하고 정리하기
+* 다양한 트래픽 부하를 처리하도록 애플리케이션 스케일링하기
 
-*Networking and Access:*
+*네트워킹과 접근:*
 
-* Expose applications to external users through routes
-* Configure application networking and service discovery
+* Route를 통해 애플리케이션을 외부 사용자에게 노출하기
+* 애플리케이션 네트워킹과 서비스 디스커버리 구성하기
 
-*Monitoring and Troubleshooting:*
+*모니터링과 문제 해결:*
 
-* View and analyze application logs for debugging
-* Access application containers for direct interaction and troubleshooting
+* 디버깅을 위해 애플리케이션 로그를 확인하고 분석하기
+* 직접 상호작용하고 문제를 해결하기 위해 애플리케이션 컨테이너에 접근하기
 
-*Database Integration:*
+*데이터베이스 연동:*
 
-* Deploy databases from the OpenShift service catalog
-* Configure applications to connect to and use databases
+* OpenShift 서비스 카탈로그에서 데이터베이스 배포하기
+* 데이터베이스에 연결하여 사용하도록 애플리케이션 구성하기
 
-*Collaboration and Automation:*
+*협업과 자동화:*
 
-* Grant access to other users for collaborative development
-* Set up webhooks to enable automated application builds from code changes
+* 다른 사용자에게 협업 개발을 위한 접근 권한 부여하기
+* 코드 변경 시 자동으로 애플리케이션이 빌드되도록 webhook 설정하기
 
-NOTE: While this workshop uses Java applications, the concepts and techniques apply to applications built with .NET, Node.js, Python, and other runtimes.
+NOTE: 이 워크숍은 Java 애플리케이션을 사용하지만, 여기서 다루는 개념과 기법은 .NET, Node.js, Python 등 다른 런타임으로 빌드된 애플리케이션에도 동일하게 적용됩니다.

@@ -1,56 +1,54 @@
-= Logging
-:navtitle: Logging
+= 로깅
+:navtitle: 로깅
 
 include::vars.adoc[]
 
-OpenShift provides some convenient mechanisms for viewing application logs.
-First and foremost is the ability to examine a *Pod*'s logs directly from the
-web console or via the command line.
+OpenShift는 애플리케이션 로그를 확인할 수 있는 편리한 메커니즘을 제공합니다.
+가장 대표적인 것은 웹 콘솔이나 명령줄을 통해 *Pod*의 로그를 직접 확인할 수 있는
+기능입니다.
 
 [#container_logs]
-== Background: Container Logs
+== 배경 지식: 컨테이너 로그
 
-OpenShift expects containers to log all information to `STDOUT`. In this way, both regular and error information is
-captured via standardized mechanisms. When exploring the *Pod*'s logs
-directly, you are essentially going through the container runtime to access the
-container's logs, through OpenShift's API.
+OpenShift는 컨테이너가 모든 정보를 `STDOUT`에 로그로 남기기를 기대합니다. 이러한 방식으로
+일반 정보와 오류 정보 모두 표준화된 메커니즘을 통해 수집됩니다. *Pod*의 로그를
+직접 살펴볼 때는, 사실상 OpenShift의 API를 통해 컨테이너 런타임을 거쳐
+컨테이너의 로그에 접근하는 것입니다.
 
 [NOTE]
 ====
-In some cases, applications may not have been designed to send all of their
-information to `STDOUT` and `STDERR`. In many cases, multiple local log files
-are used. While OpenShift cannot parse any information from these files, nothing
-prevents them from being created. In other cases, log information is
-sent to some external system. OpenShift does not prohibit these
-behaviors. If you have an application that does not log to `STDOUT`, either because it
-already sends log information to some external system or because it writes
-log information to various files, don't worry - OpenShift can still work with it.
+경우에 따라 애플리케이션이 모든 정보를 `STDOUT`과 `STDERR`로 보내도록 설계되지
+않았을 수 있습니다. 많은 경우 여러 개의 로컬 로그 파일이 사용됩니다. OpenShift는 이러한 파일에서
+정보를 파싱할 수는 없지만, 그렇다고 이런 파일이 생성되는 것을 막지는 않습니다. 다른 경우에는 로그
+정보가 외부 시스템으로 전송되기도 합니다. OpenShift는 이러한
+동작들을 금지하지 않습니다. 애플리케이션이 이미 로그 정보를 외부 시스템으로 보내고 있거나
+여러 파일에 로그 정보를 기록하고 있어서 `STDOUT`에 로그를 남기지 않더라도,
+걱정하지 마세요 - OpenShift는 여전히 이런 애플리케이션과도 잘 동작합니다.
 ====
 
 [#examining_logs]
-== Exercise: Examining Logs
+== 로그 살펴보기
 
-Since you already deployed your application, you can examine its
-logs. In the *Topology* view, click the `parksmap` entry and then the *Resources* tab. You should see a *View Logs* link next to the *Pod* entry.
+이미 애플리케이션을 배포했으니 로그를 살펴볼 수 있습니다. *Topology* 화면에서 `parksmap` 항목을 클릭한 후 *Resources* 탭을 클릭합니다. *Pod* 항목 옆에 *View Logs* 링크가 보일 것입니다.
 
 [.bordershadow]
 image::parksmap-view-logs-link.png[link="self",window=_blank]
 
-Click the *View Logs* link to view the *Pod*'s logs:
+*View Logs* 링크를 클릭하여 *Pod*의 로그를 확인합니다:
 
 [.bordershadow]
 image::parksmap-logging-console-logs.png[link="self",window=_blank]
 
-WARNING: If you notice some errors in the log, that's okay. You'll remedy those shortly.
+WARNING: 로그에서 몇 가지 오류가 보이더라도 괜찮습니다. 곧 해결할 예정입니다.
 
-You also have the option of viewing logs from the command line. Use the `oc logs` command, and pass a label selector to view logs from all Pods that match the selector:
+명령줄에서도 로그를 확인할 수 있습니다. `oc logs` 명령을 사용하고 레이블 셀렉터를 전달하면 해당 셀렉터와 일치하는 모든 Pod의 로그를 확인할 수 있습니다:
 
 [source,role="copypaste"]
 ----
 oc logs -l app=parksmap
 ----
 
-You will see the application logs displayed:
+애플리케이션 로그가 다음과 같이 표시됩니다:
 
 [.console-output]
 [source]
@@ -71,4 +69,4 @@ pleted in 16 ms
 2019-05-22 19:44:13.395  INFO 1 --- [nio-8080-exec-2] c.o.e.roadshow.rest.BackendsController   : Backends: getAll
 ----
 
-WARNING: If you scroll through the logs, you may notice an error that mentions a service account. What's that? Don't worry, you'll learn about that shortly.
+WARNING: 로그를 스크롤하다 보면 service account에 관한 오류를 발견할 수도 있습니다. 이게 무엇일까요? 걱정하지 마세요, 곧 배우게 될 것입니다.

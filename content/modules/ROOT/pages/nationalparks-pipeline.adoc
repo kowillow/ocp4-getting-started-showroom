@@ -1,68 +1,67 @@
-= Continuous Integration and Pipelines
-:navtitle: Continuous Integration and Pipelines
+= 지속적 통합과 파이프라인
+:navtitle: 지속적 통합과 파이프라인
 
 include::vars.adoc[]
 
-In this lab you will learn about pipelines and how to configure a pipeline in OpenShift so
-that it will take care of the application lifecycle.
+이 실습에서는 파이프라인에 대해 배우고, OpenShift에서 애플리케이션 라이프사이클을 관리하도록 파이프라인을
+구성하는 방법을 배웁니다.
 
-A continuous delivery (CD) pipeline is an automated expression of your process for getting software
-from version control right through to your users and customers.
-Every change to your software (committed in source control) goes through a complex process on
-its way to being released. This process involves building the software in a reliable and repeatable
-manner, as well as progressing the built software (called a "build") through multiple stages of
-testing and deployment.
+지속적 배포(CD) 파이프라인은 소프트웨어를 버전 관리 시스템에서부터 사용자와 고객에게까지
+전달하는 프로세스를 자동화하여 표현한 것입니다.
+소프트웨어에 대한 모든 변경 사항(소스 컨트롤에 커밋된 것)은 릴리스되기까지 복잡한 과정을 거칩니다. 이
+과정에는 소프트웨어를 신뢰할 수 있고 반복 가능한 방식으로 빌드하는 것과, 빌드된 소프트웨어("빌드"라고 함)를
+여러 단계의 테스트와 배포를 거쳐 진행시키는 것이 포함됩니다.
 
-OpenShift Pipelines is a cloud-native, continuous integration and delivery (CI/CD) solution for building pipelines using link:https://tekton.dev/[Tekton,window='_blank']. Tekton is a flexible, Kubernetes-native, open-source CI/CD framework that enables automating deployments across multiple platforms (Kubernetes, serverless, VMs, etc) by abstracting away the underlying details.
+OpenShift Pipelines는 link:https://tekton.dev/[Tekton,window='_blank']을 사용하여 파이프라인을 구축하는 클라우드 네이티브 지속적 통합/배포(CI/CD) 솔루션입니다. Tekton은 유연하고 Kubernetes 네이티브한 오픈소스 CI/CD 프레임워크로, 기반 세부 사항을 추상화하여 여러 플랫폼(Kubernetes, 서버리스, VM 등)에 걸쳐 배포를 자동화할 수 있게 해줍니다.
 
 [.bordershadow]
 image::devops-pipeline-flow.png[link="self",window=_blank]
 
 [#understanding_tekton]
-== Understanding Tekton
+== Tekton 이해하기
 
-Tekton defines a number of link:https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[Kubernetes custom resources,window='_blank'] as building blocks in order to standardize pipeline concepts and provide a terminology that is consistent across CI/CD solutions. 
+Tekton은 파이프라인 개념을 표준화하고 CI/CD 솔루션 전반에 걸쳐 일관된 용어를 제공하기 위해, 여러 link:https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[Kubernetes 커스텀 리소스,window='_blank']를 빌딩 블록으로 정의합니다.
 
-The custom resources needed to define a pipeline are listed below:
+파이프라인을 정의하는 데 필요한 커스텀 리소스는 다음과 같습니다:
 
-* `Task`: a reusable, loosely coupled number of steps that perform a specific task (e.g. building a container image)
-* `Pipeline`: the definition of the pipeline and the `Tasks` that it should perform
-* `TaskRun`: the execution and result of running an instance of task
-* `PipelineRun`: the execution and result of running an instance of pipeline, which includes a number of `TaskRuns`
+* `Task`: 특정 작업(예: 컨테이너 이미지 빌드)을 수행하는, 재사용 가능하고 느슨하게 결합된 여러 단계
+* `Pipeline`: 파이프라인의 정의와 파이프라인이 수행해야 할 `Task`들
+* `TaskRun`: task 인스턴스를 실행한 결과와 그 실행 내역
+* `PipelineRun`: 여러 `TaskRun`을 포함하는 pipeline 인스턴스를 실행한 결과와 그 실행 내역
 
 [.bordershadow]
 image::tekton-architecture.png[link="self",window=_blank]
 
-In short, in order to create a pipeline, one does the following:
+요약하면, 파이프라인을 생성하기 위해서는 다음과 같은 작업을 수행합니다:
 
-* Create custom or install link:https://github.com/tektoncd/catalog[existing,window='_blank'] reusable `Tasks`
-* Create a `Pipeline` and `PipelineResources` to define your application's delivery pipeline
-* Create a `PersistentVolumeClaim` to provide the volume/filesystem for pipeline execution or provide a `VolumeClaimTemplate` which creates a `PersistentVolumeClaim`
-* Create a `PipelineRun` to instantiate and invoke the pipeline
+* 재사용 가능한 `Task`를 직접 만들거나 link:https://github.com/tektoncd/catalog[기존,window='_blank'] Task를 설치합니다
+* 애플리케이션의 배포 파이프라인을 정의하는 `Pipeline`과 `PipelineResources`를 생성합니다
+* 파이프라인 실행에 사용할 볼륨/파일시스템을 제공하기 위해 `PersistentVolumeClaim`을 생성하거나, `PersistentVolumeClaim`을 생성하는 `VolumeClaimTemplate`을 제공합니다
+* 파이프라인을 인스턴스화하고 실행하기 위해 `PipelineRun`을 생성합니다
 
-For further details on pipeline concepts, refer to the link:https://tekton.dev/docs[Tekton documentation,window='_blank'] that provides an excellent guide for understanding various parameters and attributes available for defining pipelines.
+파이프라인 개념에 대한 더 자세한 내용은, 파이프라인을 정의하는 데 사용할 수 있는 다양한 파라미터와 속성을 이해하는 데 훌륭한 가이드를 제공하는 link:https://tekton.dev/docs[Tekton 문서,window='_blank']를 참고하세요.
 
 [#create_your_pipeline]
-== Exercise: Create Your Pipeline
+== 실습: 파이프라인 생성하기
 
-As pipelines provide the ability to promote applications between different stages of the delivery cycle, Tekton, which is our Continuous Integration server that will execute our pipelines, will be deployed on a project with a Continuous Integration role. Pipelines executed in this project will have permissions to interact with all the projects modeling the different stages of our delivery cycle. 
+파이프라인은 배포 사이클의 여러 단계 사이에서 애플리케이션을 승격시키는 기능을 제공하므로, 우리의 파이프라인을 실행할 지속적 통합 서버인 Tekton은 지속적 통합 역할을 하는 project에 배포됩니다. 이 project에서 실행되는 파이프라인은 배포 사이클의 여러 단계를 나타내는 모든 project와 상호작용할 수 있는 권한을 가집니다.
 
-Let's now create a Tekton pipeline for Nationalparks backend. In the Developer Perspective, click *Pipelines -> Pipelines* in the left navigation, then click *Create -> Pipeline*.
+이제 Nationalparks 백엔드를 위한 Tekton 파이프라인을 생성해 보겠습니다. Developer Perspective에서 왼쪽 내비게이션의 *Pipelines -> Pipelines*를 클릭한 후 *Create -> Pipeline*을 클릭합니다.
 
 [.bordershadow]
 image::devops_create_pipeline.png[link="self",window=_blank]
 
-Here we can view the interactive Pipeline builder. We can add tasks to the pipeline by clicking on the *Add task* button. We can also add parameters to the pipeline by clicking on the created tasks. To save time here, we'll use the *YAML view* to create the pipeline. 
+여기에서 대화형 Pipeline builder를 확인할 수 있습니다. *Add task* 버튼을 클릭하여 파이프라인에 task를 추가할 수 있습니다. 생성된 task를 클릭하여 파이프라인에 파라미터를 추가할 수도 있습니다. 시간을 절약하기 위해 여기서는 *YAML view*를 사용하여 파이프라인을 생성하겠습니다.
 
 [.bordershadow]
 image::devops_pipeline_builder_yaml.png[link="self",window=_blank]
 
-Now, depending on which language you are using, you'll need to create the appropriate pipeline:
+이제 사용하는 언어에 따라 적절한 파이프라인을 생성해야 합니다:
 
 ====
 *Java*
 
-Here, we can copy this Tekton Pipeline in the YAML text area. This pipeline will clone the source code from our local Git server (Gitea), build and test the application, build a container image and deploy it on OpenShift.
+여기에서 이 Tekton Pipeline을 YAML 텍스트 영역에 복사할 수 있습니다. 이 파이프라인은 로컬 Git 서버(Gitea)에서 소스 코드를 클론하고, 애플리케이션을 빌드 및 테스트한 후, 컨테이너 이미지를 빌드하여 OpenShift에 배포합니다.
 
 [source,role="copypaste",subs="attributes"]
 ----
@@ -163,25 +162,25 @@ spec:
     - name: maven-settings
 ----
 
-Now, let's head back to the *Pipeline builder* view to see it visually.
+이제 다시 *Pipeline builder* 화면으로 돌아가서 시각적으로 확인해 보겠습니다.
 
 image::devops_pipeline_builder_java.png[link="self",window=_blank]
 
-This pipeline has 4 Tasks defined:
+이 파이프라인에는 4개의 Task가 정의되어 있습니다:
 
-- *git clone*: this is a `Task` that will clone our source repository for nationalparks and store it to a `Workspace` `app-source` which will use the PVC created for it `app-source-workspace`
-- *build-and-test*: will build and test our Java application using `maven` `Task`
-- *build-image*: this is a link:https://buildah.io/[buildah,window=_blank] Task that will build an image using a binary file as input in OpenShift, in our case a JAR artifact generated in the previous task
-- *redeploy*: it will use an `openshift-client` Task to deploy the created image on OpenShift using the Deployment named `nationalparks` we created in the previous lab
+- *git clone*: nationalparks의 소스 저장소를 클론하여 `app-source-workspace`라는 PVC를 사용하는 `Workspace` `app-source`에 저장하는 `Task`입니다
+- *build-and-test*: `maven` `Task`를 사용하여 Java 애플리케이션을 빌드하고 테스트합니다
+- *build-image*: OpenShift에서 바이너리 파일(이 경우 이전 task에서 생성된 JAR 아티팩트)을 입력으로 사용하여 이미지를 빌드하는 link:https://buildah.io/[buildah,window=_blank] Task입니다
+- *redeploy*: 이전 실습에서 생성한 `nationalparks`라는 Deployment를 사용하여 생성된 이미지를 OpenShift에 배포하기 위해 `openshift-client` Task를 사용합니다
 
 image::devops_pipeline_tasks_java.png[link="self",window=_blank]
 
-The Pipeline is parametric, with default values already preconfigured.
+이 Pipeline은 파라미터화되어 있으며, 기본값이 이미 미리 설정되어 있습니다.
 
-It is using two *Workspaces*:
+다음 두 개의 *Workspace*를 사용합니다:
 
-- *app-source*: linked to a *PersistentVolumeClaim* `app-source-pvc` we will create next.  This will be used to store the artifact to be used in different *Task*
-- *maven_settings*: an *EmptyDir* volume for the maven cache, this can be extended also with a PVC to make subsequent Maven builds faster
+- *app-source*: 다음에 생성할 *PersistentVolumeClaim* `app-source-pvc`에 연결됩니다. 여러 *Task*에서 사용할 아티팩트를 저장하는 데 사용됩니다
+- *maven_settings*: maven 캐시를 위한 *EmptyDir* 볼륨으로, 이후의 Maven 빌드를 더 빠르게 하기 위해 PVC로 확장할 수도 있습니다
 
 image::devops_pipeline_workspaces_java.png[link="self",window=_blank]
 
@@ -514,67 +513,67 @@ image::devops_pipeline_workspaces_java.png[link="self",window=_blank]
 // --
 ====
 
-Finally, make sure to click the *Create* button to create the Pipeline.
+마지막으로, *Create* 버튼을 클릭하여 Pipeline을 생성했는지 확인하세요.
 
 [#add_storage_for_pipeline]
-== Exercise: Add Storage for your Pipeline
+== 실습: 파이프라인용 스토리지 추가하기
 
-OpenShift manages Storage with link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/[Persistent Volumes,window='_blank'] to be attached to Pods running our applications through *Persistent Volume Claim* requests, and it also provides the capability to manage it at ease from the Web Console. 
-From the left menu, go to *Storage* -> *Persistent Volume Claims*.
+OpenShift는 *Persistent Volume Claim* 요청을 통해 애플리케이션을 실행하는 Pod에 연결되는 스토리지를 link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/[Persistent Volume,window='_blank']으로 관리하며, 웹 콘솔에서 쉽게 관리할 수 있는 기능도 제공합니다.
+왼쪽 메뉴에서 *Storage* -> *Persistent Volume Claims*로 이동하세요.
 
-Go to the top-right side and click *Create Persistent Volume Claim* button.
+오른쪽 상단으로 이동하여 *Create Persistent Volume Claim* 버튼을 클릭합니다.
 
 [.bordershadow]
 image::nationalparks-codechanges-pipeline-pvc-1.png[link="self",window=_blank]
 
-Inside *Persistent Volume Claim name* insert *app-source-pvc*.
+*Persistent Volume Claim name*에 *app-source-pvc*를 입력합니다.
 
-In *Size* section, insert *1* as we are going to create 1 GiB Persistent Volume for our Pipeline, using RWO Single User access mode.
+*Size* 섹션에는 *1*을 입력합니다. RWO Single User 액세스 모드를 사용하여 Pipeline을 위한 1 GiB Persistent Volume을 생성할 것이기 때문입니다.
 
-Leave all other default settings, and click *Create*.
+나머지 설정은 기본값으로 두고 *Create*를 클릭합니다.
 
 [.bordershadow]
 image::nationalparks-codechanges-pipeline-pvc.png[link="self",window=_blank]
 
-TIP: The *Storage Class* is the type of storage available in the cluster.
+TIP: *Storage Class*는 클러스터에서 사용 가능한 스토리지의 유형입니다.
 
 [#run_the_pipeline]
-== Run the Pipeline
+== 파이프라인 실행하기
 
-We can now start the Pipeline from the Web Console. Go to left-side menu, click on *Pipelines -> Pipelines*, then click on *nationalparks-pipeline*. From top-right *Actions* list, click on *Start*.
+이제 웹 콘솔에서 Pipeline을 시작할 수 있습니다. 왼쪽 메뉴로 이동하여 *Pipelines -> Pipelines*를 클릭한 후 *nationalparks-pipeline*을 클릭합니다. 오른쪽 상단의 *Actions* 목록에서 *Start*를 클릭합니다.
 
 [.bordershadow]
 image::devops-pipeline-start-1.png[link="self",window=_blank]
 
-You will be prompted with parameters to add the Pipeline, showing default ones. Your appropriate values are already preconfigured.
+Pipeline에 추가할 파라미터를 입력하라는 메시지가 표시되며, 기본값이 함께 나타납니다. 적절한 값들은 이미 미리 설정되어 있습니다.
 
-In *Workspaces* -> *app-source*, select *PersistentVolumeClaim* from the list, and then select *app-source-pvc*. This is the share volume used by Pipeline Tasks in your Pipeline containing the source code and compiled artifacts.
+*Workspaces* -> *app-source*에서 목록의 *PersistentVolumeClaim*을 선택한 후 *app-source-pvc*를 선택합니다. 이는 소스 코드와 컴파일된 아티팩트를 담고 있는, Pipeline의 Task들이 공유해서 사용하는 볼륨입니다.
 
-In *Workspaces* -> *maven-settings*, leave it as *Empty Directory*.
+*Workspaces* -> *maven-settings*는 *Empty Directory*로 그대로 둡니다.
 
 [.bordershadow]
 
-Click on *Start* to run your Pipeline.
+*Start*를 클릭하여 Pipeline을 실행합니다.
 
 [.bordershadow]
 image::devops-pipeline-start-2.png[link="self",window=_blank]
 
-You can follow the Pipeline execution at ease from Web Console. Go to left-side menu, click on *Pipelines -> Pipeline*, then click on *nationalparks-pipeline*. Switch to *Pipeline Runs* tab to watch all the steps in progress:
+웹 콘솔에서 Pipeline 실행 과정을 쉽게 확인할 수 있습니다. 왼쪽 메뉴로 이동하여 *Pipelines -> Pipeline*을 클릭한 후 *nationalparks-pipeline*을 클릭합니다. *Pipeline Runs* 탭으로 전환하여 진행 중인 모든 단계를 확인하세요:
 
 [.bordershadow]
 image::devops-pipeline-run-1.png[link="self",window=_blank]
 
-The click on the `PipelineRun`:
+그런 다음 `PipelineRun`을 클릭합니다:
 
 [.bordershadow]
 image::devops-pipeline-run-java-2.png[link="self",window=_blank]
 
-Then click on the *Task* running to check logs:
+그런 다음 실행 중인 *Task*를 클릭하여 로그를 확인합니다:
 
 [.bordershadow]
 image::devops-pipeline-run-java-3.png[link="self",window=_blank]
 
-Verify PipelineRun has been completed with success:
+PipelineRun이 성공적으로 완료되었는지 확인합니다:
 
 [.bordershadow]
 image::devops-pipeline-run-java-4.png[link="self",window=_blank]

@@ -1,120 +1,114 @@
-= Nationalparks Backend App
-:navtitle: Nationalparks Backend App
+= Nationalparks 백엔드 애플리케이션
+:navtitle: Nationalparks 백엔드 애플리케이션
 
 include::vars.adoc[]
 
-In this section, you're going to deploy a backend service that will expose 2 main REST endpoints to the visualizer
-application (`parksmap` web component that was deployed in the previous workshop sections).
-The application will query for each national park's information (including its
-coordinates) that are stored in a MongoDB database. This application will also
-provide an external access point, so that the API can be directly used
-by end users.
+이 섹션에서는 시각화 애플리케이션(이전 워크숍 섹션에서 배포한 `parksmap` 웹 구성 요소)에
+두 가지 주요 REST 엔드포인트를 노출하는 백엔드 Service를 배포합니다.
+이 애플리케이션은 MongoDB 데이터베이스에 저장된 각 국립공원의 정보(좌표 포함)를
+조회합니다. 또한 이 애플리케이션은 API를 최종 사용자가 직접 사용할 수 있도록
+외부 접근 지점도 제공합니다.
 
 [.bordershadow]
 image::roadshow-app-architecture-nationalparks-1.png[link="self",window=_blank]
 
 [#source_to_image]
-== Background: Source-to-Image (S2I)
+== 배경 지식: Source-to-Image (S2I)
 
-In a previous workshop section, you learned how to deploy a pre-existing container
-image. Now you will learn how OpenShift can build container images directly from source code in an existing Git repository. This is accomplished using the Source-to-Image project.
+이전 워크숍 섹션에서는 기존에 존재하는 컨테이너 이미지를 배포하는 방법을 배웠습니다.
+이번에는 기존 Git 저장소의 소스 코드로부터 OpenShift가 직접 컨테이너 이미지를 빌드하는 방법을 배웁니다. 이는 Source-to-Image 프로젝트를 통해 이루어집니다.
 
-link:{ocp4_starter_openshift_github}/source-to-image[Source-to-Image (S2I),window='_blank'] is an
-open source project sponsored by Red Hat that has the following goal:
+link:{ocp4_starter_openshift_github}/source-to-image[Source-to-Image (S2I),window='_blank']는
+Red Hat이 후원하는 오픈소스 프로젝트로, 다음과 같은 목표를 가지고 있습니다:
 
 [quote]
 --
-Source-to-image (S2I) is a tool for building reproducible container images. S2I
-produces ready-to-run images by injecting source code into a container image and
-assembling a new container image which incorporates the builder image and built
-source. The result is then ready to use with docker run. S2I supports
-incremental builds which re-use previously downloaded dependencies, previously
-built artifacts, etc.
+Source-to-image(S2I)는 재현 가능한 컨테이너 이미지를 빌드하기 위한 도구입니다. S2I는
+소스 코드를 컨테이너 이미지에 주입하고 빌더 이미지와 빌드된 소스를 결합한 새로운
+컨테이너 이미지를 조합하여 즉시 실행 가능한 이미지를 만들어냅니다. 그 결과물은 docker run으로
+바로 사용할 준비가 됩니다. S2I는 이전에 다운로드한 종속성이나 이전에 빌드된
+아티팩트 등을 재사용하는 증분 빌드(incremental build)를 지원합니다.
 --
 
-OpenShift can use S2I as one of its build mechanisms, in addition to building container images using instructions in a Dockerfile, and "custom" builds.
+OpenShift는 Dockerfile의 지시어를 사용한 이미지 빌드나 "custom" 빌드 외에도, S2I를 빌드 메커니즘 중 하나로 사용할 수 있습니다.
 
-OpenShift runs the S2I process inside a special *Pod*, called a Build
-Pod, and thus builds are subject to quotas, limits, resource scheduling, and
-other aspects of OpenShift.
+OpenShift는 S2I 프로세스를 Build Pod라고 하는 특별한 *Pod* 내부에서
+실행하므로, 빌드 역시 쿼터, 제한, 리소스 스케줄링 등 OpenShift의
+다른 요소들과 마찬가지로 이러한 제약을 받습니다.
 
-A full discussion of S2I is beyond the scope of this workshop, but you can find
-more information about it either in the
-link:{ocp4_starter_openshift_docs}/html/images/creating-images[OpenShift S2I documentation,window='_blank']
-or on link:{ocp4_starter_openshift_github}/source-to-image[GitHub,window='_blank']. The only key concept you need to
-remember about S2I is that it's magic.
+S2I에 대한 전체적인 논의는 이 워크숍의 범위를 벗어나지만, 더 자세한 내용은
+link:{ocp4_starter_openshift_docs}/html/images/creating-images[OpenShift S2I 문서,window='_blank']나
+link:{ocp4_starter_openshift_github}/source-to-image[GitHub,window='_blank']에서 확인할 수 있습니다. S2I에 대해 기억해야 할 유일한
+핵심 개념은, 이것이 마법 같다는 것입니다.
 
 [#creating_a_application]
-== Exercise: Creating a Backend Application
+== 실습: 백엔드 애플리케이션 생성하기
 
-The backend service that you will be deploying as part of this exercise is
-called `nationalparks`. This is an application that performs 2D
-geo-spatial queries against a MongoDB database to locate and return map
-coordinates of all National Parks in the world. That was just a fancy way of
-saying that you are going to deploy a web service that returns a JSON list of
-places.
+이 실습에서 배포할 백엔드 Service는 `nationalparks`라고 합니다. 이 애플리케이션은
+MongoDB 데이터베이스에 대해 2D 지리공간 쿼리를 수행하여 전 세계 국립공원의 지도
+좌표를 찾아 반환합니다. 조금 어렵게 표현했지만, 결국 장소 목록을 JSON으로
+반환하는 웹 서비스를 배포한다는 뜻입니다.
 
 [#add_to_project]
-=== Add to Project
-Because the `nationalparks` component is a backend to serve data that your
-existing frontend (parksmap) will consume, you are going to build and deploy it inside the existing
-project that you have been using so far. 
+=== Project에 추가하기
+`nationalparks` 구성 요소는 기존 프런트엔드(parksmap)가 사용할 데이터를 제공하는
+백엔드이기 때문에, 지금까지 사용해 온 기존 project 안에 빌드하고 배포하게 됩니다.
 
 [#using_application_code_on_git_server]
-=== Using Application Code on Git Server
+=== Git 서버에서 애플리케이션 코드 사용하기
 
-OpenShift can work with any accessible Git repository. This could be GitHub,
-GitLab, or any other server that speaks Git. You can even register webhooks in
-your Git server to initiate OpenShift builds triggered by any update to the
-application code!
+OpenShift는 접근 가능한 모든 Git 저장소와 함께 동작할 수 있습니다. GitHub,
+GitLab, 또는 Git 프로토콜을 지원하는 다른 어떤 서버든 사용할 수 있습니다. 심지어
+Git 서버에 webhook을 등록하여 애플리케이션 코드가 업데이트될 때마다 OpenShift 빌드가
+시작되도록 할 수도 있습니다!
 
-Later in the workshop, you will make a code change and then rebuild your
-application. Now, let's take a look at deploying a backend service.
+워크숍 후반부에서는 코드를 변경한 후 애플리케이션을 다시 빌드해 볼 것입니다. 지금은
+백엔드 Service를 배포하는 방법을 살펴보겠습니다.
 
 [#deploying_the_backend_service]
-=== Deploying the Backend Service
+=== 백엔드 Service 배포하기
 
-Similar to how you used the *+* button before with an existing image, you
-can do the same for specifying a source code repository.
-Let's use it with a simple link:{ocp4_starter_openshift_roadshow}/nationalparks.git[Java,window='_blank'] S2I image.
+이전에 기존 이미지를 사용할 때 *+* 버튼을 사용했던 것처럼, 소스 코드
+저장소를 지정할 때도 동일하게 할 수 있습니다.
+간단한 link:{ocp4_starter_openshift_roadshow}/nationalparks.git[Java,window='_blank'] S2I 이미지를 사용해 봅시다.
 
-In the Topology view, click the *+* button in the header, and select *Import from Git*.
+Topology 화면에서 헤더의 *+* 버튼을 클릭하고 *Import from Git*을 선택합니다.
 
 [.bordershadow]
 image::nationalparks-show-add-options.png[link="self",window=_blank]
 
-The *Import from Git* workflow will guide you through the process of deploying your app based on a few selections.
+*Import from Git* 워크플로우는 몇 가지 선택 사항을 통해 앱 배포 과정을 안내해 줍니다.
 
-Enter the following for Git Repo URL:
+Git Repo URL에 다음을 입력합니다:
 
 [source,role=copypaste,subs="attributes"]
 ----
 {ocp4_starter_openshift_roadshow}/nationalparks.git
 ----
 
-OpenShift will automatically determine the programming language used by the source code. You have the option to select an *Import Strategy*.
+OpenShift가 소스 코드에서 사용된 프로그래밍 언어를 자동으로 감지합니다. *Import Strategy*를 선택할 수 있는 옵션이 있습니다.
 
-Click *Edit Import Strategy*.
+*Edit Import Strategy*를 클릭합니다.
 
 [.bordershadow]
 image::nationalparks-import-strategy.png[width=500,link="self",window=_blank]
 
-You have three options: 
+세 가지 옵션이 있습니다:
 
-* *Devfile*: this will use link:{ocp4_starter_devfile_docs}[devfile,window='_blank'] spec to create an application stack. The repository has to contain a file named `devfile.yaml` in the devfile format.
-* *Dockerfile*: this will create a container image from an existing Dockerfile in the source Git repository. 
-* *Builder Image*: this will use a mechanism called Source-to-Image to automatically create a container image directly from the source code - no Dockerfile required.
+* *Devfile*: link:{ocp4_starter_devfile_docs}[devfile,window='_blank'] 스펙을 사용하여 애플리케이션 스택을 생성합니다. 저장소에는 devfile 형식의 `devfile.yaml` 파일이 있어야 합니다.
+* *Dockerfile*: 소스 Git 저장소에 있는 기존 Dockerfile로 컨테이너 이미지를 생성합니다.
+* *Builder Image*: Source-to-Image라는 메커니즘을 사용하여 소스 코드로부터 직접 컨테이너 이미지를 자동으로 생성합니다 - Dockerfile이 필요하지 않습니다.
 
-Select *Builder Image* as you are going to create the container image from the source code, as discussed in the next section.
+다음 섹션에서 다룰 내용처럼 소스 코드로부터 컨테이너 이미지를 생성할 것이므로 *Builder Image*를 선택합니다.
 
 [.bordershadow]
 image::nationalparks-import-strategy-build.png[link="self",window=_blank]
 
-TIP: You could also use Dockerfile, as the repo contains a multi-stage Dockerfile. The goal of this exercise is to experience the Builder Image feature in OpenShift.
+TIP: 저장소에는 멀티 스테이지 Dockerfile도 포함되어 있으므로 Dockerfile을 사용할 수도 있습니다. 이 실습의 목표는 OpenShift의 Builder Image 기능을 경험해 보는 것입니다.
 
-Verify that *Java* has been selected as your Builder Image, and be sure to select version *openjdk-11-ubi8* to have OpenJDK 11.
+Builder Image로 *Java*가 선택되었는지 확인하고, OpenJDK 11을 사용하도록 버전 *openjdk-11-ubi8*이 선택되어 있는지 확인하세요.
 
-Scroll down to the *General* section. Add the following:
+아래로 스크롤하여 *General* 섹션으로 이동합니다. 다음을 추가합니다:
 
 *Application Name* :
 [source,role=copypaste]
@@ -128,13 +122,13 @@ workshop
 nationalparks
 ----
 
-In the *Build* section, select *BuildConfig*.
+*Build* 섹션에서 *BuildConfig*를 선택합니다.
 
-In the *Deploy* section, select *Deployment*.
+*Deploy* 섹션에서 *Deployment*를 선택합니다.
 
-Under *Advanced Options*, ensure *Create a route* is *checked*. You are going to create another *Secure Route*, this time directly from this view.
+*Advanced Options* 아래에서 *Create a route*가 *체크*되어 있는지 확인합니다. 이번에는 이 화면에서 직접 또 다른 *Secure Route*를 생성하게 됩니다.
 
-Click *Show advanced Routing options*. Leave all default options, then go to the *Security* section. Check the *Secure Route* option. Under *TLS termination*, select *Edge*.
+*Show advanced Routing options*를 클릭합니다. 기본 옵션은 그대로 두고 *Security* 섹션으로 이동합니다. *Secure Route* 옵션을 체크합니다. *TLS termination* 아래에서 *Edge*를 선택합니다.
 
 [.bordershadow]
 image::nationalparks-configure-service1.png[link="self",window=_blank]
@@ -142,7 +136,7 @@ image::nationalparks-configure-service1.png[link="self",window=_blank]
 [.bordershadow]
 image::nationalparks-configure-service2.png[link="self",window=_blank]
 
-Scroll down and expand the *Labels* section to add 3 labels.
+아래로 스크롤하여 *Labels* 섹션을 펼쳐 레이블 3개를 추가합니다.
 
 [.bordershadow]
 image::nationalparks-configure-service4.png[link="self",window=_blank]
@@ -150,40 +144,40 @@ image::nationalparks-configure-service4.png[link="self",window=_blank]
 [.bordershadow]
 image::nationalparks-configure-service3.png[link="self",window=_blank]
 
-The name of the Application group:
+Application 그룹의 이름입니다:
 
 [source,role=copypaste]
 ----
 app=workshop
 ----
 
-Next, the name of this deployment:
+다음은 이 배포의 이름입니다:
 
 [source,role=copypaste]
 ----
 component=nationalparks
 ----
 
-And finally, the role this component plays in the overall application:
+마지막으로, 이 구성 요소가 전체 애플리케이션에서 수행하는 역할입니다:
 
 [source,role=copypaste]
 ----
 role=backend
 ----
 
-Click *Create* to submit.
+*Create*를 클릭하여 제출합니다.
 
 [#monitoring-the-build]
-=== Monitoring the Build
+=== 빌드 모니터링하기
 
-To see the build logs, in Topology view, click the `nationalparks` entry, then click on *View Logs* in the *Builds* section of the *Resources* tab.
+빌드 로그를 확인하려면 Topology 화면에서 `nationalparks` 항목을 클릭한 후, *Resources* 탭의 *Builds* 섹션에서 *View Logs*를 클릭합니다.
 
 [.bordershadow]
 image::nationalparks-java-new-java-build.png[link="self",window=_blank]
 
-Based on the application's language, the build process will be different. However, the initial build will take a few minutes as the dependencies are downloaded. You can see all of this happening in real time!
+애플리케이션의 언어에 따라 빌드 프로세스는 다르게 진행됩니다. 다만 종속성을 다운로드하는 초기 빌드는 몇 분 정도 걸립니다. 이 모든 과정을 실시간으로 확인할 수 있습니다!
 
-From the command line, you can also see the *Builds*:
+명령줄에서도 *Build*를 확인할 수 있습니다:
 
 [.console-input]
 [source,role="copypaste"]
@@ -191,7 +185,7 @@ From the command line, you can also see the *Builds*:
 oc get builds
 ----
 
-You'll see output like:
+다음과 같은 출력이 표시됩니다:
 
 [.console-output]
 [source]
@@ -200,7 +194,7 @@ NAME              TYPE      FROM          STATUS     STARTED              DURATI
 nationalparks-1   Source    Git@b052ae6   Running    About a minute ago   1m2s
 ----
 
-You can also view the build logs with the following command:
+다음 명령으로 빌드 로그를 확인할 수도 있습니다:
 
 [.console-input]
 [source,role="copypaste"]
@@ -208,16 +202,16 @@ You can also view the build logs with the following command:
 oc logs -f builds/nationalparks-1
 ----
 
-After the build has completed successfully:
+빌드가 성공적으로 완료되면:
 
-* The S2I process will push the resulting image to the internal OpenShift image registry
-* The *Deployment* (D) will detect that the image has changed, and this
-  will cause a new deployment to happen.
-* A *ReplicaSet* (RS) will be spawned for this new deployment.
-* The RS will detect no *Pods* are running and will cause one to be deployed, as the default replica count is just 1.
+* S2I 프로세스가 결과 이미지를 내부 OpenShift 이미지 레지스트리에 푸시합니다
+* *Deployment*(D)가 이미지가 변경된 것을 감지하고, 이로 인해
+  새로운 배포가 발생합니다.
+* 이 새 배포를 위한 *ReplicaSet*(RS)이 생성됩니다.
+* 기본 레플리카 개수가 1이므로, RS는 실행 중인 *Pod*가 없음을 감지하고 하나를 배포합니다.
 
-In the end, when issuing the `oc get pods` command, you will see that the build Pod
-has finished (exited) and that an application *Pod* is in a ready and running state:
+결국 `oc get pods` 명령을 실행하면, 빌드 Pod는
+완료(종료)되었고 애플리케이션 *Pod*는 준비되어 실행 중인 상태인 것을 확인할 수 있습니다:
 
 [.console-output]
 [source]
@@ -228,7 +222,7 @@ nationalparks-1-build       0/1       Completed   0          3m
 parksmap-57df75c46d-xltcs   1/1       Running     0          2h
 ----
 
-Look again at the OpenShift web console. You will notice that the *Route* was created for you, since you enabled it when creating the application. You can see the URL in the web console, or via the command line:
+다시 OpenShift 웹 콘솔을 살펴보세요. 애플리케이션을 생성할 때 활성화했기 때문에 *Route*가 생성된 것을 확인할 수 있습니다. 웹 콘솔에서 URL을 확인하거나 명령줄에서 확인할 수 있습니다:
 
 [.console-input]
 [source,role="copypaste"]
@@ -236,17 +230,17 @@ Look again at the OpenShift web console. You will notice that the *Route* was cr
 oc get routes
 ----
 
-You should see something like the following:
+다음과 유사한 결과가 표시됩니다:
 
 [.console-output]
 [source,role="copypaste",subs="attributes"]
 ----
 NAME            HOST/PORT                                                   PATH      SERVICES        PORT       TERMINATION       WILDCARD
-nationalparks   nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}      nationalparks   8080-tcp        edge 
+nationalparks   nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}      nationalparks   8080-tcp        edge
 parksmap        parksmap-{ocp4_starter_project}.{ocp4_starter_apps_domain}           parksmap        8080-tcp        edge        none
 ----
 
-In the above example, the URL is:
+위 예시에서 URL은 다음과 같습니다:
 
 [.console-output]
 [source,subs="+attributes"]
@@ -254,23 +248,23 @@ In the above example, the URL is:
 https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}
 ----
 
-Since this is a backend application, it doesn't actually have a web interface.
-However, it can still be used with a browser. All backends that work with the parksmap
-frontend are required to implement a `/ws/info/` endpoint. To test, visit this URL in your browser:
+이는 백엔드 애플리케이션이므로 실제 웹 인터페이스는 없습니다.
+그러나 브라우저로도 사용해 볼 수 있습니다. parksmap 프런트엔드와 함께 동작하는 모든 백엔드는
+`/ws/info/` 엔드포인트를 구현해야 합니다. 테스트하려면 브라우저에서 다음 URL을 방문하세요:
 
 link:https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/info/[National Parks Info Page,window='_blank']
 
-WARNING: If the Pod is Running and the application is not available, please wait a few seconds and refresh the page, since you haven't configured Health Checks for it yet.
+WARNING: Pod가 Running 상태인데도 애플리케이션이 사용 불가능하다면, 아직 Health Check를 구성하지 않았기 때문이니 몇 초 기다렸다가 페이지를 새로고침해 보세요.
 
-You will see a simple JSON string:
+간단한 JSON 문자열이 표시됩니다:
 
 [source]
 ----
 {"id":"nationalparks","displayName":"National Parks","center":{"latitude":"47.039304","longitude":"14.505178"},"zoom":4}
 ----
 
-Earlier in the workshop, you read that:
+워크숍 앞부분에서 다음 내용을 읽었습니다:
 
-_This is an application that performs 2D geo-spatial queries against a MongoDB database_
+_이 애플리케이션은 MongoDB 데이터베이스에 대해 2D 지리공간 쿼리를 수행합니다_
 
-But you don't have a database. Yet.
+하지만 아직 데이터베이스가 없습니다. 아직은요.

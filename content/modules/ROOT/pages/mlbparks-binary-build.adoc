@@ -1,38 +1,38 @@
-= Binary Builds
-:navtitle: Binary Builds
+= 바이너리 빌드
+:navtitle: 바이너리 빌드
 
 include::vars.adoc[]
 
 [#moving_on_from_s2i]
-== Moving on From S2I
-As you saw before S2I is a great way to get from source code to a container, but the process is a bit too slow for daily fast iterative
-development. For example, if you want to change some CSS or change one method in a class you don't want to go through
-a full git commit and build cycle. In this lab we are going to show you a more efficient method for quick iteration. While
-we are at it we will also show you how to debug your code.
+== S2I를 넘어서
+앞서 확인했듯이 S2I는 소스 코드에서 컨테이너로 가는 훌륭한 방법이지만, 매일 빠르게 반복하는
+개발 작업을 하기에는 이 과정이 다소 느립니다. 예를 들어 CSS를 조금 바꾸거나 클래스의 메서드 하나를
+변경하고 싶을 때, 전체 git commit과 빌드 사이클을 거치고 싶지는 않을 것입니다. 이 실습에서는
+빠르게 반복 작업을 하는 더 효율적인 방법을 보여드립니다. 그 과정에서 코드를 디버깅하는 방법도
+함께 살펴보겠습니다.
 
-Now that we built the MLB parks service let's go ahead and make some quick changes.
+이제 MLB parks service를 빌드했으니, 빠른 변경 작업을 몇 가지 해보겠습니다.
 
 [#fast_iterative_code_change_using_binary_deploy]
-== Fast Iterative Code Change Using Binary Deploy
+== 바이너리 배포를 사용한 빠른 반복 코드 변경
 
-The OpenShift command line has the ability to do a deployment from your local machine. In this case we are going to use S2I,
-but we are going to tell OpenShift to just take the war file from our local machine and bake it in the image.
+OpenShift 명령줄은 로컬 머신에서 배포를 수행하는 기능을 제공합니다. 이 경우 S2I를 사용하되,
+로컬 머신에 있는 war 파일을 그대로 가져와 이미지에 담도록 OpenShift에 지시합니다.
 
-Doing this pattern of development lets us do quick builds on our local machine (benefitting from our local cache and
-all the horsepower on our machine) and then just quickly send up the war file.
+이런 개발 패턴을 사용하면 로컬 머신에서 빠르게 빌드하고(로컬 캐시와 머신의 모든 성능을
+활용하여) war 파일만 빠르게 업로드할 수 있습니다.
 
-NOTE: You could also use this pattern to actually send up your working directory to the S2I builder to have it do the Maven build
-on OpenShift. Using the local directory would relieve you from having Maven or any of the Java toolchain on your local
-// machine AND would also not require git commit with a push. Read more in the
-// {openshift-docs-url}/builds/basic-build-operations.html#builds-basic-start-source_basic-build-operations[official documentation]
+NOTE: 실제로 작업 디렉터리 전체를 S2I 빌더에 전송하여 OpenShift에서 Maven 빌드를 수행하도록 하는 방식으로도 이 패턴을 사용할 수 있습니다. 로컬 디렉터리를 사용하면 로컬 머신에 Maven이나 다른 Java 툴체인을 설치할 필요가 없어지고
+// 또한 git commit과 push도 필요하지 않게 됩니다. 자세한 내용은
+// {openshift-docs-url}/builds/basic-build-operations.html#builds-basic-start-source_basic-build-operations[공식 문서]에서 확인하세요.
 
 
 [#using_binary_deployment]
-== Exercise: Using Binary Deployment
+== 실습: 바이너리 배포 사용하기
 
 [#clone_source]
-=== Clone source
-The first step is to clone the MLB source code from GitHub to your workshop environment:
+=== 소스 클론하기
+첫 번째 단계는 GitHub에서 MLB 소스 코드를 워크숍 환경으로 클론하는 것입니다:
 
 [.console-input]
 [source,bash]
@@ -40,19 +40,19 @@ The first step is to clone the MLB source code from GitHub to your workshop envi
 git clone https://github.com/openshift-roadshow/mlbparks.git
 ----
 
-NOTE: We are using Intellij here in the guide for screenshots but this should work regardless of your tool chain. JBoss
-Developer Studio and JBoss Developer Tools have built in functionality that makes this close to seamless right from the IDE.
+NOTE: 이 가이드의 스크린샷에서는 IntelliJ를 사용하고 있지만 어떤 툴체인을 사용하든 상관없이 동작해야 합니다. JBoss
+Developer Studio와 JBoss Developer Tools는 IDE 안에서 거의 매끄럽게 이 작업을 수행할 수 있는 내장 기능을 제공합니다.
 
 [#setup_the_build_of_the_war_file]
-=== Setup the Build of the WAR file
-If you have Maven all set up on your machine, then you can `cd` into the `mlbparks` directory and run `mvn package`
+=== WAR 파일 빌드 설정하기
+로컬 머신에 Maven이 모두 설정되어 있다면 `mlbparks` 디렉터리로 `cd`한 후 `mvn package`를 실행하면 됩니다.
 
 [#docker_for_maven]
 [TIP]
 ====
-If you don't have Maven on your machine but you are able to run docker, you can instead mount the repo directory and run the build commands from within the container.
+로컬 머신에 Maven이 없지만 docker를 실행할 수 있다면, 대신 저장소 디렉터리를 마운트하여 컨테이너 안에서 빌드 명령을 실행할 수 있습니다.
 
-. From within the directory that you ran `git clone` above, run the following command:
+. 위에서 `git clone`을 실행한 디렉터리 안에서 다음 명령을 실행합니다:
 +
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
@@ -60,7 +60,7 @@ If you don't have Maven on your machine but you are able to run docker, you can 
 docker run -it --rm --user 0 --name maven_builder -v ~/.kube:/home/jboss/.kube -v $(pwd):/workspaces -w /workspaces registry.access.redhat.com/ubi8/openjdk-11 /bin/bash
 ----
 +
-. Next, run this command (in the container) to locally install the latest version of `oc` on the container
+. 다음으로, (컨테이너 안에서) 다음 명령을 실행하여 컨테이너에 최신 버전의 `oc`를 로컬로 설치합니다
 +
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
@@ -69,7 +69,7 @@ mkdir -p $HOME/bin && curl -L https://mirror.openshift.com/pub/openshift-v4/clie
     tar -xvzf - -C $HOME/bin/ oc && chmod 755 $HOME/bin/oc && ln -s $HOME/bin/oc $HOME/bin/kubectl
 ----
 +
-. Finally, ensure that you are still connected to your OpenShift cluster from within the builder container by running the following and comparing the output:
+. 마지막으로, 다음을 실행하고 출력을 비교하여 빌더 컨테이너 안에서도 여전히 OpenShift 클러스터에 연결되어 있는지 확인합니다:
 +
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
@@ -83,7 +83,7 @@ oc whoami --show-server
 https://{ocp4_starter_apps_domain}:30713
 ----
 
-Once completed, you should be able to follow the commands as they are outlined below.
+완료되면 아래 안내된 명령들을 그대로 따라 할 수 있습니다.
 ====
 
 [.console-input]
@@ -93,14 +93,14 @@ cd mlbparks
 mvn package
 ----
 
-Pay attention to the output location for the ROOT.war, we will need that directory later.
+ROOT.war의 출력 위치를 잘 기억해 두세요. 나중에 해당 디렉터리가 필요합니다.
 
 [#code_change]
-=== Code Change
+=== 코드 변경
 
-Time for a source code change! 
+이제 소스 코드를 변경할 시간입니다!
 
-Edit `BackendController` Java class from this path:
+다음 경로에서 `BackendController` Java 클래스를 편집합니다:
 
 [.console-output]
 [source,bash]
@@ -108,21 +108,21 @@ Edit `BackendController` Java class from this path:
 src/main/java/com/openshift/evg/roadshow/rest/BackendController.java
 ----
 
-This is the REST endpoint that gives basic info on the service and can be reached at:
+이는 서비스에 대한 기본 정보를 제공하는 REST 엔드포인트이며 다음 위치에서 확인할 수 있습니다:
 
 [source,bash,role="copypaste",subs="+attributes"]
 ----
 http://mlbparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/info/
 ----
 
-Please change line 23 to add a _AMAZING_ in front of "MLB Parks" look like this:
+23번째 줄을 변경하여 "MLB Parks" 앞에 _AMAZING_을 추가해서 다음과 같이 만드세요:
 
 [source,java]
 ----
 return new Backend("mlbparks", "AMAZING MLB Parks", new Coordinates("39.82", "-98.57"), 5);
 ----
 
-Don't forget to save the file and run `mvn package` again from the root of the source folder: 
+파일을 저장하는 것을 잊지 말고, 소스 폴더의 루트에서 `mvn package`를 다시 실행하세요:
 
 [.console-input]
 [source,bash,subs="+attributes,macros+"]
@@ -131,11 +131,11 @@ mvn package
 ----
 
 [#doing_the_binary_build]
-=== Doing the Binary Build
+=== 바이너리 빌드 수행하기
 
-Alright we have our war file built, time to kick off a build using it.
+자, war 파일 빌드가 끝났으니 이를 사용해서 빌드를 시작해 보겠습니다.
 
-If you built your war with Maven:
+Maven으로 war를 빌드했다면:
 
 [.console-input]
 [source,bash,subs="+attributes,macros+"]
@@ -143,18 +143,18 @@ If you built your war with Maven:
 oc start-build bc/mlbparks --from-file=target/ROOT.war --follow
 ----
 
-NOTE: The --follow is optional if you want to follow the build output in your terminal.
+NOTE: 터미널에서 빌드 출력을 따라가고 싶다면 --follow는 선택 사항입니다.
 
-Using labels and a recreate deployment strategy, as soon as the new deployment finishes the map name will be updated. Under a recreate deployment strategy we first tear down the pod before doing our new deployment.
-When the pod is torn down, the parksmap service removes the MLBParks map from the layers. When it comes back up, the layer
-automatically gets added back with our new title.  This would not have happened with a rolling deployment because
-rolling spins up the new version of the pod before it takes down the old one. Rolling strategy enables a zero-downtime deployment.
+레이블과 recreate 배포 전략을 사용하면, 새 배포가 끝나는 즉시 지도 이름이 업데이트됩니다. recreate 배포 전략에서는 새 배포를 수행하기 전에 먼저 pod를 내립니다.
+pod가 내려가면 parksmap service는 레이어에서 MLBParks 지도를 제거합니다. pod가 다시 올라오면 레이어가
+새 제목과 함께 자동으로 다시 추가됩니다. 이는 rolling 배포에서는 일어나지 않는 현상인데, rolling 배포는
+기존 버전의 pod를 내리기 전에 새 버전의 pod를 먼저 띄우기 때문입니다. rolling 전략은 무중단 배포를 가능하게 합니다.
 
-You can follow the deployment in progress from Topology view, and when it is completed, you will see the new content at:
+Topology 화면에서 진행 중인 배포를 확인할 수 있으며, 완료되면 다음 위치에서 새로운 콘텐츠를 확인할 수 있습니다:
 
 [source,bash,role="copypaste",subs="+attributes"]
 ----
 http://mlbparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/info/
 ----
 
-So now you have seen how we can speed up the build and deploy process.
+이렇게 빌드와 배포 프로세스를 어떻게 빠르게 할 수 있는지 살펴보았습니다.

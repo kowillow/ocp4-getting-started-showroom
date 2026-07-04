@@ -1,23 +1,23 @@
-= ParksMap Architecture
-:navtitle: ParksMap Architecture
+= ParksMap 아키텍처
+:navtitle: ParksMap 아키텍처
 
 include::vars.adoc[]
 
-This section introduces you to the architecture of the ParksMap application, which you'll use throughout this workshop. Understanding the architecture will help you better understand the tasks you'll perform from a developer's perspective. ParksMap is a polyglot geo-spatial data visualization application built using a microservices architecture. It consists of multiple services developed using different programming languages and frameworks.
+이 섹션에서는 이 워크숍 전체에서 사용할 ParksMap 애플리케이션의 아키텍처를 소개합니다. 아키텍처를 이해하면 개발자 관점에서 수행하게 될 작업을 더 잘 이해하는 데 도움이 됩니다. ParksMap은 마이크로서비스 아키텍처로 구축된 폴리글랏(polyglot) 지리공간 데이터 시각화 애플리케이션입니다. 서로 다른 프로그래밍 언어와 프레임워크로 개발된 여러 Service로 구성되어 있습니다.
 
 [.bordershadow]
 image::roadshow-app-architecture.png[align="center",link="self",window=_blank]
 
-The main service is a web application with two key components:
+메인 Service는 두 가지 핵심 구성 요소로 이루어진 웹 애플리케이션입니다:
 
-1. **Server-side component**: Aggregates geo-spatial APIs provided by multiple independent backend services.
-2. **Client-side component**: Built with JavaScript, it visualizes geo-spatial data on the map and communicates with the server-side using WebSockets to update the map in real-time.
+1. **서버 측 구성 요소**: 여러 독립적인 백엔드 Service가 제공하는 지리공간 API를 집계합니다.
+2. **클라이언트 측 구성 요소**: JavaScript로 구축되며, 지도에 지리공간 데이터를 시각화하고 WebSocket을 사용하여 서버 측과 통신하여 지도를 실시간으로 업데이트합니다.
 
-You'll deploy a set of independent backend services that provide various mapping and geo-spatial information, including:
+다음을 포함하여 다양한 지도 및 지리공간 정보를 제공하는 독립적인 백엔드 Service 세트를 배포하게 됩니다:
 
-* Worldwide National Parks
-* Major League Baseball Stadiums in North America
+* 전 세계 국립공원(National Parks)
+* 북미 메이저리그 야구 경기장(MLB Stadiums)
 
-The original source code for this application is located link:{ocp4_starter_roadshow_url}[here,window=_blank].
+이 애플리케이션의 원본 소스 코드는 link:{ocp4_starter_roadshow_url}[여기,window=_blank]에 있습니다.
 
-The server-side component of the ParksMap web application acts as a communication gateway to all available backends. These backends are dynamically discovered using service discovery mechanisms provided by OpenShift, which will be discussed in more detail in the following sections.
+ParksMap 웹 애플리케이션의 서버 측 구성 요소는 사용 가능한 모든 백엔드에 대한 통신 게이트웨이 역할을 합니다. 이러한 백엔드는 OpenShift가 제공하는 서비스 디스커버리(service discovery) 메커니즘을 통해 동적으로 검색되며, 이는 다음 섹션에서 더 자세히 다룹니다.

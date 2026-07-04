@@ -1,48 +1,46 @@
-= Further Resources
-:navtitle: Further Resources
+= 추가 자료
+:navtitle: 추가 자료
 
 include::vars.adoc[]
 
-The exercises in this workshop have shown you how OpenShift can be used not only for deploying
-stateless web applications, but also applications which require persistent
-file system storage.
+이 워크숍의 실습을 통해 OpenShift가 상태를 가지지 않는 웹 애플리케이션뿐 아니라
+영구적인 파일 시스템 스토리지가 필요한 애플리케이션을 배포하는 데도
+어떻게 사용될 수 있는지 살펴보았습니다.
 
-This flexibility makes OpenShift an ideal platform for deploying both web
-applications and databases.
+이러한 유연성 덕분에 OpenShift는 웹 애플리케이션과 데이터베이스를 모두
+배포하기에 이상적인 플랫폼이 됩니다.
 
-If you have finished this workshop early and want to experiment some more,
-we have additional exercises you can try out using our online interactive
-learning environment.
+이 워크숍을 일찍 마치고 좀 더 실습해 보고 싶다면, 온라인 대화형
+학습 환경을 통해 시도해 볼 수 있는 추가 실습을 준비해 두었습니다.
 
-* link:https://developers.redhat.com/learn[*Red Hat Developer Learning Portal*,window='_blank'] - An online interactive learning environment where you can run
-through various scenarios related to using OpenShift and more.
+* link:https://developers.redhat.com/learn[*Red Hat Developer Learning Portal*,window='_blank'] - OpenShift 사용과 관련된 다양한 시나리오를 직접 실습해 볼 수 있는
+온라인 대화형 학습 환경입니다.
 
-The online interactive learning environment is always available so you
-can continue to work on those exercises even after the workshop is over.
+이 온라인 대화형 학습 환경은 항상 이용할 수 있으므로 워크숍이 끝난 후에도
+계속해서 실습을 이어갈 수 있습니다.
 
-Below you will find further resources for learning about OpenShift and
-running OpenShift on your own computer, as well as details about OpenShift
-Online or other OpenShift related products and services.
+아래에서 OpenShift에 대해 더 배우고 여러분의 컴퓨터에서 직접 OpenShift를
+실행하는 방법, 그리고 OpenShift Online이나 다른 OpenShift 관련 제품 및
+서비스에 대한 자세한 내용을 확인할 수 있습니다.
 
-* link:https://docs.redhat.com/en/documentation/openshift_container_platform[*OpenShift Documentation*,window='_blank'] - The landing page for OpenShift documentation.
+* link:https://docs.redhat.com/en/documentation/openshift_container_platform[*OpenShift Documentation*,window='_blank'] - OpenShift 문서의 랜딩 페이지입니다.
 
-* link:https://developers.redhat.com/learn/openshift[*OpenShift Resources on developers.redhat.com*,window='_blank'] - A collection of resources for developers who are building and deploying applications on OpenShift.
+* link:https://developers.redhat.com/learn/openshift[*OpenShift Resources on developers.redhat.com*,window='_blank'] - OpenShift에서 애플리케이션을 구축하고 배포하는 개발자를 위한 자료 모음입니다.
 
-* link:https://developers.redhat.com/products/openshift-local/overview[*Red Hat OpenShift Local*,window='_blank'] - A tool which can
-be used to install a local OpenShift cluster on your own computer, running
-in a virtual machine.
+* link:https://developers.redhat.com/products/openshift-local/overview[*Red Hat OpenShift Local*,window='_blank'] - 가상 머신에서 실행되는 로컬 OpenShift 클러스터를
+여러분의 컴퓨터에 설치할 수 있는 도구입니다.
 
-* link:https://www.openshift.com/dedicated[*OpenShift Dedicated*,window='_blank'] - A
-dedicated hosting environment for running your applications, managed and
-supported for you by Red Hat.
+* link:https://www.openshift.com/dedicated[*OpenShift Dedicated*,window='_blank'] - Red Hat이
+직접 관리하고 지원하는, 애플리케이션 실행을 위한 전용 호스팅
+환경입니다.
 
-* link:https://www.openshift.com/[*OpenShift Container Platform*,window='_blank'] - The Red
-Hat supported OpenShift product for installation on premise or in hosted
-cloud environments.
+* link:https://www.openshift.com/[*OpenShift Container Platform*,window='_blank'] - 온프레미스나
+호스팅 클라우드 환경에 설치할 수 있는, Red Hat이 지원하는 OpenShift
+제품입니다.
 
-* link:https://commons.openshift.org[*OpenShift Commons*,window=_blank] - A community for users, partners, customers, and contributors to come together to collaborate and work together on OpenShift.
+* link:https://commons.openshift.org[*OpenShift Commons*,window=_blank] - 사용자, 파트너, 고객, 기여자가 모여 OpenShift에 대해 함께 협력하고 작업하는 커뮤니티입니다.
 
-The following free online eBooks are also available for download related to OpenShift.
+OpenShift와 관련하여 다음과 같은 무료 온라인 eBook도 다운로드할 수 있습니다.
 
 * link:https://developers.redhat.com/e-books/openshift-for-developers[*OpenShift for Developers Second Edition*,window='_blank']
 
