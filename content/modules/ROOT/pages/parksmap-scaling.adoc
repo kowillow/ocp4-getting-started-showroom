@@ -3,10 +3,12 @@
 
 include::vars.adoc[]
 
-[#deployments_and_replication_controllers]
+[#deployments_and_replicasets]
 == 배경 지식: Deployment와 ReplicaSet
 
-**Service**는 생성되고 사라지기를 반복할 수 있는 **Pod**에 대한 라우팅과 로드 밸런싱을 제공하는 반면, **ReplicaSet**(RS)은 원하는 개수의 **Pod**(레플리카)가 실행되도록 지정하고 보장하는 역할을 합니다. 예를 들어 애플리케이션 서버가 항상 3개의 **Pod**(인스턴스)를 실행하도록 하려면 **ReplicaSet**이 필요합니다. RS가 없으면 종료되거나 죽은 **Pod**는 자동으로 다시 시작되지 않습니다. **ReplicaSet**은 OpenShift에서 자가 치유(self-healing) 기능을 제공합니다. **Deployment**는 이 **ReplicaSet**을 제어합니다.
+**Pod**는 스스로를 지키지 않습니다. Pod 하나가 죽거나 실수로 삭제되면, 그 자리를 대신 채워줄 존재가 없는 한 애플리케이션은 그대로 사라진 채로 남습니다.
+
+이 문제를 해결해 주는 것이 **ReplicaSet**(RS)입니다. ReplicaSet은 "정해진 개수의 Pod가 항상 실행되고 있는지" 계속 감시하는 감독관 같은 역할을 합니다. 예를 들어 애플리케이션 서버가 항상 3개의 **Pod**(인스턴스)를 실행하도록 지정해 두면, 그중 하나가 죽거나 삭제되더라도 ReplicaSet이 즉시 새 Pod를 하나 더 만들어 항상 3개를 유지합니다. 이렇게 사람이 개입하지 않아도 스스로 원래 상태를 복구하는 것을 자가 치유(self-healing)라고 부릅니다.
 
 link:{ocp4_starter_openshift_docs}/html/building_applications/deployments[Deployment 문서^]에 따르면 다음과 같습니다:
 
@@ -15,7 +17,9 @@ __
 ReplicaSet은 지정된 개수의 Pod 레플리카가 항상 실행되도록 보장하는 네이티브 Kubernetes API 오브젝트입니다.
 __
 
-Kubernetes에서 **Deployment**는 어떤 이미지를 몇 개의 복제본으로, 어떤 방식으로 업데이트하며 배포할지를 정의하는 리소스입니다. 거의 모든 경우에 **Pod**, **Service**, **ReplicaSet**, **Deployment** 리소스를 함께 사용하게 됩니다. 웹 콘솔이나 CLI로 컨테이너 이미지를 배포하면 OpenShift가 이 모든 것을 대신 생성해 줍니다.
+그렇다면 **Deployment**는 무엇일까요? Deployment는 ReplicaSet보다 한 단계 위에서 동작합니다. Deployment는 Pod를 직접 관리하지 않고, 대신 ReplicaSet을 관리합니다. 즉 여러분이 "이 이미지를 몇 개의 복제본으로, 어떤 방식으로 업데이트하며 배포하고 싶다"고 Deployment에 정의해 두면, Deployment가 그에 맞는 ReplicaSet을 만들고, 그 ReplicaSet이 실제 Pod 개수를 유지하는 두 단계 구조입니다.
+
+거의 모든 경우에 **Pod**, **Service**, **ReplicaSet**, **Deployment** 리소스를 함께 사용하게 됩니다. 웹 콘솔이나 CLI로 컨테이너 이미지를 배포하면 OpenShift가 이 모든 것을 대신 생성해 줍니다.
 
 [#exploring_deployment_related_objects]
 == 실습: Deployment 관련 오브젝트 살펴보기
