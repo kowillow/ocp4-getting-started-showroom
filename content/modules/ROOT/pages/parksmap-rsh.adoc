@@ -79,12 +79,12 @@ OpenShift 웹 콘솔에서도 CLI를 사용하지 않고 컨테이너의 터미�
 웹 콘솔을 통해 Pod의 터미널에 접근하려면 Topology 화면으로 이동하여 ``parksmap`` 항목을 클릭한 후 **Pod**를 클릭합니다.
 
 [.bordershadow]
-image::parksmap-rsh-dev-console-pod.png[Topology에서 parksmap 항목의 Pod를 클릭하는 화면,link="self",window=_blank]
+image::parksmap-rsh-dev-console-pod.png[Topology에서 parksmap 항목의 Pod를 클릭하는 화면,link=self,window=blank]
 
 선택한 Pod의 정보를 확인하는 화면에서 **Terminal** 탭을 클릭하여 셸 세션을 엽니다.
 
 [.bordershadow]
-image::parksmap-rsh-applications-pods-terminal.png[Pod 세부 정보에서 Terminal 탭으로 셸 세션을 여는 화면,link="self",window=_blank]
+image::parksmap-rsh-applications-pods-terminal.png[Pod 세부 정보에서 Terminal 탭으로 셸 세션을 여는 화면,link=self,window=blank]
 
 CLI를 사용했을 때와 동일한 명령을 실행하여 웹 콘솔 기반 터미널이 어떻게 동작하는지 확인해 보세요.
 

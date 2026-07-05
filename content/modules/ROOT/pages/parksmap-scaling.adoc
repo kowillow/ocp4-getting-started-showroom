@@ -75,12 +75,12 @@ oc scale --replicas=2 deployment/parksmap
 또는 **Developer Perspective**에서 Pod를 2개로 스케일링할 수도 있습니다. Topology 화면에서 ``parksmap`` Deployment를 클릭하고 **Details** 탭을 선택합니다:
 
 [.bordershadow]
-image::parksmap-details.png[parksmap Deployment의 Details 탭에 표시된 Pod 시각화 화면,link="self",window=_blank]
+image::parksmap-details.png[parksmap Deployment의 Details 탭에 표시된 Pod 시각화 화면,link=self,window=blank]
 
 다음으로, Pod 시각화 옆의 **^** 아이콘을 클릭하여 Pod를 2개로 스케일링합니다.
 
 [.bordershadow]
-image::parksmap-scaleup.png[Pod 개수를 2개로 늘리는 스케일 업 조작 화면,link="self",window=_blank]
+image::parksmap-scaleup.png[Pod 개수를 2개로 늘리는 스케일 업 조작 화면,link=self,window=blank]
 
 레플리카 개수가 변경되었는지 확인하려면 다음 명령을 실행합니다:
 
@@ -163,7 +163,7 @@ parksmap   10.128.2.90:8080,10.131.0.40:8080   45m
 Developer Perspective에서도 두 **Pod**가 모두 실행 중인 것을 확인할 수 있습니다:
 
 [.bordershadow]
-image::parksmap-scaled.png[Developer Perspective에서 확인한 실행 중인 Pod 2개 현황,link="self",window=_blank]
+image::parksmap-scaled.png[Developer Perspective에서 확인한 실행 중인 Pod 2개 현황,link=self,window=blank]
 
 전반적으로, 애플리케이션을 스케일링하는 것은 이렇게 간단합니다. OpenShift는 기존 이미지의 새 인스턴스를 실행하는 것이므로 애플리케이션 스케일링은 매우 빠르게 이루어질 수 있으며, 특히 새 Pod가 https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/[스케줄링된^] 노드에 이미지가 캐시되어 있다면 더욱 그렇습니다.
 

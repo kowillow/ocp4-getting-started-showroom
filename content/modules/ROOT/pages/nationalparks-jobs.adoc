@@ -45,7 +45,7 @@ spec:
 ----
 
 [.bordershadow]
-image::nationalparks-job-create.png[Job Create From YAML 다이얼로그,link="self",window=_blank]
+image::nationalparks-job-create.png[Job Create From YAML 다이얼로그,link=self,window=blank]
 // TODO: 스크린샷 필요 - Job Create From YAML 다이얼로그
 
 **Create**를 클릭합니다. Job 상태를 확인합니다:
@@ -70,7 +70,7 @@ oc logs job/nationalparks-data-load
 ----
 
 [.bordershadow]
-image::nationalparks-job-topology.png[Topology 화면에서 완료된 Job Pod,link="self",window=_blank]
+image::nationalparks-job-topology.png[Topology 화면에서 완료된 Job Pod,link=self,window=blank]
 // TODO: 스크린샷 필요 - Topology 화면에서 완료된 Job Pod
 
 NOTE: 이미 데이터가 적재되어 있다면 애플리케이션이 중복 삽입을 방지할 수도 있습니다. 로그 내용은 ``nationalparks`` 애플리케이션의 구현에 따라 달라집니다.
@@ -111,7 +111,7 @@ spec:
 NOTE: ``schedule: "0 2 31 2 *"``는 "2월 31일 새벽 2시"를 의미합니다. 2월에는 31일이 없어서 이 일정은 영원히 도래하지 않습니다. cron 표현식 자체는 유효한 값(일 1~31, 월 1~12)이라 OpenShift는 그대로 받아들이지만, 실제로 자동 트리거되는 일은 없습니다.
 
 [.bordershadow]
-image::nationalparks-cronjob-create.png[CronJob Create From YAML 다이얼로그,link="self",window=_blank]
+image::nationalparks-cronjob-create.png[CronJob Create From YAML 다이얼로그,link=self,window=blank]
 // TODO: 스크린샷 필요 - CronJob Create From YAML 다이얼로그
 
 **Create**를 클릭합니다. CronJob이 등록되었는지 확인합니다:
@@ -124,7 +124,7 @@ oc get cronjob
 이 CronJob은 스케줄이 도래하지 않으므로 저절로 Job을 만들지 않습니다. 필요할 때마다 웹 콘솔에서 수동으로 실행해 봅니다. **Workloads** → **CronJobs**에서 ``nationalparks-data-load-template``을 클릭하고, 사이드 패널의 **Actions** 드롭다운에서 **Run Job**을 선택합니다.
 
 [.bordershadow]
-image::nationalparks-cronjob-run-job.png[Actions 드롭다운에서 Run Job을 선택하는 화면,link="self",window=_blank]
+image::nationalparks-cronjob-run-job.png[Actions 드롭다운에서 Run Job을 선택하는 화면,link=self,window=blank]
 // TODO: 스크린샷 필요 - Actions 드롭다운에서 Run Job을 선택하는 화면
 
 새로 생성된 Job을 확인합니다:

@@ -10,7 +10,7 @@ include::vars.adoc[]
 외부 접근 지점도 제공합니다.
 
 [.bordershadow]
-image::roadshow-app-architecture-nationalparks-1.png[nationalparks 백엔드를 포함한 애플리케이션 아키텍처 다이어그램,link="self",window=_blank]
+image::roadshow-app-architecture-nationalparks-1.png[nationalparks 백엔드를 포함한 애플리케이션 아키텍처 다이어그램,link=self,window=blank]
 
 [#source_to_image]
 == 배경 지식: Source-to-Image (S2I)
@@ -75,7 +75,7 @@ Git 서버에 webhook을 등록하여 애플리케이션 코드가 업데이트�
 Topology 화면에서 헤더의 **+** 버튼을 클릭하고 **Import from Git**을 선택합니다.
 
 [.bordershadow]
-image::nationalparks-show-add-options.png[Topology 화면의 + 버튼과 Import from Git 메뉴,link="self",window=_blank]
+image::nationalparks-show-add-options.png[Topology 화면의 + 버튼과 Import from Git 메뉴,link=self,window=blank]
 
 **Import from Git** 워크플로우는 몇 가지 선택 사항을 통해 앱 배포 과정을 안내해 줍니다.
 
@@ -91,7 +91,7 @@ OpenShift가 소스 코드에서 사용된 프로그래밍 언어를 자동으�
 **Edit Import Strategy**를 클릭합니다.
 
 [.bordershadow]
-image::nationalparks-import-strategy.png[Edit Import Strategy 옵션 선택 화면,width=500,link="self",window=_blank]
+image::nationalparks-import-strategy.png[Edit Import Strategy 옵션 선택 화면,width=500,link=self,window=blank]
 
 세 가지 옵션이 있습니다:
 
@@ -102,7 +102,7 @@ image::nationalparks-import-strategy.png[Edit Import Strategy 옵션 선택 화�
 다음 섹션에서 다룰 내용처럼 소스 코드로부터 컨테이너 이미지를 생성할 것이므로 **Builder Image**를 선택합니다.
 
 [.bordershadow]
-image::nationalparks-import-strategy-build.png[Builder Image 임포트 전략 선택 화면,link="self",window=_blank]
+image::nationalparks-import-strategy-build.png[Builder Image 임포트 전략 선택 화면,link=self,window=blank]
 
 TIP: 저장소에는 멀티 스테이지 Dockerfile도 포함되어 있으므로 Dockerfile을 사용할 수도 있습니다. 이 실습의 목표는 OpenShift의 Builder Image 기능을 경험해 보는 것입니다.
 
@@ -131,18 +131,18 @@ nationalparks
 **Show advanced Routing options**를 클릭합니다. 기본 옵션은 그대로 두고 **Security** 섹션으로 이동합니다. **Secure Route** 옵션을 체크합니다. **TLS termination** 아래에서 **Edge**를 선택합니다.
 
 [.bordershadow]
-image::nationalparks-configure-service1.png[Secure Route와 Edge TLS termination 설정 화면,link="self",window=_blank]
+image::nationalparks-configure-service1.png[Secure Route와 Edge TLS termination 설정 화면,link=self,window=blank]
 
 [.bordershadow]
-image::nationalparks-configure-service2.png[Advanced Routing 옵션의 Security 설정 상세 화면,link="self",window=_blank]
+image::nationalparks-configure-service2.png[Advanced Routing 옵션의 Security 설정 상세 화면,link=self,window=blank]
 
 아래로 스크롤하여 **Labels** 섹션을 펼쳐 레이블 3개를 추가합니다.
 
 [.bordershadow]
-image::nationalparks-configure-service4.png[Labels 섹션을 펼쳐 레이블을 추가하는 화면,link="self",window=_blank]
+image::nationalparks-configure-service4.png[Labels 섹션을 펼쳐 레이블을 추가하는 화면,link=self,window=blank]
 
 [.bordershadow]
-image::nationalparks-configure-service3.png[app/component/role 레이블이 입력된 화면,link="self",window=_blank]
+image::nationalparks-configure-service3.png[app/component/role 레이블이 입력된 화면,link=self,window=blank]
 
 Application 그룹의 이름입니다:
 
@@ -173,7 +173,7 @@ role=backend
 빌드 로그를 확인하려면 Topology 화면에서 ``nationalparks`` 항목을 클릭한 후, **Resources** 탭의 **Builds** 섹션에서 **View Logs**를 클릭합니다.
 
 [.bordershadow]
-image::nationalparks-java-new-java-build.png[Builds 섹션에서 확인하는 빌드 로그 화면,link="self",window=_blank]
+image::nationalparks-java-new-java-build.png[Builds 섹션에서 확인하는 빌드 로그 화면,link=self,window=blank]
 
 애플리케이션의 언어에 따라 빌드 프로세스는 다르게 진행됩니다. 다만 종속성을 다운로드하는 초기 빌드는 몇 분 정도 걸립니다. 이 모든 과정을 실시간으로 확인할 수 있습니다!
 

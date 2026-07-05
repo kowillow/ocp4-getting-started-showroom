@@ -13,7 +13,7 @@ OpenShift 콘솔은 Project, 애플리케이션, 클러스터 리소스를 관�
 === OpenShift 웹 콘솔 접속하기
 
 [.bordershadow]
-image::openshift-console-login.png[OpenShift 웹 콘솔 로그인 화면,width=500,link="self",window=_blank]
+image::openshift-console-login.png[OpenShift 웹 콘솔 로그인 화면,width=500,link=self,window=blank]
 
 OpenShift 콘솔에 접속하려면 이 페이지 오른쪽의 **OCP Console** 탭을 클릭한 후 제공된 자격 증명으로 로그인합니다.
 
@@ -29,7 +29,7 @@ TIP: 모니터 화면이 작아서 불편한 경우, 오른쪽 상단의 'Tabs'�
 로그인하면 Project를 확인하고 플랫폼의 기능을 탐색할 수 있는 기본 대시보드가 표시됩니다.
 
 [.bordershadow]
-image::openshift-console-dashboard.png[로그인 후 표시되는 OpenShift 웹 콘솔 기본 대시보드,link="self",window=_blank]
+image::openshift-console-dashboard.png[로그인 후 표시되는 OpenShift 웹 콘솔 기본 대시보드,link=self,window=blank]
 
 [#command_line_interface]
 == 명령줄 인터페이스
@@ -74,7 +74,7 @@ NOTE: "The server uses a certificate signed by an unknown authority."라는 메�
 TIP: 또는 토큰을 사용하여 인증할 수도 있습니다. 토큰을 얻으려면 아래와 같이 OpenShift 웹 콘솔에서 **Copy login command** 옵션을 사용하세요.
 
 [.bordershadow]
-image::openshift-console-login-command.png[웹 콘솔의 Copy login command 옵션 화면,link="self",window=_blank]
+image::openshift-console-login-command.png[웹 콘솔의 Copy login command 옵션 화면,link=self,window=blank]
 
 === 접근 권한 확인하기
 
@@ -129,7 +129,7 @@ Project는 여러분(또는 여러분의 팀)이 작업에 사용하는 모든 �
 OpenShift 웹 콘솔에 로그인한 후, 프로젝트 목록에서 여러분의 Project({ocp4_starter_project})를 찾아 클릭합니다. Project 개요를 살펴보면서 Project의 리소스와 활동에 대한 요약을 확인해 보세요.
 
 [.bordershadow]
-image::openshift-console-project.png[OpenShift 웹 콘솔의 Project 개요 화면,link="self",window=_blank]
+image::openshift-console-project.png[OpenShift 웹 콘솔의 Project 개요 화면,link=self,window=blank]
 
 ==== 토폴로지 뷰
 
@@ -138,7 +138,7 @@ Project 내의 애플리케이션과 그 구성 요소를 시각적으로 표현
 왼쪽 메뉴에서 **워크로드**로 이동한 후 **토폴로지**를 선택합니다.
 
 [.bordershadow]
-image::openshift-console-topology.png[애플리케이션 구성 요소를 시각적으로 보여주는 토폴로지 화면,link="self",window=_blank]
+image::openshift-console-topology.png[애플리케이션 구성 요소를 시각적으로 보여주는 토폴로지 화면,link=self,window=blank]
 
 아직 아무것도 배포하지 않았기 때문에 현재는 애플리케이션이나 구성 요소가 보이지 않습니다. 워크샵을 진행하면서 이 **토폴로지** 화면에서 애플리케이션의 구성 요소를 시각화하고 상호작용할 수 있게 됩니다.
 

@@ -15,7 +15,7 @@ include::vars.adoc[]
 OpenShift Pipelines는 link:https://tekton.dev/[Tekton^]을 사용하여 파이프라인을 구축하는 클라우드 네이티브 지속적 통합/배포(CI/CD) 솔루션입니다. Tekton은 유연하고 Kubernetes 네이티브한 오픈소스 CI/CD 프레임워크로, 기반 세부 사항을 추상화하여 여러 플랫폼(Kubernetes, 서버리스, VM 등)에 걸쳐 배포를 자동화할 수 있게 해줍니다.
 
 [.bordershadow]
-image::devops-pipeline-flow.png[지속적 통합/배포 파이프라인의 전체 흐름 다이어그램,link="self",window=_blank]
+image::devops-pipeline-flow.png[지속적 통합/배포 파이프라인의 전체 흐름 다이어그램,link=self,window=blank]
 
 [#pipeline_group]
 == 파이프라인 생성과 실행
@@ -33,7 +33,7 @@ Tekton은 파이프라인 개념을 표준화하고 CI/CD 솔루션 전반에 �
 * ``PipelineRun``: 여러 ``TaskRun``을 포함하는 pipeline 인스턴스를 실행한 결과와 그 실행 내역
 
 [.bordershadow]
-image::tekton-architecture.png[Task/Pipeline/TaskRun/PipelineRun 간의 관계를 보여주는 Tekton 아키텍처 다이어그램,link="self",window=_blank]
+image::tekton-architecture.png[Task/Pipeline/TaskRun/PipelineRun 간의 관계를 보여주는 Tekton 아키텍처 다이어그램,link=self,window=blank]
 
 요약하면, 파이프라인을 생성하기 위해서는 다음과 같은 작업을 수행합니다:
 
@@ -52,12 +52,12 @@ image::tekton-architecture.png[Task/Pipeline/TaskRun/PipelineRun 간의 관계�
 이제 Nationalparks 백엔드를 위한 Tekton 파이프라인을 생성해 보겠습니다. Developer Perspective에서 왼쪽 내비게이션의 **Pipelines -> Pipelines**를 클릭한 후 **Create -> Pipeline**을 클릭합니다.
 
 [.bordershadow]
-image::devops_create_pipeline.png[Pipelines 메뉴에서 Create > Pipeline을 선택하는 화면,link="self",window=_blank]
+image::devops_create_pipeline.png[Pipelines 메뉴에서 Create > Pipeline을 선택하는 화면,link=self,window=blank]
 
 여기에서 대화형 Pipeline builder를 확인할 수 있습니다. **Add task** 버튼을 클릭하여 파이프라인에 task를 추가할 수 있습니다. 생성된 task를 클릭하여 파이프라인에 파라미터를 추가할 수도 있습니다. 시간을 절약하기 위해 여기서는 **YAML view**를 사용하여 파이프라인을 생성하겠습니다.
 
 [.bordershadow]
-image::devops_pipeline_builder_yaml.png[Pipeline builder의 YAML view 편집 화면,link="self",window=_blank]
+image::devops_pipeline_builder_yaml.png[Pipeline builder의 YAML view 편집 화면,link=self,window=blank]
 
 이제 사용하는 언어에 따라 적절한 파이프라인을 생성해야 합니다:
 
@@ -167,7 +167,7 @@ spec:
 
 이제 다시 **Pipeline builder** 화면으로 돌아가서 시각적으로 확인해 보겠습니다.
 
-image::devops_pipeline_builder_java.png[Pipeline builder에 시각화된 Java 파이프라인 구조,link="self",window=_blank]
+image::devops_pipeline_builder_java.png[Pipeline builder에 시각화된 Java 파이프라인 구조,link=self,window=blank]
 
 이 파이프라인에는 4개의 Task가 정의되어 있습니다:
 
@@ -176,7 +176,7 @@ image::devops_pipeline_builder_java.png[Pipeline builder에 시각화된 Java �
 - **build-image**: OpenShift에서 바이너리 파일(이 경우 이전 task에서 생성된 JAR 아티팩트)을 입력으로 사용하여 이미지를 빌드하는 link:https://buildah.io/[buildah^] Task입니다
 - **redeploy**: 이전 실습에서 생성한 ``nationalparks``라는 Deployment를 사용하여 생성된 이미지를 OpenShift에 배포하기 위해 ``openshift-client`` Task를 사용합니다
 
-image::devops_pipeline_tasks_java.png[git-clone/build-and-test/build-image/redeploy 4개 Task 목록,link="self",window=_blank]
+image::devops_pipeline_tasks_java.png[git-clone/build-and-test/build-image/redeploy 4개 Task 목록,link=self,window=blank]
 
 이 Pipeline은 파라미터화되어 있으며, 기본값이 이미 미리 설정되어 있습니다.
 
@@ -185,7 +185,7 @@ image::devops_pipeline_tasks_java.png[git-clone/build-and-test/build-image/redep
 - **app-source**: 다음에 생성할 **PersistentVolumeClaim** ``app-source-pvc``에 연결됩니다. 여러 **Task**에서 사용할 아티팩트를 저장하는 데 사용됩니다
 - **maven_settings**: maven 캐시를 위한 **EmptyDir** 볼륨으로, 이후의 Maven 빌드를 더 빠르게 하기 위해 PVC로 확장할 수도 있습니다
 
-image::devops_pipeline_workspaces_java.png[app-source/maven-settings Workspace 설정 화면,link="self",window=_blank]
+image::devops_pipeline_workspaces_java.png[app-source/maven-settings Workspace 설정 화면,link=self,window=blank]
 
 // **.NET**
 
@@ -527,7 +527,7 @@ OpenShift는 **Persistent Volume Claim** 요청을 통해 애플리케이션을 
 오른쪽 상단으로 이동하여 **Create Persistent Volume Claim** 버튼을 클릭합니다.
 
 [.bordershadow]
-image::nationalparks-codechanges-pipeline-pvc-1.png[Create Persistent Volume Claim 버튼 위치,link="self",window=_blank]
+image::nationalparks-codechanges-pipeline-pvc-1.png[Create Persistent Volume Claim 버튼 위치,link=self,window=blank]
 
 **Persistent Volume Claim name**에 **app-source-pvc**를 입력합니다.
 
@@ -536,7 +536,7 @@ image::nationalparks-codechanges-pipeline-pvc-1.png[Create Persistent Volume Cla
 나머지 설정은 기본값으로 두고 **Create**를 클릭합니다.
 
 [.bordershadow]
-image::nationalparks-codechanges-pipeline-pvc.png[app-source-pvc 생성을 위한 PVC 설정 다이얼로그,link="self",window=_blank]
+image::nationalparks-codechanges-pipeline-pvc.png[app-source-pvc 생성을 위한 PVC 설정 다이얼로그,link=self,window=blank]
 
 TIP: **Storage Class**는 클러스터에서 사용 가능한 스토리지의 유형입니다.
 
@@ -546,7 +546,7 @@ TIP: **Storage Class**는 클러스터에서 사용 가능한 스토리지의 �
 이제 웹 콘솔에서 Pipeline을 시작할 수 있습니다. 왼쪽 메뉴로 이동하여 **Pipelines -> Pipelines**를 클릭한 후 **nationalparks-pipeline**을 클릭합니다. 오른쪽 상단의 **Actions** 목록에서 **Start**를 클릭합니다.
 
 [.bordershadow]
-image::devops-pipeline-start-1.png[Actions 메뉴에서 Start를 선택하는 화면,link="self",window=_blank]
+image::devops-pipeline-start-1.png[Actions 메뉴에서 Start를 선택하는 화면,link=self,window=blank]
 
 Pipeline에 추가할 파라미터를 입력하라는 메시지가 표시되며, 기본값이 함께 나타납니다. 적절한 값들은 이미 미리 설정되어 있습니다.
 
@@ -559,24 +559,24 @@ Pipeline에 추가할 파라미터를 입력하라는 메시지가 표시되며,
 **Start**를 클릭하여 Pipeline을 실행합니다.
 
 [.bordershadow]
-image::devops-pipeline-start-2.png[Workspaces 파라미터 입력 후 Start 실행 다이얼로그,link="self",window=_blank]
+image::devops-pipeline-start-2.png[Workspaces 파라미터 입력 후 Start 실행 다이얼로그,link=self,window=blank]
 
 웹 콘솔에서 Pipeline 실행 과정을 쉽게 확인할 수 있습니다. 왼쪽 메뉴로 이동하여 **Pipelines -> Pipeline**을 클릭한 후 **nationalparks-pipeline**을 클릭합니다. **Pipeline Runs** 탭으로 전환하여 진행 중인 모든 단계를 확인하세요:
 
 [.bordershadow]
-image::devops-pipeline-run-1.png[Pipeline Runs 탭에서 진행 중인 PipelineRun 목록,link="self",window=_blank]
+image::devops-pipeline-run-1.png[Pipeline Runs 탭에서 진행 중인 PipelineRun 목록,link=self,window=blank]
 
 그런 다음 ``PipelineRun``을 클릭합니다:
 
 [.bordershadow]
-image::devops-pipeline-run-java-2.png[PipelineRun 상세 화면의 Task 실행 그래프,link="self",window=_blank]
+image::devops-pipeline-run-java-2.png[PipelineRun 상세 화면의 Task 실행 그래프,link=self,window=blank]
 
 그런 다음 실행 중인 **Task**를 클릭하여 로그를 확인합니다:
 
 [.bordershadow]
-image::devops-pipeline-run-java-3.png[실행 중인 Task의 로그 출력 화면,link="self",window=_blank]
+image::devops-pipeline-run-java-3.png[실행 중인 Task의 로그 출력 화면,link=self,window=blank]
 
 PipelineRun이 성공적으로 완료되었는지 확인합니다:
 
 [.bordershadow]
-image::devops-pipeline-run-java-4.png[성공적으로 완료된 PipelineRun 상태 화면,link="self",window=_blank]
+image::devops-pipeline-run-java-4.png[성공적으로 완료된 PipelineRun 상태 화면,link=self,window=blank]

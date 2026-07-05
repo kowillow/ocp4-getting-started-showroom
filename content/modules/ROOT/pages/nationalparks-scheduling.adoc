@@ -204,7 +204,7 @@ nationalparks-7d8c6b5f9d-m4k2p   1/1     Running   0          10s   10.129.2.14 
 ----
 
 [.bordershadow]
-image::nationalparks-scheduling-toleration.png[Toleration 추가 후 Taint가 걸린 노드에 정상적으로 배치된 Pod,link="self",window=_blank]
+image::nationalparks-scheduling-toleration.png[Toleration 추가 후 Taint가 걸린 노드에 정상적으로 배치된 Pod,link=self,window=blank]
 // TODO: 스크린샷 필요 - Toleration 추가 후 Taint가 걸린 노드에 정상적으로 배치된 Pod
 
 Toleration을 추가하니 같은 노드에 정상적으로 스케줄링된 것을 확인할 수 있습니다. ``nodeSelector``와 ``tolerations``를 원래대로 되돌립니다:

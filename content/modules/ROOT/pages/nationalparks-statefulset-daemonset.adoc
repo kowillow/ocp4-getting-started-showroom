@@ -88,7 +88,7 @@ spec:
 ----
 
 [.bordershadow]
-image::nationalparks-redis-statefulset-create.png[StatefulSet Create From YAML 다이얼로그,link="self",window=_blank]
+image::nationalparks-redis-statefulset-create.png[StatefulSet Create From YAML 다이얼로그,link=self,window=blank]
 // TODO: 스크린샷 필요 - StatefulSet Create From YAML 다이얼로그
 
 **Create**를 클릭합니다. Pod가 생성되는 것을 확인합니다:
@@ -138,7 +138,7 @@ redis-0   1/1     Running   0          8s
 Deployment였다면 새 Pod가 매번 다른 무작위 이름을 받았겠지만, 이번에는 **똑같은 이름 ``redis-0``**으로 다시 생성되었습니다. StatefulSet은 Pod가 삭제되고 재생성되어도 같은 순번의 이름을 그대로 다시 부여하기 때문입니다.
 
 [.bordershadow]
-image::nationalparks-redis-topology.png[Topology 화면에서 redis-0 Pod,link="self",window=_blank]
+image::nationalparks-redis-topology.png[Topology 화면에서 redis-0 Pod,link=self,window=blank]
 // TODO: 스크린샷 필요 - Topology 화면에서 redis-0 Pod
 
 NOTE: 실제로 ``nationalparks`` 코드가 이 Redis를 캐시로 사용하려면 애플리케이션 코드 수정이 필요합니다. 이 모듈은 애플리케이션 코드 변경 없이 StatefulSet 자체의 동작(안정적인 이름)을 보여주는 것이 목적입니다.

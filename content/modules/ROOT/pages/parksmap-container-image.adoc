@@ -6,7 +6,7 @@ include::vars.adoc[]
 이 섹션에서는 ``parksmap``이라고도 알려진 ParksMap 애플리케이션의 웹 구성 요소를 배포합니다. 이 구성 요소는 OpenShift의 서비스 디스커버리(service discovery) 메커니즘을 사용하여 백엔드 Service를 검색하고 해당 데이터를 지도에 표시합니다.
 
 [.bordershadow]
-image::roadshow-app-architecture-parksmap-1.png[ParksMap 프런트엔드와 백엔드 서비스 디스커버리 아키텍처 다이어그램,link="self",window=_blank]
+image::roadshow-app-architecture-parksmap-1.png[ParksMap 프런트엔드와 백엔드 서비스 디스커버리 아키텍처 다이어그램,link=self,window=blank]
 
 [#deploy_and_pod_group]
 == 이미지 배포와 Pod
@@ -22,7 +22,7 @@ image::roadshow-app-architecture-parksmap-1.png[ParksMap 프런트엔드와 백�
 왼쪽 상단의 **+** 아이콘을 클릭합니다. OpenShift에 애플리케이션을 배포할 수 있는 여러 옵션이 있는 메뉴가 표시됩니다. 배포하려는 이미지의 정보를 지정할 수 있는 대화 상자를 열려면 **컨테이너 이미지**를 클릭합니다.
 
 [.bordershadow]
-image::openshift-console-add-container.png[Container images 배포 옵션을 입력하는 대화 상자,link="self",window=_blank]
+image::openshift-console-add-container.png[Container images 배포 옵션을 입력하는 대화 상자,link=self,window=blank]
 
 '외부 레지스트리의 이미지 이름' 아래에 **Image Name** 필드에 다음을 복사하여 붙여넣습니다:
 
@@ -36,7 +36,7 @@ image::openshift-console-add-container.png[Container images 배포 옵션을 입
 화면은 다음과 같은 모습이 됩니다:
 
 [.bordershadow]
-image::parksmap-image.png[이미지 이름 입력 후 표시되는 parksmap 이미지 세부 정보 화면,link="self",window=_blank]
+image::parksmap-image.png[이미지 이름 입력 후 표시되는 parksmap 이미지 세부 정보 화면,link=self,window=blank]
 
 **런타임 아이콘**에서 OpenShift 토폴록지 화면에 표시할 아이콘을 선택합니다. 이 프런트엔드는 Spring Boot로 만들어졌으므로 **spring-boot**를 선택합니다.
 
@@ -86,15 +86,15 @@ role=frontend
 ----
 
 [.bordershadow]
-image::parksmap-image-options.png[Runtime Icon과 이름 및 레이블을 설정하는 이미지 배포 옵션 화면,width=600,link="self",window=_blank]
+image::parksmap-image-options.png[Runtime Icon과 이름 및 레이블을 설정하는 이미지 배포 옵션 화면,width=600,link=self,window=blank]
 
 [.bordershadow]
-image::parksmap-advanced-image-options.png[Create a route 체크 해제 등 고급 옵션과 레이블 입력 화면,width=600,link="self",window=_blank]
+image::parksmap-advanced-image-options.png[Create a route 체크 해제 등 고급 옵션과 레이블 입력 화면,width=600,link=self,window=blank]
 
 이제 파란색 **만들기(Create)** 버튼을 클릭합니다. **토폴로지** 페이지로 이동하며, ``workshop`` 애플리케이션 내 ``parksmap`` 배포에 대한 시각화를 확인할 수 있습니다.
 
 [.bordershadow]
-image::parksmap-dc-topology.png[Topology 화면에 표시된 workshop 애플리케이션의 parksmap 배포 아이콘,width=400,link="self",window=_blank]
+image::parksmap-dc-topology.png[Topology 화면에 표시된 workshop 애플리케이션의 parksmap 배포 아이콘,width=400,link=self,window=blank]
 
 OpenShift에서 컨테이너 이미지를 배포하는 데 필요한 단계는 이것이 전부입니다. 이렇게 별다른 설정 없이 바로 동작하는 이유는, 이 이미지가 다음과 같은 몇 가지 모범 사례를 따르고 있기 때문입니다:
 
@@ -135,19 +135,19 @@ NOTE: 방금 배포한 ``parksmap`` Pod는 컨테이너 1개만 포함하는 가
 Topology 화면에서 ``parksmap`` 항목을 클릭하면 배포에 대한 정보가 표시됩니다. 기본적으로 **Resources** 탭이 표시될 수 있습니다. 이 경우 **Details** 탭을 클릭합니다.
 
 [.bordershadow]
-image::switchtoresources.png[Pod 상세 정보를 보기 위해 Details 탭으로 전환하는 화면,link="self",window=_blank]
+image::switchtoresources.png[Pod 상세 정보를 보기 위해 Details 탭으로 전환하는 화면,link=self,window=blank]
 
 해당 패널에서 여러분의 작업으로 생성된 하나의 **Pod**가 있는 것을 확인할 수 있습니다.
 
 [.bordershadow]
-image::parksmap-overview.png[Details 탭에 표시된 parksmap Pod 1개 현황,link="self",window=_blank]
+image::parksmap-overview.png[Details 탭에 표시된 parksmap Pod 1개 현황,link=self,window=blank]
 
 NOTE: 이 화면에서 애플리케이션에 Health check를 추가하라고 제안하는 정보 상자를 볼 수 있습니다. 이는 나중에 처리할 것이므로, 지금은 오른쪽 상단의 X 아이콘을 클릭해서 이 정보 상자를 닫으면 됩니다.
 
 웹 콘솔에서 **Workloads -> Pods**로 이동하면 여러분의 **Project** 내에 생성된 모든 **Pod** 목록도 확인할 수 있습니다.
 
 [.bordershadow]
-image::parksmap-podlist.png[Workloads > Pods 메뉴의 프로젝트 내 전체 Pod 목록,link="self",window=_blank]
+image::parksmap-podlist.png[Workloads > Pods 메뉴의 프로젝트 내 전체 Pod 목록,link=self,window=blank]
 
 이 **Pod**는 단일 컨테이너를 포함하며, 이는 간단한 Spring Boot/Java 애플리케이션인
 ``parksmap`` 애플리케이션입니다.
@@ -177,7 +177,7 @@ parksmap-6444cdcd46-hp9st   1/1     Running   0          50s
 
 NOTE: 위의 ``oc get pods`` 출력에서 올바른 **Pod** 이름을 사용해야 합니다.
 
-[source]
+[source,bash,role="copypaste"]
 ----
 oc get pod <pod-name> -o yaml
 ----
@@ -229,15 +229,15 @@ metadata:
 세부 정보 페이지로 이동합니다. 또는 **Topology** 페이지에서 ``parksmap`` Deployment를 클릭하고 **Resources**를 선택한 후 **Pod** 이름을 클릭해도 이동할 수 있습니다.
 
 [.bordershadow]
-image::parksmap-dc-resources.png[parksmap Deployment의 Resources 탭에 표시된 Pod 목록,link="self",window=_blank]
+image::parksmap-dc-resources.png[parksmap Deployment의 Resources 탭에 표시된 Pod 목록,link=self,window=blank]
 
 여기에서 설정, 메트릭, 환경 변수, 로그, 이벤트를 확인할 수 있고, 실행 중인 Pod에 대한 터미널 셸도 얻을 수 있습니다.
 
 [.bordershadow]
-image::parksmap-pod.png[설정/메트릭/로그/터미널을 확인할 수 있는 Pod 세부 정보 페이지,link="self",window=_blank]
+image::parksmap-pod.png[설정/메트릭/로그/터미널을 확인할 수 있는 Pod 세부 정보 페이지,link=self,window=blank]
 
 [.bordershadow]
-image::parksmap-pod-events.png[Pod 세부 정보 페이지의 Events 탭에 표시된 이벤트 목록,link="self",window=_blank]
+image::parksmap-pod-events.png[Pod 세부 정보 페이지의 Events 탭에 표시된 이벤트 목록,link=self,window=blank]
 
 ``parksmap`` 이미지를 실행하는 데 다소 시간이 걸릴 수 있습니다. 이미지를 실행하도록 요청받은 각
 OpenShift 노드는, 로컬에 캐시되어 있지 않다면 이미지를 pull(다운로드)해야

@@ -45,9 +45,9 @@ OpenShift와 관련하여 다음과 같은 무료 온라인 eBook도 다운로�
 * link:https://developers.redhat.com/e-books/openshift-for-developers[**OpenShift for Developers Second Edition**^]
 
 [.bordershadow]
-image::further-resources-openshift-for-developers.png[OpenShift for Developers 전자책 표지,link="self",window=_blank]
+image::further-resources-openshift-for-developers.png[OpenShift for Developers 전자책 표지,link=self,window=blank]
 
 * link:https://developers.redhat.com/e-books/path-gitops[**The Path to GitOps**^]
 
 [.bordershadow]
-image::further-resources-devops-with-openshift.png[The Path to GitOps 전자책 표지,link="self",window=_blank]
+image::further-resources-devops-with-openshift.png[The Path to GitOps 전자책 표지,link=self,window=blank]

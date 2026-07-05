@@ -6,7 +6,7 @@ include::vars.adoc[]
 이 워크샵 섹션에서는 애플리케이션을 외부 사용자가 접근할 수 있도록 만듭니다.
 
 [.bordershadow]
-image::roadshow-app-architecture-parksmap-2.png[Route를 통해 외부 사용자에게 노출되는 ParksMap 애플리케이션 구조도,link="self",window=_blank]
+image::roadshow-app-architecture-parksmap-2.png[Route를 통해 외부 사용자에게 노출되는 ParksMap 애플리케이션 구조도,link=self,window=blank]
 
 [#services]
 == 배경 지식: Service
@@ -56,7 +56,7 @@ IP는 고정되며 해당 **Service**가 존재하는 동안 절대 변경되지
 **Topology** 화면에서는 ``parksmap`` Deployment를 클릭한 후 **Resources**를 클릭하면 Service 정보를 확인할 수 있습니다.
 
 [.bordershadow]
-image::parksmap-serviceslist.png[Resources 탭에서 확인한 parksmap Service 연결 정보,link="self",window=_blank]
+image::parksmap-serviceslist.png[Resources 탭에서 확인한 parksmap Service 연결 정보,link=self,window=blank]
 
 다음 명령을 사용하여 YAML 형식으로 데이터를 표시함으로써
 **Service**에 대한 더 자세한 정보를 확인할 수도 있습니다:
@@ -110,7 +110,7 @@ status:
 또는 이전 화면에서 **Service**를 클릭하여 웹 콘솔로 정보를 확인할 수도 있습니다.
 
 [.bordershadow]
-image::parksmap-service.png[웹 콘솔에서 확인한 parksmap Service 상세 정보 화면,link="self",window=_blank]
+image::parksmap-service.png[웹 콘솔에서 확인한 parksmap Service 상세 정보 화면,link=self,window=blank]
 
 ``parksmap`` **Pod**의 YAML을 확인하여 **Service**
 가 **Selector**를 어떻게 사용하는지 이해해 보세요. 다음 명령을 실행하여 Pod 정보를 확인합니다:
@@ -236,7 +236,7 @@ Route는 OpenShift 콘솔에서 생성하거나 ``oc`` CLI를 사용하여 생�
 . **Security** 섹션에서 **Secure route**를 체크합니다. **TLS Termination** 목록에서 **Edge**를 선택합니다.
 . 나머지 필드는 비워두고 **Create**를 클릭합니다:
 +
-image::parksmap-route-create-1.png[Name/Service/TLS Termination 등을 입력하는 Route 생성 화면,link="self",window=_blank]
+image::parksmap-route-create-1.png[Name/Service/TLS Termination 등을 입력하는 Route 생성 화면,link=self,window=blank]
 
 TIP: 클러스터 Apps 도메인에 대한 TLS 인증서가 기본적으로 사용되므로 별도의 인증서를 추가할 필요가 없습니다. OpenShift 클러스터로 연결되는 커스텀 도메인을 사용하고 싶다면 route별로 인증서를 추가할 수 있습니다.
 
@@ -303,11 +303,11 @@ parksmap   parksmap-{ocp4_starter_project}.{ocp4_starter_apps_domain}          p
 ``parksmap`` Deployment의 **Topology** 화면에서 **Resources** 탭 아래로도 **Route**를 확인할 수 있습니다. Topology에서 ``parksmap`` 노드에 화살표 아이콘이 생긴 것을 확인하세요. 이를 클릭하면 브라우저에서 **Route**의 URL이 열립니다.
 
 [.bordershadow]
-image::parksmap-route-created.png[생성된 Route로 연결되는 화살표 아이콘이 표시된 Topology 화면,link="self",window=_blank]
+image::parksmap-route-created.png[생성된 Route로 연결되는 화살표 아이콘이 표시된 Topology 화면,link=self,window=blank]
 
 이제 Developer Perspective에 표시된 URL에서 애플리케이션을 사용할 수 있습니다. 링크를 클릭하면 확인할 수 있습니다.
 
 NOTE: 이 페이지를 처음 여는 경우, 브라우저가 위치 정보 접근 권한을 요청할 수 있습니다. 이는 프런트엔드 앱이 세계 지도를 여러분의 위치로 중앙 정렬하기 위해 필요합니다. 허용하지 않으면 앱은 기본 위치를 사용합니다.
 
 [.bordershadow]
-image::parksmap-route-empty-map.png[Route URL로 접속한 parksmap 애플리케이션의 빈 지도 화면,link="self",window=_blank]
+image::parksmap-route-empty-map.png[Route URL로 접속한 parksmap 애플리케이션의 빈 지도 화면,link=self,window=blank]

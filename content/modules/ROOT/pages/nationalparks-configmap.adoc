@@ -30,7 +30,7 @@ include::vars.adoc[]
 **Workloads** → **ConfigMaps**에서 오른쪽 상단의 **Create** 버튼을 클릭하고 **From YAML**을 선택합니다.
 
 [.bordershadow]
-image::nationalparks-configmap-create.png[ConfigMap Create From YAML 다이얼로그,link="self",window=_blank]
+image::nationalparks-configmap-create.png[ConfigMap Create From YAML 다이얼로그,link=self,window=blank]
 // TODO: 스크린샷 필요 - ConfigMap Create From YAML 다이얼로그
 
 에디터에 다음 YAML을 붙여넣습니다:
@@ -75,7 +75,7 @@ MONGODB_DATABASE
 값으로는 resource로 ``nationalparks-config``를, key로 ``MONGODB_DATABASE``를 선택합니다.
 
 [.bordershadow]
-image::nationalparks-configmap-env-wire.png[Edit Deployment 대화 상자에서 ConfigMap을 참조하는 환경 변수 추가 화면,link="self",window=_blank]
+image::nationalparks-configmap-env-wire.png[Edit Deployment 대화 상자에서 ConfigMap을 참조하는 환경 변수 추가 화면,link=self,window=blank]
 // TODO: 스크린샷 필요 - Edit Deployment 대화 상자에서 +Add from ConfigMap or Secret (resource=ConfigMap)
 
 대화 상자 하단의 **Save** 버튼을 클릭합니다. 새 **ReplicaSet**이 롤아웃되는 것을 확인할 수 있습니다:

@@ -20,7 +20,7 @@ link:https://www.redhat.com/en/topics/containers/whats-a-linux-container-vb[컨�
 
 지금까지 OpenShift와 컨테이너가 무엇인지 살펴봤으니, 이제 실습에 사용할 실제 환경을 소개합니다.
 
-image::common-environment-ocp-architecture.png[OpenShift Architecture,link="self",window=_blank]
+image::common-environment-ocp-architecture.png[OpenShift Architecture,link=self,window=blank]
 
 이 워크샵은 퍼블릭 클라우드에서 실행되는 OpenShift 환경에서 호스팅됩니다. 이 환경은 다음과 같은 시스템으로 구성됩니다:
 

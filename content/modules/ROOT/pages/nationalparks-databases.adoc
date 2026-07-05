@@ -11,7 +11,7 @@ OpenShift 디스커버리 메커니즘을 통해 ``parksmap`` 구성 요소가 �
 지도 데이터가 자동으로 표시되도록 합니다.
 
 [.bordershadow]
-image::roadshow-app-architecture-nationalparks-2.png[MongoDB 데이터베이스를 포함한 애플리케이션 아키텍처 다이어그램,link="self",window=_blank]
+image::roadshow-app-architecture-nationalparks-2.png[MongoDB 데이터베이스를 포함한 애플리케이션 아키텍처 다이어그램,link=self,window=blank]
 
 [#mongodb_deploy_group]
 == MongoDB 배포와 연결
@@ -42,7 +42,7 @@ PVC를 만들 때 StorageClass를 지정하면(또는 클러스터의 기본 Sto
 **Workloads** → **Secrets**에서 오른쪽 상단의 **Create** 버튼을 클릭하고 **From YAML**을 선택합니다.
 
 [.bordershadow]
-image::mongodb_create_secret.png[Secrets 화면에서 Create → From YAML을 선택하는 메뉴,link="self",window=_blank]
+image::mongodb_create_secret.png[Secrets 화면에서 Create → From YAML을 선택하는 메뉴,link=self,window=blank]
 
 에디터에 다음 YAML을 붙여넣습니다:
 
@@ -62,7 +62,7 @@ stringData:
 ----
 
 [.bordershadow]
-image::mongodb_create_secret_dialog.png[mongodb-credentials Secret YAML이 입력된 편집기 화면,link="self",window=_blank]
+image::mongodb_create_secret_dialog.png[mongodb-credentials Secret YAML이 입력된 편집기 화면,link=self,window=blank]
 
 폼 하단의 **Create** 버튼을 클릭합니다.
 
@@ -77,7 +77,7 @@ Secret이 준비되었으니, 이전에 다른 애플리케이션을 추가할 �
     - Name → ``mongodb``
 
 [.bordershadow]
-image::mongodb_deploy_image_image.png[mongo 컨테이너 이미지와 Runtime 아이콘을 지정하는 Image 섹션,link="self",window=_blank]
+image::mongodb_deploy_image_image.png[mongo 컨테이너 이미지와 Runtime 아이콘을 지정하는 Image 섹션,link=self,window=blank]
 
 * Resource type 드롭다운이 **Deployment** 옵션으로 설정되어 있는지 확인합니다.
 
@@ -105,14 +105,14 @@ MONGO_INITDB_ROOT_PASSWORD
     - Create a route → 데이터베이스는 OpenShift 클러스터 외부의 클라이언트가 접근하지 않을 것이므로 **체크 해제**합니다.
 
 [.bordershadow]
-image::mongodb_deploy_image_general.png[MongoDB 배포의 환경 변수와 Create a route 옵션이 표시된 General 섹션,link="self",window=_blank]
+image::mongodb_deploy_image_general.png[MongoDB 배포의 환경 변수와 Create a route 옵션이 표시된 General 섹션,link=self,window=blank]
 
 마지막으로, 페이지 하단의 **Create** 버튼을 클릭하여 MongoDB 컨테이너를 배포합니다.
 
 이 배포 마법사에는 볼륨을 추가하는 항목이 없으므로, 영구 저장소는 배포가 끝난 뒤 별도로 연결합니다. 일반적으로는 **Topology** 화면에서 구성 요소를 클릭하고 사이드 패널의 **Actions** 드롭다운에서 **Add Storage**를 선택한 뒤, PVC Name/Access Mode/Size/Mount Path만 입력하면 손쉽게 스토리지를 붙일 수 있습니다.
 
 [.bordershadow]
-image::mongodb_deploy_image_volume.png[Actions 드롭다운에서 Add Storage를 선택하는 화면,link="self",window=_blank]
+image::mongodb_deploy_image_volume.png[Actions 드롭다운에서 Add Storage를 선택하는 화면,link=self,window=blank]
 // TODO: 스크린샷 필요 - Actions 드롭다운에서 Add Storage를 선택하는 화면
 
 하지만 MongoDB는 예외적인 경우입니다. ``mongo`` 컨테이너 이미지는 자체적으로 ``/data/db``와 ``/data/configdb`` 두 경로를 볼륨으로 선언해 두고 있어서, OpenShift가 Deployment를 생성하는 시점에 이 두 경로에 임시 저장소(``emptyDir``)를 이미 자동으로 마운트해 둔 상태입니다(볼륨이 2개 자동 생성되므로, 그중 어떤 것이 ``/data/db``용인지는 인덱스가 아니라 마운트 경로로 찾아야 합니다). 그래서 Add Storage로 같은 경로(``/data/db``)에 PVC를 추가하려 하면 "이미 사용 중인 경로"라는 경고가 뜨고, 그대로 진행해도 기존 ``emptyDir``이 그대로 남아있어 PVC가 실제로는 연결되지 않습니다.
@@ -146,12 +146,12 @@ oc get pvc mongodb-data
 다음 단계는 nationalparks 애플리케이션이 연결을 생성하는 데 사용할 특정 사용자를 이 MongoDB 인스턴스에 생성하는 것입니다. 이를 위해 Topology 화면에서 **MongoDB Deployment**를 클릭한 후, 오른쪽 화면에 표시되는 해당 **Pod**를 클릭합니다.
 
 [.bordershadow]
-image::mongodb_deployment_topology_pod.png[Topology 화면에서 MongoDB Deployment의 Pod를 선택하는 화면,link="self",window=_blank]
+image::mongodb_deployment_topology_pod.png[Topology 화면에서 MongoDB Deployment의 Pod를 선택하는 화면,link=self,window=blank]
 
 Pod 세부 정보 화면으로 이동하며, 여기에서 **Terminal**을 클릭하면 해당 컨테이너에서 터미널 세션을 시작할 수 있습니다.
 
 [.bordershadow]
-image::mongodb_pod_details_terminal.png[Pod 세부 정보 화면의 Terminal 탭,link="self",window=_blank]
+image::mongodb_pod_details_terminal.png[Pod 세부 정보 화면의 Terminal 탭,link=self,window=blank]
 
 다음 스니펫을 복사하여 터미널 창에 붙여넣어, 올바른 설정과 역할을 가진 데이터베이스 사용자를 생성합니다:
 
@@ -173,7 +173,7 @@ NOTE: 프로덕션 환경에서는 컨테이너 entrypoint를 수정하거나 ht
 이제 데이터베이스와 관련된 모든 준비가 끝났으니 다시 nationalparks 애플리케이션으로 초점을 돌려보겠습니다. **Topology** 화면으로 돌아가서 **nationalparks Deployment**를 클릭하고 오른쪽 화면의 드롭다운에서 __Actions → Edit Deployment__를 선택합니다.
 
 [.bordershadow]
-image::nationalparks_deployment_edit.png[nationalparks Deployment의 Actions 메뉴에서 Edit Deployment 선택,link="self",window=_blank]
+image::nationalparks_deployment_edit.png[nationalparks Deployment의 Actions 메뉴에서 Edit Deployment 선택,link=self,window=blank]
 
 **Edit Deployment** 대화 상자에서 아래로 스크롤하여 **Environment Variables** 섹션으로 이동합니다. 서버 호스트(``MONGODB_SERVER_HOST``)와 데이터베이스 이름(``MONGODB_DATABASE``)은 이미 앞선 모듈에서 ConfigMap을 통해 연결해 두었으니, 이번에는 자격 증명 두 개만 ``mongodb-credentials`` Secret에서 가져오면 됩니다.
 
@@ -196,7 +196,7 @@ MONGODB_PASSWORD
 값으로는 resource로 ``mongodb-credentials``를, key로 ``app-pwd``를 선택합니다.
 
 [.bordershadow]
-image::nationalparks_deployment_env_vars_secrets.png[Secret에서 가져온 MONGODB_USER와 MONGODB_PASSWORD 환경 변수 목록,link="self",window=_blank]
+image::nationalparks_deployment_env_vars_secrets.png[Secret에서 가져온 MONGODB_USER와 MONGODB_PASSWORD 환경 변수 목록,link=self,window=blank]
 
 마지막으로 대화 상자 하단의 **Save** 버튼을 클릭합니다. 이렇게 하면 애플리케이션의 새 버전이 롤아웃되면서 방금 배포한 MongoDB 인스턴스와 연결됩니다.
 
@@ -227,7 +227,7 @@ OpenShift에 애플리케이션을 배포할 때는, 종속 시스템에 대한 
 이제 MongoDB 배포에 지정된 레이블을 수정해 보겠습니다. **Topology** 화면에서 MongoDB 배포를 선택하고 __Actions → Edit Labels__를 선택합니다.
 
 [.bordershadow]
-image::mongodb_deployment_labels.png[MongoDB 배포의 Actions 메뉴에서 Edit Labels 선택,link="self",window=_blank]
+image::mongodb_deployment_labels.png[MongoDB 배포의 Actions 메뉴에서 Edit Labels 선택,link=self,window=blank]
 
 이전과 마찬가지로 레이블 3개를 추가합니다:
 
@@ -383,6 +383,6 @@ https://parksmap-{ocp4_starter_project}.{ocp4_starter_apps_domain}
 ----
 
 [.bordershadow]
-image::nationalparks-databases-new-parks.png[parksmap 지도에 국립공원 마커가 표시된 화면,link="self",window=_blank]
+image::nationalparks-databases-new-parks.png[parksmap 지도에 국립공원 마커가 표시된 화면,link=self,window=blank]
 
 이제 공원들이 갑자기 나타나는 것을 확인할 수 있습니다. 정말 멋지네요!

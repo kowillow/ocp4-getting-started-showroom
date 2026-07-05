@@ -1,5 +1,5 @@
-= 파이프라인 자동화
-:navtitle: 파이프라인 자동화
+= 파이프라인과 Webhook
+:navtitle: 파이프라인과 Webhook
 
 include::vars.adoc[]
 
@@ -25,7 +25,7 @@ Tekton **Trigger**를 사용하면 Web Hook 같은 외부 이벤트(Git push 이
 트리거 지원을 추가하려면 project에 ``TriggerTemplate``, ``TriggerBinding``, ``EventListener``를 생성해야 합니다.
 
 [.bordershadow]
-image::devops-pipeline-triggers.png[TriggerTemplate/TriggerBinding/EventListener 트리거 구성 요소 다이어그램,link="self",window=_blank]
+image::devops-pipeline-triggers.png[TriggerTemplate/TriggerBinding/EventListener 트리거 구성 요소 다이어그램,link=self,window=blank]
 
 각 구성 요소를 자세히 살펴보겠습니다:
 
@@ -71,7 +71,7 @@ oc create -f {ocp4_starter_gitea_url}/{ocp4_starter_gitea_user}/nationalparks/ra
 **Topology** 화면에서 ``EventListener``를 위한 새 Deployment **el-nationalparks**가 생성되었는지 확인합니다:
 
 [.bordershadow]
-image::devops-pipeline-triggers-eventlistener.png[Topology 화면의 el-nationalparks EventListener Deployment,width=500,link="self",window=_blank]
+image::devops-pipeline-triggers-eventlistener.png[Topology 화면의 el-nationalparks EventListener Deployment,width=500,link=self,window=blank]
 
 [#webhook_integration_group]
 == Webhook 연동
@@ -90,7 +90,7 @@ URL을 클립보드에 복사한 후, 이 페이지 오른쪽의 **Gitea** 탭�
 
 Gitea 자격 증명은 다음과 같습니다:
 
-[source,subs=attributes]
+[source,text,subs=attributes]
 ----
 username: {ocp4_starter_gitea_user}
 password: {ocp4_starter_gitea_password}
@@ -99,12 +99,12 @@ password: {ocp4_starter_gitea_password}
 화면 오른쪽 상단의 Settings 링크를 클릭합니다:
 
 [.bordershadow]
-image::nationalparks-codechanges-settings.png[Gitea 저장소 화면 우측 상단의 Settings 링크,link="self",window=_blank]
+image::nationalparks-codechanges-settings.png[Gitea 저장소 화면 우측 상단의 Settings 링크,link=self,window=blank]
 
 **Webhooks**를 클릭한 후 **Add Webhook** 버튼을 클릭하고, 마지막으로 **Gitea**를 선택합니다.
 
 [.bordershadow]
-image::nationalparks-codechanges-add-webhook.png[Webhooks 메뉴에서 Add Webhook과 Gitea를 선택하는 화면,link="self",window=_blank]
+image::nationalparks-codechanges-add-webhook.png[Webhooks 메뉴에서 Add Webhook과 Gitea를 선택하는 화면,link=self,window=blank]
 
 이전 섹션에서 생성한 EventListener를 사용하여 Gitea에 Web Hook을 구성합니다.
 ``EventListener``에는 Web Hook의 URL로 사용할 OpenShift ``Route``가 노출되어 있습니다.
@@ -121,7 +121,7 @@ http://el-nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/
 마지막으로 **Update Webhook**을 클릭합니다.
 
 [.bordershadow]
-image::nationalparks-codechanges-config-webhook.png[Payload URL과 Content Type을 설정하는 Webhook 구성 화면,link="self",window=_blank]
+image::nationalparks-codechanges-config-webhook.png[Payload URL과 Content Type을 설정하는 Webhook 구성 화면,link=self,window=blank]
 
 짜잔! 이제부터는 Gitea 저장소에 새로운 소스 코드를 커밋할 때마다
 OpenShift에서 새로운 빌드와 배포가 발생합니다. 직접 시도해
@@ -137,11 +137,11 @@ OpenShift에서 새로운 빌드와 배포가 발생합니다. 직접 시도해
 화면에 파일이 표시되면, 여기에 보이는 것처럼 오른쪽 상단의 편집 버튼을
 클릭합니다:
 
-image::nationalparks-codechanges-change-code.png[Gitea file editor showing the edit button for BackendController.java,link="self",window=_blank]
+image::nationalparks-codechanges-change-code.png[Gitea file editor showing the edit button for BackendController.java,link=self,window=blank]
 
 20번째 줄을 다음과 같이:
 
-[source]
+[source,java]
 ----
 return new Backend("nationalparks","National Parks", new Coordinates("47.039304", "14.505178"), 4);
 ----
