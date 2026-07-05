@@ -15,7 +15,7 @@
 ** xref:parksmap-scaling.adoc#deployments_and_replicasets[배경 지식: Deployment와 ReplicaSet]
 ** xref:parksmap-scaling.adoc#exploring_deployment_related_objects[실습: Deployment 관련 오브젝트 살펴보기]
 ** xref:parksmap-scaling.adoc#scaling_the_application[실습: 애플리케이션 스케일링하기]
-** xref:parksmap-scaling.adoc#application_self_healing[애플리케이션 "자가 치유(Self Healing)"]
+** xref:parksmap-scaling.adoc#application_self_healing[실습: 애플리케이션 자가 치유(Self Healing) 확인하기]
 ** xref:parksmap-scaling.adoc#scale_down[스케일 다운]
 * xref:parksmap-rolling-update.adoc[Rolling Update와 Rollback]
 ** xref:parksmap-rolling-update.adoc#rolling_update_strategy[배경 지식: RollingUpdate 전략]

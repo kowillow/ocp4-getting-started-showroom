@@ -93,16 +93,23 @@ image::parksmap-advanced-image-options.png[Create a route 체크 해제 등 고�
 [.bordershadow]
 image::parksmap-dc-topology.png[Topology 화면에 표시된 workshop 애플리케이션의 parksmap 배포 아이콘,width=400,link="self",window=_blank]
 
-OpenShift에서 컨테이너 이미지를 배포하는 데 필요한 단계는 이것이 전부입니다. EXPOSE 포트를 정의하는 것, **root 사용자**나 다른 사용자 이름으로 실행할 필요가 없는 것, 시작 시 실행할 종료되지 않는 단일 CMD를 갖는 것과 같은 모범 사례를 따르는 모든 컨테이너 이미지에서 이 방식이 동작합니다. 이러한 내용은 이 애플리케이션의 https://github.com/openshift-roadshow/parksmap-web/blob/master/Dockerfile[Dockerfile^]에서 확인할 수 있습니다.
+OpenShift에서 컨테이너 이미지를 배포하는 데 필요한 단계는 이것이 전부입니다. 이렇게 별다른 설정 없이 바로 동작하는 이유는, 이 이미지가 다음과 같은 몇 가지 모범 사례를 따르고 있기 때문입니다:
+
+* **EXPOSE로 포트를 정의합니다**: Dockerfile에 ``EXPOSE`` 명령으로 포트를 선언해 두면, OpenShift가 이 이미지를 읽어 어떤 포트로 요청을 받는지 자동으로 인식합니다. 그래서 포트 번호를 따로 알려줄 필요가 없습니다.
+* **특정 사용자로 실행되도록 강제하지 않습니다**: OpenShift는 보안을 위해 이미지가 정한 사용자가 아니라, 클러스터가 임의로 배정한 사용자 번호로 컨테이너를 실행합니다. 이미지가 **root 사용자**나 특정 사용자 이름으로만 동작하도록 하드코딩되어 있으면 이 과정에서 권한 오류로 실패하지만, 어떤 사용자 번호로 실행되어도 동작하도록 만들어진 이미지는 문제없이 그대로 실행됩니다.
+* **종료되지 않는 단일 CMD를 갖습니다**: Kubernetes는 컨테이너의 메인 프로세스(``CMD``/``ENTRYPOINT``로 지정한 프로세스)가 계속 실행되고 있어야 Pod가 정상적으로 실행 중이라고 판단합니다. 한 번 실행되고 끝나버리는 스크립트 대신, 웹 서버처럼 계속 떠 있는 단일 프로세스를 시작 시 실행해야 하는 이유입니다.
+
+이러한 내용은 이 애플리케이션의 https://github.com/openshift-roadshow/parksmap-web/blob/master/Dockerfile[Dockerfile^]에서 확인할 수 있습니다.
 
 NOTE: 애플리케이션을 대규모로 배포할 때는 적절한 레이블을 지정하는 것이 중요합니다. OpenShift는 Overview 페이지에서 구성 요소를 정의하고 그룹화하기 위해 **app** 레이블을 사용합니다. 명시적으로 지정하지 않으면 OpenShift가 기본값으로 이 레이블을 생성합니다.
 
 [#containers_and_pods]
 == 배경 지식: 컨테이너와 Pod
 
-본격적으로 시작하기 전에, 컨테이너와 **Pod**가 어떻게 연관되어 있는지 이해하는 것이 중요합니다. 이 워크숍에서는 이러한 기술의 배경 지식을 자세히 다루지 않지만, 궁금한 점이 있다면 진행자에게 문의해 주세요. 대신 바로 실습을 통해 사용해 보겠습니다.
+컨테이너와 **Pod**는 같은 것이 아닙니다. **컨테이너**는 애플리케이션과 그 실행에 필요한 모든 것(런타임, 라이브러리, 설정)을 하나로 묶은 패키지 그 자체입니다. **Pod**는 OpenShift(및 Kubernetes)가 이 컨테이너를 실제로 클러스터에서 실행하기 위해 사용하는 배포 단위로, 하나 이상의 컨테이너를 감싸서 같은 네트워크와 저장 공간을 공유하도록 묶어줍니다. 즉 컨테이너는 "무엇을 실행할지"에 대한 것이고, Pod는 "그것을 클러스터에서 어떻게 실행할지"에 대한 것입니다.
 
-OpenShift(및 Kubernetes)에서 배포 가능한 가장 작은 단위는 **Pod**입니다. **Pod**는 함께 배포되고 동일한 호스트에서 실행되는 것이 보장되는 하나 이상의 https://opencontainers.org/[OCI 컨테이너^] 그룹입니다.
+OpenShift(및 Kubernetes)에서 배포 가능한 가장 작은 단위는 **Pod**입니다. **Pod**는 함께 배포되고 동일한 호스트에서 실행되는 것이 보장되는 하나 이상의 https://opencontainers.org/[OCI(Open Container Initiative) 컨테이너^] 그룹입니다. OCI는 컨테이너 이미지와 런타임이 따라야 할 업계 표준 규격으로, Docker나 CRI-O 같은 서로 다른 도구로 만든 컨테이너라도 이 표준을 따르기만 하면 OpenShift에서 동일한 방식으로 실행할 수 있습니다.
+
 OpenShift 공식 문서에 따르면 다음과 같습니다:
 
 [quote]
@@ -116,6 +123,8 @@ __
 **Pod**는 여러 개의 OCI 컨테이너를 포함할 수 있습니다. 일반적인 개념은 **Pod**가
 "메인 프로세스"와 그 프로세스와 함께 실행하고자 하는 보조 서비스들을 포함하는 것입니다. **Pod**에 넣을 수 있는 컨테이너의 예로는 Apache HTTPD
 서버, 로그 분석기, 업로드된 파일을 관리하는 파일 서비스 등이 있습니다.
+
+NOTE: 방금 배포한 ``parksmap`` Pod는 컨테이너 1개만 포함하는 가장 단순한 형태입니다. Pod가 여러 컨테이너를 포함할 수 있다는 것은 이번 실습에서 직접 확인하지는 않지만, 앞으로 다른 애플리케이션을 다룰 때 마주칠 수 있는 일반적인 개념으로 알아두면 됩니다.
 
 [#examining_the_pod]
 == 실습: Pod 살펴보기
@@ -212,9 +221,9 @@ metadata:
 ...............
 ----
 
-웹 인터페이스의 *Pod* 세부 정보
-페이지에서도 동일한 정보의 대부분을 확인할 수 있습니다. *Pod*의 이름을 클릭하면
-세부 정보 페이지로 이동합니다. 또는 *Topology* 페이지에서 `parksmap` Deployment를 클릭하고 *Resources*를 선택한 후 *Pod* 이름을 클릭해도 이동할 수 있습니다.
+웹 인터페이스의 **Pod** 세부 정보
+페이지에서도 동일한 정보의 대부분을 확인할 수 있습니다. **Pod**의 이름을 클릭하면
+세부 정보 페이지로 이동합니다. 또는 **Topology** 페이지에서 ``parksmap`` Deployment를 클릭하고 **Resources**를 선택한 후 **Pod** 이름을 클릭해도 이동할 수 있습니다.
 
 [.bordershadow]
 image::parksmap-dc-resources.png[parksmap Deployment의 Resources 탭에 표시된 Pod 목록,link="self",window=_blank]
@@ -227,10 +236,10 @@ image::parksmap-pod.png[설정/메트릭/로그/터미널을 확인할 수 있�
 [.bordershadow]
 image::parksmap-pod-events.png[Pod 세부 정보 페이지의 Events 탭에 표시된 이벤트 목록,link="self",window=_blank]
 
-`parksmap` 이미지를 실행하는 데 다소 시간이 걸릴 수 있습니다. 이미지를 실행하도록 요청받은 각
+``parksmap`` 이미지를 실행하는 데 다소 시간이 걸릴 수 있습니다. 이미지를 실행하도록 요청받은 각
 OpenShift 노드는, 로컬에 캐시되어 있지 않다면 이미지를 pull(다운로드)해야
-합니다. 이미지 다운로드와 배포 상태는 *Pod* 세부 정보 페이지에서 확인하거나, 명령
-줄에서 앞서 사용했던 `oc get pods` 명령을 통해 확인할 수 있습니다.
+합니다. 이미지 다운로드와 배포 상태는 **Pod** 세부 정보 페이지에서 확인하거나, 명령
+줄에서 앞서 사용했던 ``oc get pods`` 명령을 통해 확인할 수 있습니다.
 
 [#customizing_image_lifecycle_behavior]
 == 배경 지식: 이미지 라이프사이클 동작 커스터마이징하기
@@ -243,25 +252,28 @@ OpenShift가 노드의 CRI(Container Runtime Interface) 런타임(Docker 데몬 
 [#services]
 == 배경 지식: Service
 
-*Service*는 OpenShift 내부에서 트래픽을 *Pod*로 라우팅하는 편리한 추상화 계층을 제공합니다.
-또한 해당 *Pod*로 전송되는 트래픽에 대한 로드 밸런서 역할도 합니다. 예를 들어
-증가하는 트래픽을 처리하기 위해 더 많은 `parksmap` 인스턴스가 필요하다면,
-*Pod*를 더 늘릴 수 있습니다. OpenShift는 이러한 Pod들을 자동으로
-*Service*의 엔드포인트로 매핑하며, 들어오는 요청 입장에서는 `parksmap`이 요청을
+=== Service는 왜 필요한가
+
+**Pod**는 언제든 다시 시작되거나 새로 만들어질 수 있고, 그때마다 새로운 IP 주소를 받습니다. 그래서 다른 무언가가 특정 Pod의 IP 주소를 직접 기억해서 사용한다면, 그 Pod가 재시작되는 순간 연결이 끊어져 버립니다. **Service**는 이 문제를 해결하기 위한 안정적인 창구입니다. Service는 OpenShift 내부에서 트래픽을 **Pod**로 라우팅하는 추상화 계층을 제공하며, 또한 해당 **Pod**로 전송되는 트래픽에 대한 로드 밸런서 역할도 합니다.
+
+예를 들어 증가하는 트래픽을 처리하기 위해 더 많은 ``parksmap`` 인스턴스가 필요하다면,
+**Pod**를 더 늘릴 수 있습니다. OpenShift는 이러한 Pod들을 자동으로
+**Service**의 엔드포인트로 매핑하며, 들어오는 요청 입장에서는 ``parksmap``이 요청을
 더 잘 처리하게 되었다는 것 외에는 별다른 차이를 느끼지 못합니다.
 
-OpenShift에 이미지를 실행하도록 요청했을 때, OpenShift는 자동으로 *Service*를
-생성해 주었습니다. Service는 내부적인 구성 요소라는 점을 기억하세요. "외부
-세계"나 OpenShift 환경 바깥에 있는 것들은 Service에 접근할 수 없습니다. 괜찮습니다 - 이 문제를 해결하기 위해 나중에 *Route*를 사용하는 방법을 배우게 됩니다.
+OpenShift에 이미지를 실행하도록 요청했을 때, OpenShift는 자동으로 **Service**를
+생성해 주었습니다. Service는 클러스터 내부에서만 유효한 가상 IP(ClusterIP)를 가지는 내부 구성 요소라는 점을 기억하세요. 그래서 "외부
+세계"나 OpenShift 환경 바깥에 있는 것들은 이 IP로 Service에 접근할 수 없습니다. 괜찮습니다. 이 문제를 해결하기 위해 나중에 **Route**를 사용하는 방법을 배우게 됩니다.
 
+=== Service는 Pod를 어떻게 찾는가
 
-*Service*는 *Selector*를 사용하여 여러 *Pod*와 매핑됩니다. *Selector*는 *Labels*를 사용하여 어떤 Pod가 트래픽을 받아야 하는지 결정합니다.
+**Service**는 **Selector**를 사용하여 여러 **Pod**와 매핑됩니다. **Selector**는 **Labels**(Pod에 붙이는 ``app=parksmap``과 같은 key=value 형태의 태그)를 기준으로 어떤 Pod가 트래픽을 받아야 하는지 결정합니다. 즉 Pod가 몇 개이든, 어떤 이름으로 생성되든 상관없이 정해진 Label만 붙어 있으면 그 Service의 트래픽 대상이 됩니다.
 
 직접 YAML 형식으로 작성하는 방법을 포함하여
 link:{ocp4_starter_openshift_docs}/html/networking_overview[Service^]에 대한 더 많은 정보는, OpenShift 공식 문서에서 확인할 수 있습니다.
 
-이제 *Service*가 무엇인지 기본 개념을 이해했으니, 방금 배포한 이미지에 대해 생성된
-*Service*를 살펴보겠습니다. 여러분의 *Project*에 정의된 *Service*를 확인하려면 다음 명령을 입력합니다:
+이제 **Service**가 무엇인지 기본 개념을 이해했으니, 방금 배포한 이미지에 대해 생성된
+**Service**를 살펴보겠습니다. 여러분의 **Project**에 정의된 **Service**를 확인하려면 다음 명령을 입력합니다:
 
 [source,bash,role="copypaste"]
 ----
@@ -277,18 +289,18 @@ NAME       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
 parksmap   ClusterIP   172.31.106.159   <none>        8080/TCP   15m
 ----
 
-위 출력에서, `parksmap`이라는 이름의 *Service*가
-172.30.22.209/8080TCP라는 IP/포트 조합을 가지고 있는 것을 확인할 수 있습니다. 각
-*Service*는 생성 시 고유한 IP 주소를 받기 때문에 여러분의 IP 주소는 다를 수 있습니다. *Service*의
-IP는 고정되며 해당 *Service*가 존재하는 동안 절대 변경되지 않습니다.
+위 출력에서, ``parksmap``이라는 이름의 **Service**가
+172.31.106.159라는 IP에 8080/TCP 포트로 연결되어 있는 것을 확인할 수 있습니다. 각
+**Service**는 생성 시 고유한 IP 주소를 받기 때문에 여러분의 IP 주소는 다를 수 있습니다. **Service**의
+IP는 고정되며 해당 **Service**가 존재하는 동안 절대 변경되지 않습니다.
 
-*Topology* 화면에서는 `parksmap` Deployment를 클릭한 후 *Resources*를 클릭하면 Service 정보를 확인할 수 있습니다.
+**Topology** 화면에서는 ``parksmap`` Deployment를 클릭한 후 **Resources**를 클릭하면 Service 정보를 확인할 수 있습니다.
 
 [.bordershadow]
 image::parksmap-serviceslist.png[Resources 탭에서 확인한 parksmap Service 연결 정보,link="self",window=_blank]
 
 다음 명령을 사용하여 YAML 형식으로 데이터를 표시함으로써
-*Service*에 대한 더 자세한 정보를 확인할 수도 있습니다:
+**Service**에 대한 더 자세한 정보를 확인할 수도 있습니다:
 
 [source,bash,role="copypaste"]
 ----
@@ -334,22 +346,22 @@ status:
   loadBalancer: {}
 ----
 
-`selector` 필드를 주목하고 기억해 두세요.
+``selector`` 필드를 주목하고 기억해 두세요. 잠시 후 ``parksmap`` Pod의 Label과 실제로 일치하는지 직접 비교해 보겠습니다.
 
-또는 이전 화면에서 *Service*를 클릭하여 웹 콘솔로 정보를 확인할 수도 있습니다.
+또는 이전 화면에서 **Service**를 클릭하여 웹 콘솔로 정보를 확인할 수도 있습니다.
 
 [.bordershadow]
 image::parksmap-service.png[웹 콘솔에서 확인한 parksmap Service 상세 정보 화면,link="self",window=_blank]
 
-`parksmap` *Pod*의 YAML을 확인하여 *Service*
-가 *Selector*를 어떻게 사용하는지 이해해 보세요. 다음 명령을 실행하여 Pod 정보를 확인합니다:
+``parksmap`` **Pod**의 YAML을 확인하여 **Service**
+가 **Selector**를 어떻게 사용하는지 이해해 보세요. 다음 명령을 실행하여 Pod 정보를 확인합니다:
 
 [source,bash,role="copypaste"]
 ----
 oc describe pods
 ----
 
-`Labels` 섹션 아래에서 다음을 확인할 수 있습니다:
+``Labels`` 섹션 아래에서 다음을 확인할 수 있습니다:
 
 [.console-output]
 [source]
@@ -358,10 +370,10 @@ app=parksmap
 deployment=parksmap
 ----
 
-이 *Pod* 레이블은 *Service*의 *Selector*가 대상으로 하는 레이블과 일치합니다.
+이 **Pod** 레이블은 **Service**의 **Selector**가 대상으로 하는 레이블과 일치합니다.
 
-NOTE: *Labels*는 단순한 key-value 쌍입니다. 동일한 *Project*(*Namespace*라고도 함) 내에서 *Selector*와
-일치하는 레이블을 가진 모든 *Pod*는 해당 *Service*와 연결됩니다. 이를 직접 확인하려면 다음
+NOTE: **Labels**는 단순한 key-value 쌍입니다. 동일한 **Project**(**Namespace**라고도 함) 내에서 **Selector**와
+일치하는 레이블을 가진 모든 **Pod**는 해당 **Service**와 연결됩니다. 이를 직접 확인하려면 다음
 명령을 실행하세요:
 
 [source,bash,role="copypaste"]
@@ -394,6 +406,6 @@ Events:            <none>
 ----
 
 왜 엔드포인트가 하나만 나열되는지 궁금할 수 있습니다. 이는 현재 실행 중인
-*Pod*가 하나뿐이기 때문입니다. 다음 실습에서는 애플리케이션을 스케일링하는 방법을 배우게 되며,
-그 시점에는 *Service*에 연결된 여러 엔드포인트를
+**Pod**가 하나뿐이기 때문입니다. 다음 실습에서는 애플리케이션을 스케일링하는 방법을 배우게 되며,
+그 시점에는 **Service**에 연결된 여러 엔드포인트를
 확인할 수 있습니다.
