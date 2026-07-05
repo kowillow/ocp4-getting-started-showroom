@@ -3,8 +3,11 @@
 
 include::vars.adoc[]
 
+[#deployment_replicaset_group]
+== Deployment와 ReplicaSet
+
 [#deployments_and_replicasets]
-== 배경 지식: Deployment와 ReplicaSet
+=== 배경 지식: Deployment와 ReplicaSet
 
 **Pod**는 스스로를 지키지 않습니다. Pod 하나가 죽거나 실수로 삭제되면, 그 자리를 대신 채워줄 존재가 없는 한 애플리케이션은 그대로 사라진 채로 남습니다.
 
@@ -22,7 +25,7 @@ __
 거의 모든 경우에 **Pod**, **Service**, **ReplicaSet**, **Deployment** 리소스를 함께 사용하게 됩니다. 웹 콘솔이나 CLI로 컨테이너 이미지를 배포하면 OpenShift가 이 모든 것을 대신 생성해 줍니다.
 
 [#exploring_deployment_related_objects]
-== 실습: Deployment 관련 오브젝트 살펴보기
+=== 실습: Deployment 관련 오브젝트 살펴보기
 
 **ReplicaSet**과 **Deployment**의 배경 지식을 알았으니, 이제 이들이 어떻게 함께 작동하는지 살펴보겠습니다. OpenShift에 ``parksmap`` 이미지를 배포하도록 지시했을 때 생성된 **Deployment**를 확인해 보세요:
 
@@ -56,8 +59,11 @@ parksmap-65c4f8b676   1         1         1       21m
 
 TIP: OpenShift의 **HorizontalPodAutoscaler(HPA)**는 여러 Pod의 CPU 및 메모리 사용량을 모니터링하고, 더 많은 인스턴스를 추가하여 애플리케이션 안정성을 보장하도록 Deployment를 자동으로 업데이트할 수 있습니다. link:{ocp4_starter_openshift_docs}/html/nodes/working-with-pods#nodes-pods-autoscaling[문서에서 Horizontal Pod Autoscaler에 대해^] 더 자세히 알아볼 수 있습니다.
 
+[#scaling_group]
+== 스케일링과 자가 치유
+
 [#scaling_the_application]
-== 실습: 애플리케이션 스케일링하기
+=== 실습: 애플리케이션 스케일링하기
 
 이 실습에서는 parksmap 애플리케이션을 2개의 인스턴스로 스케일링합니다. ``oc scale`` 명령을 사용하거나 OpenShift 웹 콘솔에서 Desired Count를 늘려서 수행할 수 있습니다. 원하는 방법을 선택하세요.
 
@@ -162,7 +168,7 @@ image::parksmap-scaled.png[Developer Perspective에서 확인한 실행 중인 P
 전반적으로, 애플리케이션을 스케일링하는 것은 이렇게 간단합니다. OpenShift는 기존 이미지의 새 인스턴스를 실행하는 것이므로 애플리케이션 스케일링은 매우 빠르게 이루어질 수 있으며, 특히 새 Pod가 https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/[스케줄링된^] 노드에 이미지가 캐시되어 있다면 더욱 그렇습니다.
 
 [#application_self_healing]
-== 실습: 애플리케이션 자가 치유(Self Healing) 확인하기
+=== 실습: 애플리케이션 자가 치유(Self Healing) 확인하기
 
 OpenShift의 **ReplicaSet**은 원하는 개수의 **Pod**가 실행되고 있는지 지속적으로 모니터링하기 때문에, 원하는 레플리카 개수와 현재 개수가 일치하지 않을 경우 OpenShift가 상황을 "고칠" 것이라고 예상할 수 있습니다.
 
@@ -193,7 +199,7 @@ link:{ocp4_starter_openshift_docs}/html/building_applications/application-health
 섹션과 이 가이드의 뒷부분에서 확인할 수 있습니다.
 
 [#scale_down]
-== 실습: 스케일 다운
+=== 실습: 스케일 다운
 
 계속 진행하기 전에, 애플리케이션을 다시 인스턴스 1개로 스케일 다운하세요. 원하는
 방법을 자유롭게 사용하면 됩니다.

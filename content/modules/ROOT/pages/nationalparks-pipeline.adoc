@@ -17,8 +17,11 @@ OpenShift Pipelines는 link:https://tekton.dev/[Tekton^]을 사용하여 파이�
 [.bordershadow]
 image::devops-pipeline-flow.png[지속적 통합/배포 파이프라인의 전체 흐름 다이어그램,link="self",window=_blank]
 
+[#pipeline_group]
+== 파이프라인 생성과 실행
+
 [#understanding_tekton]
-== Tekton 이해하기
+=== Tekton 이해하기
 
 Tekton은 파이프라인 개념을 표준화하고 CI/CD 솔루션 전반에 걸쳐 일관된 용어를 제공하기 위해, 여러 link:https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[Kubernetes 커스텀 리소스^]를 빌딩 블록으로 정의합니다.
 
@@ -42,7 +45,7 @@ image::tekton-architecture.png[Task/Pipeline/TaskRun/PipelineRun 간의 관계�
 파이프라인 개념에 대한 더 자세한 내용은, 파이프라인을 정의하는 데 사용할 수 있는 다양한 파라미터와 속성을 이해하는 데 훌륭한 가이드를 제공하는 link:https://tekton.dev/docs[Tekton 문서^]를 참고하세요.
 
 [#create_your_pipeline]
-== 실습: 파이프라인 생성하기
+=== 실습: 파이프라인 생성하기
 
 파이프라인은 배포 사이클의 여러 단계 사이에서 애플리케이션을 승격시키는 기능을 제공하므로, 우리의 파이프라인을 실행할 지속적 통합 서버인 Tekton은 지속적 통합 역할을 하는 project에 배포됩니다. 이 project에서 실행되는 파이프라인은 배포 사이클의 여러 단계를 나타내는 모든 project와 상호작용할 수 있는 권한을 가집니다.
 
@@ -516,7 +519,7 @@ image::devops_pipeline_workspaces_java.png[app-source/maven-settings Workspace �
 마지막으로, **Create** 버튼을 클릭하여 Pipeline을 생성했는지 확인하세요.
 
 [#add_storage_for_pipeline]
-== 실습: 파이프라인용 스토리지 추가하기
+=== 실습: 파이프라인용 스토리지 추가하기
 
 OpenShift는 **Persistent Volume Claim** 요청을 통해 애플리케이션을 실행하는 Pod에 연결되는 스토리지를 link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/[Persistent Volume^]으로 관리하며, 웹 콘솔에서 쉽게 관리할 수 있는 기능도 제공합니다.
 왼쪽 메뉴에서 **Storage** -> **Persistent Volume Claims**로 이동하세요.
@@ -538,7 +541,7 @@ image::nationalparks-codechanges-pipeline-pvc.png[app-source-pvc 생성을 위�
 TIP: **Storage Class**는 클러스터에서 사용 가능한 스토리지의 유형입니다.
 
 [#run_the_pipeline]
-== 파이프라인 실행하기
+=== 파이프라인 실행하기
 
 이제 웹 콘솔에서 Pipeline을 시작할 수 있습니다. 왼쪽 메뉴로 이동하여 **Pipelines -> Pipelines**를 클릭한 후 **nationalparks-pipeline**을 클릭합니다. 오른쪽 상단의 **Actions** 목록에서 **Start**를 클릭합니다.
 

@@ -5,8 +5,11 @@ include::vars.adoc[]
 
 OpenShift에 내장된 구성 요소 외에도, OpenShift Pipelines는 link:https://tekton.dev/docs/triggers/[**Tekton Triggers**^] 덕분에 파이프라인에 추가적인 트리거와 자동화 기능을 제공합니다.
 
+[#trigger_setup_group]
+== 트리거 구성
+
 [#webhooks]
-== 배경 지식: Web Hook
+=== 배경 지식: Web Hook
 
 대부분의 Git 저장소 서버는 Web Hook이라는 개념을 지원합니다. 코드 저장소에
 변경이 발생하면 HTTP(S)를 통해 외부 소스를 호출하는 것입니다.
@@ -15,7 +18,7 @@ OpenShift는 빌드를 트리거하기 위해 원격 시스템으로부터 Web H
 연결하면, 자동화된 코드/빌드/배포 파이프라인을 구현할 수 있습니다.
 
 [#adding_triggers_to_your_pipeline]
-== 실습: 파이프라인에 트리거 추가하기
+=== 실습: 파이프라인에 트리거 추가하기
 
 Tekton **Trigger**를 사용하면 Web Hook 같은 외부 이벤트(Git push 이벤트, pull request 등)에 반응하도록 Pipeline을 구성할 수 있습니다.
 
@@ -70,8 +73,11 @@ oc create -f {ocp4_starter_gitea_url}/{ocp4_starter_gitea_user}/nationalparks/ra
 [.bordershadow]
 image::devops-pipeline-triggers-eventlistener.png[Topology 화면의 el-nationalparks EventListener Deployment,width=500,link="self",window=_blank]
 
+[#webhook_integration_group]
+== Webhook 연동
+
 [#configuring_webhooks]
-== 실습: Gitea Web Hook 구성하기
+=== 실습: Gitea Web Hook 구성하기
 
 이 섹션에서는 nationalparks Gitea 저장소에 변경이 있을 때마다 파이프라인 실행을 트리거하는 빌드 Web Hook을 사용해 봅니다.
 
@@ -122,7 +128,7 @@ OpenShift에서 새로운 빌드와 배포가 발생합니다. 직접 시도해
 보겠습니다.
 
 [#using_webhooks]
-== 실습: Gitea Web Hook 사용하기
+=== 실습: Gitea Web Hook 사용하기
 
 다음으로, Gitea를 사용하여 파일을 수정하고 변경 사항을 커밋 및 push해 보겠습니다.
 

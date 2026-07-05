@@ -5,10 +5,15 @@ include::vars.adoc[]
 
 앞서 ``nationalparks`` 애플리케이션을 배포했지만, 아직 연결할 데이터베이스는 없습니다. 이 애플리케이션은 곧 MongoDB에 연결하게 될 텐데, 그때 필요한 연결 정보(호스트 이름, 데이터베이스 이름)를 지금 미리 준비해 두려고 합니다.
 
-민감하지 않은 설정값(호스트 이름, 데이터베이스 이름 등)을 Deployment 스펙에 직접 하드코딩하는 것은 좋은 습관이 아닙니다. 값을 바꾸려면 Deployment 자체를 수정해야 하고, 같은 값을 여러 Deployment에서 재사용하기도 어렵습니다. 이번 섹션에서는 이런 값을 **ConfigMap**으로 미리 준비해서 이 문제를 예방합니다.
+**환경 변수(environment variable)**는 프로세스가 시작될 때 운영체제(컨테이너 환경에서는 컨테이너 런타임)로부터 전달받는 key-value 쌍입니다. 애플리케이션 코드는 이 값을 읽어서 동작을 바꿀 수 있는데, 예를 들어 "어떤 데이터베이스 서버에 연결할지"를 코드에 직접 적어두는 대신 환경 변수로 읽어오게 만들면, 코드를 다시 빌드하지 않고도 배포되는 환경마다 다른 값을 넣어줄 수 있습니다.
+
+문제는 이 환경 변수 **값을 어디서 가져오느냐**입니다. 가장 간단한 방법은 Deployment에 값을 리터럴 문자열로 직접 적어 넣는 것이지만, 민감하지 않은 설정값(호스트 이름, 데이터베이스 이름 등)이라 해도 이렇게 직접 입력하는 것은 좋은 습관이 아닙니다. 값을 바꾸려면 Deployment 자체를 수정해야 하고, 같은 값을 여러 Deployment에서 재사용하기도 어렵습니다. 이번 섹션에서는 이런 값을 **ConfigMap**으로 미리 준비해 두고, Deployment는 그 ConfigMap을 참조하도록 만들어 이 문제를 예방합니다.
+
+[#configmap_group]
+== ConfigMap
 
 [#configmaps_vs_secrets]
-== 배경 지식: ConfigMap과 Secret
+=== 배경 지식: ConfigMap과 Secret
 
 **ConfigMap**과 **Secret**은 API 상으로 거의 같은 모양을 가진 오브젝트입니다. 이 둘의 공통점은 key-value 쌍의 목록을 저장하고, 환경 변수나 볼륨으로 Pod에 주입할 수 있다는 것입니다.
 
@@ -20,7 +25,7 @@ include::vars.adoc[]
 두 오브젝트 모두 애플리케이션 이미지를 다시 빌드하지 않고도 환경별로 다른 값을 주입할 수 있게 해준다는 공통의 목적을 가지고 있습니다. 잠시 후 데이터베이스를 실제로 배포할 때는 자격 증명을 Secret으로 준비하게 되는데, 그전에 먼저 민감하지 않은 연결 정보를 ConfigMap으로 준비해 보겠습니다.
 
 [#create_configmap]
-== 실습: ConfigMap 생성하기
+=== 실습: ConfigMap 생성하기
 
 **Workloads** → **ConfigMaps**에서 오른쪽 상단의 **Create** 버튼을 클릭하고 **From YAML**을 선택합니다.
 
@@ -47,13 +52,27 @@ data:
 NOTE: ``MONGODB_SERVER_HOST``의 값 ``mongodb``는 잠시 후 데이터베이스 모듈에서 배포할 MongoDB **Service**의 이름과 미리 맞춰둔 것입니다. 아직 그 Service는 존재하지 않지만, 이름만 미리 정해서 ConfigMap에 담아 두는 것입니다.
 
 [#wire_configmap_env]
-== 실습: ConfigMap 값을 환경 변수로 연결하기
+=== 실습: ConfigMap 값을 환경 변수로 연결하기
 
-이제 ``nationalparks`` Deployment에 방금 만든 ConfigMap의 값을 환경 변수로 연결합니다. **Topology** 화면에서 ``nationalparks`` Deployment를 클릭하고 _Actions → Edit Deployment_를 선택합니다.
+이제 ``nationalparks`` Deployment에 방금 만든 ConfigMap의 값을 환경 변수로 연결합니다. **Topology** 화면에서 ``nationalparks`` Deployment를 클릭하고 __Actions → Edit Deployment__를 선택합니다.
 
-**Environment Variables** 섹션으로 이동해 **+Add from ConfigMap or Secret**을 클릭하고 이름으로 ``MONGODB_SERVER_HOST``를 입력합니다. 값으로는 resource로 ``nationalparks-config``를, key로 ``MONGODB_SERVER_HOST``를 선택합니다.
+**Environment Variables** 섹션으로 이동해 **+Add from ConfigMap or Secret**을 클릭하고 이름으로 다음을 입력합니다:
 
-다시 **+Add from ConfigMap or Secret**을 클릭하고 이름으로 ``MONGODB_DATABASE``를 입력합니다. 값으로는 resource로 ``nationalparks-config``를, key로 ``MONGODB_DATABASE``를 선택합니다.
+[source,text,role=copypaste]
+----
+MONGODB_SERVER_HOST
+----
+
+값으로는 resource로 ``nationalparks-config``를, key로 ``MONGODB_SERVER_HOST``를 선택합니다.
+
+다시 **+Add from ConfigMap or Secret**을 클릭하고 이름으로 다음을 입력합니다:
+
+[source,text,role=copypaste]
+----
+MONGODB_DATABASE
+----
+
+값으로는 resource로 ``nationalparks-config``를, key로 ``MONGODB_DATABASE``를 선택합니다.
 
 [.bordershadow]
 image::nationalparks-configmap-env-wire.png[Edit Deployment 대화 상자에서 ConfigMap을 참조하는 환경 변수 추가 화면,link="self",window=_blank]
@@ -66,60 +85,4 @@ image::nationalparks-configmap-env-wire.png[Edit Deployment 대화 상자에서 
 oc get rs -l app=nationalparks
 ----
 
-아직 MongoDB를 배포하지 않았으므로, 이 환경 변수가 가리키는 ``mongodb`` Service는 존재하지 않습니다. 그런데도 애플리케이션이 정상적으로 배포되는지 확인해 보세요:
-
-[source,text,role="copypaste",subs="attributes"]
-----
-https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/data/all
-----
-
-빈 배열(``[]``)이 반환되지만 오류 화면 없이 정상적으로 응답합니다. 이는 애플리케이션이 데이터베이스 연결이 정의되지 않은 경우를 예외 처리하도록 만들어졌기 때문입니다. 다음 모듈에서 실제로 MongoDB를 배포하는 순간, 지금 준비해 둔 이 환경 변수가 곧바로 살아나 데이터베이스에 연결되는 것을 확인하게 됩니다.
-
-[#mount_configmap_volume]
-== 실습: ConfigMap을 볼륨으로 마운트하기
-
-ConfigMap은 환경 변수 외에 **볼륨**으로도 Pod에 마운트할 수 있습니다. 파일 형태의 설정(예: ``.properties``, ``.conf`` 파일)을 다뤄야 할 때 유용한 방식입니다. 간단한 예시로 확인해 보겠습니다.
-
-**Workloads** → **ConfigMaps** → **Create** → **From YAML**로 이동해 다음 YAML을 붙여넣습니다:
-
-[source,yaml,role="copypaste",subs="attributes"]
-----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: nationalparks-motd
-  namespace: {ocp4_starter_project}
-data:
-  message: |
-    Welcome to the nationalparks backend.
-    This file was mounted from a ConfigMap.
-----
-
-**Create**를 클릭합니다.
-
-``nationalparks`` Deployment를 다시 편집합니다(_Actions → Edit Deployment_). **Show advanced Deployment options** 아래 **Volumes** 섹션에서 다음을 추가합니다:
-
-* Volume 이름: ``motd-volume``
-* Source: ``nationalparks-motd`` ConfigMap
-* Mount path: ``/etc/motd``
-
-[.bordershadow]
-image::nationalparks-configmap-volume-mount.png[Edit Deployment에서 ConfigMap을 볼륨으로 추가하는 다이얼로그,link="self",window=_blank]
-// TODO: 스크린샷 필요 - Edit Deployment에서 ConfigMap을 볼륨으로 추가하는 다이얼로그
-
-**Save**를 클릭합니다. 새 Pod가 준비되면, 터미널에 접속해 파일이 실제로 마운트되었는지 확인합니다:
-
-[source,bash,role="copypaste"]
-----
-POD=$(oc get pod -l app=nationalparks -o jsonpath='{.items[0].metadata.name}')
-oc rsh $POD cat /etc/motd/message
-----
-
-[.console-output]
-[source]
-----
-Welcome to the nationalparks backend.
-This file was mounted from a ConfigMap.
-----
-
-이렇게 환경 변수 방식과 볼륨 방식, ConfigMap의 두 가지 사용법을 모두 확인했습니다.
+지금까지 살펴본 것처럼 ConfigMap 값은 환경 변수 외에 **볼륨**으로도 Pod에 마운트할 수 있습니다. 파일 형태의 설정(예: ``.properties``, ``.conf`` 파일)을 다뤄야 할 때 유용한 방식이며, 방식만 다를 뿐 ConfigMap을 만들고 Deployment에 연결하는 기본 흐름은 지금 실습한 것과 동일합니다.

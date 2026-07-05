@@ -3,10 +3,13 @@
 
 include::vars.adoc[]
 
-지금까지 ``/ws/data/load``를 브라우저에서 직접 열어 데이터를 적재했습니다. 이런 일회성 작업을 사람이 매번 브라우저를 열어 수행하는 대신, Kubernetes 오브젝트로 자동화해 보겠습니다. 앞선 모듈에서 배운 ``/ws/healthz/`` 상태 확인 경로도 CronJob으로 주기적으로 확인하도록 만들어 보겠습니다.
+지금까지 ``/ws/data/load``를 브라우저에서 직접 열어 데이터를 적재했습니다. 이런 일회성 작업을 사람이 매번 브라우저를 열어 수행하는 대신, Kubernetes 오브젝트로 자동화해 보겠습니다. 이어서 CronJob을 예약 실행이 아니라 필요할 때마다 버튼 클릭으로 재사용할 수 있는 템플릿으로 활용하는 방법도 살펴보겠습니다.
+
+[#job_automation_group]
+== Job으로 자동화하기
 
 [#jobs_and_cronjobs]
-== 배경 지식: Job과 CronJob
+=== 배경 지식: Job과 CronJob
 
 **Deployment**는 Pod가 항상 실행 중인 상태를 유지하도록 설계되었습니다. 하지만 "한 번 실행하고 끝나는" 작업, 예를 들어 데이터 마이그레이션이나 배치 처리에는 어울리지 않습니다. 이런 작업을 위한 오브젝트가 **Job**입니다.
 
@@ -16,7 +19,7 @@ include::vars.adoc[]
 Deployment(상시 실행, 재시작하면 안 됨)와 Job(완료되면 끝, 재시작 대신 재시도)의 차이를 기억해 두면 어떤 상황에 무엇을 쓸지 결정하기 쉬워집니다.
 
 [#automate_data_load]
-== 실습: 데이터 적재를 Job으로 자동화하기
+=== 실습: 데이터 적재를 Job으로 자동화하기
 
 **Workloads** → **Jobs**에서 **Create** → **From YAML**을 선택하고 다음 YAML을 붙여넣습니다:
 
@@ -72,33 +75,40 @@ image::nationalparks-job-topology.png[Topology 화면에서 완료된 Job Pod,li
 
 NOTE: 이미 데이터가 적재되어 있다면 애플리케이션이 중복 삽입을 방지할 수도 있습니다. 로그 내용은 ``nationalparks`` 애플리케이션의 구현에 따라 달라집니다.
 
-[#scheduled_healthcheck]
-== 실습: CronJob으로 상태 확인 자동화하기
+[#cronjob_as_template]
+== 실습: CronJob을 데이터 적재 템플릿으로 활용하기
 
-이번에는 앞선 모듈에서 다룬 ``/ws/healthz/`` 경로를 2분마다 자동으로 확인하는 CronJob을 만들어 보겠습니다. **Workloads** → **CronJobs**에서 **Create** → **From YAML**을 선택합니다:
+앞서 만든 ``nationalparks-data-load`` Job은 1회성입니다. 나중에 데이터를 다시 적재하고 싶다면 어떻게 해야 할까요? Job의 스펙은 대부분 수정할 수 없으므로, 같은 작업을 다시 실행하려면 매번 삭제하고 새로 만들거나 이름을 바꿔 다시 생성해야 합니다.
+
+이럴 때 **CronJob**을 "예약 실행"이 아니라 **재사용 가능한 템플릿**으로 활용하는 방법이 있습니다. 스케줄을 실제로는 절대 도래하지 않는 시각(예: 존재하지 않는 2월 31일)으로 지정해 두면, CronJob은 자동으로는 절대 실행되지 않지만, 웹 콘솔에서 버튼 클릭 한 번으로 이 템플릿을 이용해 새 Job을 언제든 수동으로 만들어낼 수 있습니다.
+
+**Workloads** → **CronJobs**에서 **Create** → **From YAML**을 선택합니다:
 
 [source,yaml,role="copypaste",subs="attributes"]
 ----
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: nationalparks-healthcheck
+  name: nationalparks-data-load-template
   namespace: {ocp4_starter_project}
 spec:
-  schedule: "*/2 * * * *"
+  schedule: "0 2 31 2 *"
   jobTemplate:
     spec:
+      backoffLimit: 2
       template:
         spec:
           restartPolicy: OnFailure
           containers:
-            - name: healthcheck
+            - name: load-data
               image: registry.access.redhat.com/ubi9/ubi-minimal:latest
               command:
                 - curl
                 - "-sf"
-                - "http://nationalparks.{ocp4_starter_project}.svc.cluster.local:8080/ws/healthz/"
+                - "http://nationalparks.{ocp4_starter_project}.svc.cluster.local:8080/ws/data/load"
 ----
+
+NOTE: ``schedule: "0 2 31 2 *"``는 "2월 31일 새벽 2시"를 의미합니다. 2월에는 31일이 없어서 이 일정은 영원히 도래하지 않습니다. cron 표현식 자체는 유효한 값(일 1~31, 월 1~12)이라 OpenShift는 그대로 받아들이지만, 실제로 자동 트리거되는 일은 없습니다.
 
 [.bordershadow]
 image::nationalparks-cronjob-create.png[CronJob Create From YAML 다이얼로그,link="self",window=_blank]
@@ -111,20 +121,30 @@ image::nationalparks-cronjob-create.png[CronJob Create From YAML 다이얼로그
 oc get cronjob
 ----
 
-몇 분 기다린 후, CronJob이 생성한 Job들의 실행 이력을 확인합니다:
+이 CronJob은 스케줄이 도래하지 않으므로 저절로 Job을 만들지 않습니다. 필요할 때마다 웹 콘솔에서 수동으로 실행해 봅니다. **Workloads** → **CronJobs**에서 ``nationalparks-data-load-template``을 클릭하고, 사이드 패널의 **Actions** 드롭다운에서 **Run Job**을 선택합니다.
+
+[.bordershadow]
+image::nationalparks-cronjob-run-job.png[Actions 드롭다운에서 Run Job을 선택하는 화면,link="self",window=_blank]
+// TODO: 스크린샷 필요 - Actions 드롭다운에서 Run Job을 선택하는 화면
+
+새로 생성된 Job을 확인합니다:
 
 [source,bash,role="copypaste"]
 ----
 oc get jobs
 ----
 
-[.bordershadow]
-image::nationalparks-cronjob-jobs-history.png[CronJob 상세 화면의 Job 실행 이력 목록,link="self",window=_blank]
-// TODO: 스크린샷 필요 - CronJob 상세 화면의 Job 실행 이력 목록
+[.console-output]
+[source]
+----
+NAME                                     COMPLETIONS   DURATION   AGE
+nationalparks-data-load                  1/1           3s         10m
+nationalparks-data-load-template-29xkq   1/1           2s         5s
+----
 
-2분마다 새로운 Job이 생성되고 완료되는 것을 확인할 수 있습니다. 실습이 끝나면 아래 명령으로 CronJob을 정리합니다:
+**Run Job**을 클릭할 때마다 이렇게 새로운 Job이 하나씩 만들어지는 것을 확인할 수 있습니다. YAML을 다시 작성할 필요 없이, 필요할 때마다 버튼 클릭 한 번으로 같은 작업을 반복 실행할 수 있는 것입니다. 실습이 끝나면 템플릿을 정리합니다:
 
 [source,bash,role="copypaste"]
 ----
-oc delete cronjob nationalparks-healthcheck
+oc delete cronjob nationalparks-data-load-template
 ----

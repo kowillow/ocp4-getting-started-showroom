@@ -1,25 +1,44 @@
-= Redis 캐시와 StatefulSet
-:navtitle: Redis 캐시와 StatefulSet
+= StatefulSet과 DaemonSet
+:navtitle: StatefulSet과 DaemonSet
 
 include::vars.adoc[]
 
 지금까지 MongoDB는 Deployment로 잘 동작했습니다. 하지만 매번 데이터베이스를 조회하는 대신, 자주 조회되는 응답을 캐시하면 ``nationalparks`` API가 더 빨라질 수 있습니다. 이런 캐시 계층에는 흔히 Redis 같은 인메모리 데이터 저장소를 사용합니다. 이번 섹션에서는 Redis를 **StatefulSet**으로 배포해 봅니다.
 
-NOTE: MongoDB는 Deployment로도 이 워크샵의 목적에는 충분합니다. 다만 Pod의 신원(identity)과 저장 공간이 유지되어야 하는 워크로드(캐시, 데이터베이스 등)에는 일반적으로 Deployment 대신 StatefulSet이 더 적합합니다. 이 모듈에서는 그 차이를 Redis를 통해 직접 확인합니다. 사실 MongoDB는 지금 영구 저장소 없이 임시(ephemeral) 상태로 동작하고 있어 StatefulSet으로 전환하는 것도 좋은 후속 과제가 될 수 있지만, 이미 구성해 둔 MongoDB 설정을 건드리지 않기 위해 이 모듈에서는 Redis로 동일한 StatefulSet 동작 방식을 보여줍니다.
+NOTE: Deployment가 관리하는 Pod는 이름이 무작위이고 완전히 교체 가능하다고 가정합니다. 하지만 캐시나 데이터베이스처럼 여러 인스턴스가 함께 클러스터를 이루는 워크로드에서는, 어떤 Pod가 정확히 몇 번째 인스턴스인지 예측 가능하게 유지되어야 하는 경우가 많습니다. 이 문제를 해결하는 것이 바로 **StatefulSet**이며, 이 모듈에서는 Redis를 통해 그 동작 방식을 직접 확인합니다.
+
+[#statefulset_group]
+== StatefulSet
 
 [#statefulsets]
-== 배경 지식: StatefulSet과 PersistentVolume
+=== 배경 지식: StatefulSet
 
-**Deployment**가 관리하는 Pod는 서로 완전히 동일하고 교체 가능하다고 가정합니다. 어떤 Pod가 죽어도 새 Pod가 대신 그 자리를 채우면 그만입니다. 하지만 일부 워크로드는 다음과 같은 특성이 필요합니다:
+**Deployment**, **StatefulSet**, **DaemonSet**은 모두 Pod를 여러 개 관리하는 워크로드 오브젝트지만, Pod를 다루는 방식과 대표적인 용도가 다릅니다:
 
-* **안정적인 네트워크 식별자**: Pod 이름이 ``redis-0``, ``redis-1``처럼 예측 가능하고 재시작 후에도 유지됩니다.
-* **순서 있는 배포/스케일링**: Pod가 0번부터 순서대로 생성되고, 스케일 다운 시에는 역순으로 종료됩니다.
-* **영구 저장소**: 각 Pod가 자신만의 ``PersistentVolumeClaim``(PVC)을 가지며, Pod가 재시작되어도 같은 볼륨에 다시 연결됩니다.
+[cols="1,2,2,2",options="header"]
+|===
+|항목 |Deployment |StatefulSet |DaemonSet
 
-**StatefulSet**의 ``volumeClaimTemplates`` 필드는 Pod마다 독립된 PVC를 자동으로 생성해 줍니다. Deployment에서는 지원하지 않는 기능입니다. 여기서 **PersistentVolume**(PV)은 클러스터에 실제로 존재하는 저장소 자원이고, PVC는 Pod가 그 저장소를 사용하겠다고 요청하는 수단이라는 점을 구분해 두면 이해하기 쉽습니다. 클러스터에 동적 프로비저닝 스토리지가 설정되어 있다면(워크샵 소개에서 이 환경의 구성 요소로 확인했던 내용입니다), ``storageClassName``을 지정하지 않아도 PVC가 자동으로 바인딩됩니다.
+|핵심 목적
+|상태 없는 애플리케이션을 원하는 개수만큼 안정적으로 유지
+|각 Pod가 고유한 신원과 순서를 유지해야 하는 워크로드 지원
+|모든(혹은 특정) 노드에 정확히 하나씩 에이전트를 실행
+
+|Pod 성격
+|무작위 이름, 완전히 교체 가능, 조건에 맞는 아무 노드에나 배치
+|안정적인 이름(``redis-0``, ``redis-1``...), 순서 있는 생성/삭제
+|노드 이름과 연결됨, 조건에 맞는 노드마다 정확히 1개씩 배치
+
+|대표 사용 사례
+|상태 없는 웹 서버, API 서버
+|데이터베이스, 캐시처럼 각 인스턴스가 고유한 신원을 가져야 하는 워크로드
+|로그 수집기, 모니터링 에이전트, 네트워크 플러그인처럼 모든 노드에 하나씩 떠 있어야 하는 시스템 데몬
+|===
+
+표에서 본 것처럼 StatefulSet의 가장 큰 특징은 Pod 이름이 ``redis-0``, ``redis-1``처럼 예측 가능하게 유지된다는 점입니다. Pod가 재시작되더라도 같은 이름으로 다시 생성되기 때문에, 클러스터를 이루는 각 인스턴스를 계속 같은 이름으로 식별하고 다룰 수 있습니다. DaemonSet의 특징은 이와 다릅니다 — 이름이 안정적인 게 아니라, **클러스터의 노드마다 정확히 1개씩** 자동으로 배치된다는 점이 핵심입니다. 이 모듈 뒷부분에서 DaemonSet도 직접 배포해 이 동작을 확인해 보겠습니다.
 
 [#deploy_redis_statefulset]
-== 실습: Redis를 StatefulSet으로 배포하기
+=== 실습: Redis를 StatefulSet으로 배포하기
 
 StatefulSet은 Pod에 안정적인 네트워크 이름을 부여하기 위해 **Headless Service**(ClusterIP가 없는 Service)가 필요합니다. 먼저 Service를 만듭니다. **Networking** → **Services**에서 **Create Service** → **From YAML**을 선택합니다:
 
@@ -66,29 +85,17 @@ spec:
           image: registry.redhat.io/rhel9/redis-7:latest
           ports:
             - containerPort: 6379
-          volumeMounts:
-            - name: redis-data
-              mountPath: /var/lib/redis/data
-  volumeClaimTemplates:
-    - metadata:
-        name: redis-data
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 1Gi
 ----
 
 [.bordershadow]
 image::nationalparks-redis-statefulset-create.png[StatefulSet Create From YAML 다이얼로그,link="self",window=_blank]
 // TODO: 스크린샷 필요 - StatefulSet Create From YAML 다이얼로그
 
-**Create**를 클릭합니다. Pod와 PVC가 생성되는 것을 확인합니다:
+**Create**를 클릭합니다. Pod가 생성되는 것을 확인합니다:
 
 [source,bash,role="copypaste"]
 ----
 oc get pods -l app=redis
-oc get pvc -l app=redis
 ----
 
 [.console-output]
@@ -96,43 +103,23 @@ oc get pvc -l app=redis
 ----
 NAME      READY   STATUS    RESTARTS   AGE
 redis-0   1/1     Running   0          40s
-
-NAME                  STATUS   VOLUME                                     CAPACITY   ACCESS MODES
-redis-data-redis-0    Bound    pvc-3a2f...                                1Gi        RWO
 ----
 
-[.bordershadow]
-image::nationalparks-redis-pvc.png[Storage > PersistentVolumeClaims 목록에서 redis-data-redis-0 Bound 상태,link="self",window=_blank]
-// TODO: 스크린샷 필요 - Storage > PersistentVolumeClaims 목록에서 redis-data-redis-0 Bound 상태
+Pod 이름이 ``redis-0``처럼 순번을 가지고 있는 것을 확인할 수 있습니다.
 
-Pod 이름이 ``redis-0``처럼 순번을 가지고 있고, 전용 PVC ``redis-data-redis-0``이 자동으로 만들어져 ``Bound``된 것을 확인할 수 있습니다.
+[#stable_pod_identity]
+=== 실습: 안정적인 Pod 이름 확인하기
 
-[#verifying_persistence]
-== 실습: 영속성 검증하기
+'애플리케이션 스케일링' 모듈에서 Pod를 강제로 삭제했을 때 새 Pod가 즉시 대신 생성되는 "자가 치유"를 확인했습니다. 그런데 그때 Deployment가 만든 새 Pod는 매번 다른 무작위 이름을 받았습니다. StatefulSet도 그럴까요? 직접 확인해 보겠습니다.
 
-``parksmap-scaling.adoc``에서 Pod를 강제로 삭제했을 때 새 Pod가 즉시 대신 생성되는 "자가 치유"를 확인했습니다. 이번에는 한 걸음 더 나아가, **데이터도 함께** 살아남는지 확인해 보겠습니다.
-
-먼저 Redis에 값을 하나 저장합니다:
+현재 Pod 이름을 확인합니다:
 
 [source,bash,role="copypaste"]
 ----
-oc rsh redis-0 redis-cli SET greeting "hello from redis-0"
+oc get pods -l app=redis
 ----
 
-[.console-output]
-[source]
-----
-OK
-----
-
-값이 저장되었는지 확인합니다:
-
-[source,bash,role="copypaste"]
-----
-oc rsh redis-0 redis-cli GET greeting
-----
-
-이제 Pod를 강제로 삭제합니다:
+Pod를 강제로 삭제합니다:
 
 [source,bash,role="copypaste"]
 ----
@@ -148,23 +135,99 @@ NAME      READY   STATUS    RESTARTS   AGE
 redis-0   1/1     Running   0          8s
 ----
 
-같은 이름 ``redis-0``으로 새 Pod가 다시 생성되었습니다. 저장했던 값이 남아있는지 확인합니다:
+Deployment였다면 새 Pod가 매번 다른 무작위 이름을 받았겠지만, 이번에는 **똑같은 이름 ``redis-0``**으로 다시 생성되었습니다. StatefulSet은 Pod가 삭제되고 재생성되어도 같은 순번의 이름을 그대로 다시 부여하기 때문입니다.
+
+[.bordershadow]
+image::nationalparks-redis-topology.png[Topology 화면에서 redis-0 Pod,link="self",window=_blank]
+// TODO: 스크린샷 필요 - Topology 화면에서 redis-0 Pod
+
+NOTE: 실제로 ``nationalparks`` 코드가 이 Redis를 캐시로 사용하려면 애플리케이션 코드 수정이 필요합니다. 이 모듈은 애플리케이션 코드 변경 없이 StatefulSet 자체의 동작(안정적인 이름)을 보여주는 것이 목적입니다.
+
+[#daemonset_connectivity_check]
+== 실습: DaemonSet으로 노드마다 연결성 점검하기
+
+parksmap 앱은 parksmap(프런트엔드), nationalparks(백엔드 API), MongoDB 여러 컴포넌트로 이루어져 있고, 이 컴포넌트들은 클러스터의 여러 노드에 나뉘어 떠 있을 수 있습니다. 그렇다면 **어느 노드에서 실행되든 다른 서비스에 동일하게 도달할 수 있을까요**? DaemonSet을 이용해 노드마다 하나씩 점검 에이전트를 띄워 직접 확인해 보겠습니다.
+
+**Workloads** → **DaemonSets**에서 **Create** → **From YAML**을 선택하고 다음 YAML을 붙여넣습니다:
+
+[source,yaml,role="copypaste",subs="attributes"]
+----
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: connectivity-checker
+  namespace: {ocp4_starter_project}
+spec:
+  selector:
+    matchLabels:
+      app: connectivity-checker
+  template:
+    metadata:
+      labels:
+        app: connectivity-checker
+    spec:
+      containers:
+        - name: checker
+          image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          command:
+            - sh
+            - -c
+            - |
+              while true; do
+                echo "[$NODE_NAME] parksmap: $(curl -sf -o /dev/null -w '%{http_code}' http://parksmap.{ocp4_starter_project}.svc.cluster.local:8080/ws/healthz/ || echo FAIL)"
+                echo "[$NODE_NAME] nationalparks: $(curl -sf -o /dev/null -w '%{http_code}' http://nationalparks.{ocp4_starter_project}.svc.cluster.local:8080/ws/healthz/ || echo FAIL)"
+                sleep 30
+              done
+----
+
+**Create**를 클릭합니다. Pod가 노드마다 하나씩 생성되는 것을 확인합니다:
 
 [source,bash,role="copypaste"]
 ----
-oc rsh redis-0 redis-cli GET greeting
+oc get pods -o wide -l app=connectivity-checker
 ----
 
 [.console-output]
 [source]
 ----
-"hello from redis-0"
+NAME                         READY   STATUS    RESTARTS   AGE   NODE
+connectivity-checker-4k8pl   1/1     Running   0          20s   worker-0
+connectivity-checker-9h2qz   1/1     Running   0          20s   worker-1
+connectivity-checker-vw7rt   1/1     Running   0          20s   worker-2
 ----
 
-이번에는 데이터가 사라지지 않았습니다. StatefulSet이 관리하는 PVC는 Pod가 삭제되고 재생성되어도 그대로 다시 연결되기 때문입니다.
+``NODE`` 열을 보면 노드마다 정확히 Pod가 하나씩 배치된 것을 확인할 수 있습니다. 서로 다른 노드에 있는 두 Pod의 로그를 각각 확인해 봅니다:
 
-[.bordershadow]
-image::nationalparks-redis-topology.png[Topology 화면에서 redis-0 Pod와 연결된 볼륨 표시,link="self",window=_blank]
-// TODO: 스크린샷 필요 - Topology 화면에서 redis-0 Pod와 연결된 볼륨 표시
+[source,bash,role="copypaste"]
+----
+oc logs connectivity-checker-4k8pl
+oc logs connectivity-checker-9h2qz
+----
 
-NOTE: 실제로 ``nationalparks`` 코드가 이 Redis를 캐시로 사용하려면 애플리케이션 코드 수정이 필요합니다. 이 모듈은 애플리케이션 코드 변경 없이 StatefulSet 자체의 동작(안정적인 이름, 영구 저장소)을 보여주는 것이 목적입니다.
+[.console-output]
+[source]
+----
+[worker-0] parksmap: 200
+[worker-0] nationalparks: 200
+----
+
+[.console-output]
+[source]
+----
+[worker-1] parksmap: 200
+[worker-1] nationalparks: 200
+----
+
+어느 노드에서 실행되는 Pod든 parksmap과 nationalparks 모두에 동일하게 200 응답을 받는 것을 확인할 수 있습니다. 노드가 다르다고 해서 접근 가능한 서비스가 달라지지 않는다는 뜻입니다 — 클러스터 네트워크는 어느 노드에서든 동일하게 동작하기 때문입니다.
+
+실습이 끝나면 정리합니다:
+
+[source,bash,role="copypaste"]
+----
+oc delete daemonset connectivity-checker
+----

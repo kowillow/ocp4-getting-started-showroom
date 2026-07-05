@@ -169,8 +169,11 @@ Events:            <none>
 그 시점에는 **Service**에 연결된 여러 엔드포인트를
 확인할 수 있습니다.
 
+[#route_group]
+== Route
+
 [#routes]
-== 배경 지식: Route
+=== 배경 지식: Route
 
 **Service**는 OpenShift 환경 내부에서 추상화와 로드 밸런싱을 제공하지만,
 때로는 OpenShift **외부**의 클라이언트(사용자, 시스템, 디바이스 등)가
@@ -184,7 +187,7 @@ TLS 같은 보안 설정을 정의할 수 있습니다. **Service**, 그리고 �
 생성해야 합니다.
 
 [#route_vs_ingress]
-== 배경 지식: OpenShift Route와 Kubernetes Ingress
+=== 배경 지식: OpenShift Route와 Kubernetes Ingress
 
 Kubernetes를 먼저 접해봤다면 **Route** 대신 **Ingress**라는 이름이 익숙할 수 있습니다. 둘은 같은 문제(외부 트래픽을 클러스터 내부 **Service**로 전달하는 것)를 해결하지만, 등장한 배경과 기능 범위가 다릅니다.
 
@@ -216,7 +219,7 @@ Kubernetes를 먼저 접해봤다면 **Route** 대신 **Ingress**라는 이름�
 이 워크샵에서는 OpenShift 네이티브 기능인 **Route**를 사용합니다. 다른 Kubernetes 배포판으로 옮겨야 하는 애플리케이션이라면 **Ingress**를 선택해 이식성을 높일 수 있습니다.
 
 [#creating_a_route]
-== 실습: Route 생성하기
+=== 실습: Route 생성하기
 
 ``parksmap`` 애플리케이션을 배포할 때 **Route**를 생성하는 체크박스를 해제했던 것을
 기억하실 겁니다. 원래는 자동으로 생성되었을 것입니다. 다행히 **Route**를 생성하는 것은
