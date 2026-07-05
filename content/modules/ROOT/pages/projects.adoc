@@ -15,21 +15,21 @@ Project는 여러분(또는 여러분의 팀)이 작업에 사용하는 모든 �
 
 **{ocp4_starter_project}**라는 이름의 Project가 이미 여러분을 위해 생성되어 있습니다. 이 페이지 오른쪽의 **OCP Console** 탭을 통해 살펴보는 것부터 시작해 보세요.
 
-OpenShift 웹 콘솔에 로그인한 후, Project 드롭다운에서 여러분의 Project를 찾아 선택합니다. Project 개요를 살펴보면서 Project의 리소스와 활동에 대한 요약을 확인해 보세요.
+OpenShift 웹 콘솔에 로그인한 후, 프로젝트 목록에서 여러분의 Project({ocp4_starter_project})를 찾아 클릭합니다. Project 개요를 살펴보면서 Project의 리소스와 활동에 대한 요약을 확인해 보세요.
 
 [.bordershadow]
 image::openshift-console-project.png[OpenShift 웹 콘솔의 Project 개요 화면,link="self",window=_blank]
 
-=== Topology 뷰
+=== 토폴로지 뷰
 
-Project 내의 애플리케이션과 그 구성 요소를 시각적으로 표현해 주는 Topology 화면을 살펴보세요.
+Project 내의 애플리케이션과 그 구성 요소를 시각적으로 표현해 주는 토폴로지 화면을 살펴보세요.
 
-왼쪽 메뉴에서 **Workloads**로 이동한 후 **Topology**를 선택합니다.
+왼쪽 메뉴에서 **워크로드**로 이동한 후 **토폴로지**를 선택합니다.
 
 [.bordershadow]
-image::openshift-console-topology.png[애플리케이션 구성 요소를 시각적으로 보여주는 Topology 화면,link="self",window=_blank]
+image::openshift-console-topology.png[애플리케이션 구성 요소를 시각적으로 보여주는 토폴로지 화면,link="self",window=_blank]
 
-아직 아무것도 배포하지 않았기 때문에 현재는 애플리케이션이나 구성 요소가 보이지 않습니다. 워크숍을 진행하면서 이 **Topology** 화면에서 애플리케이션의 구성 요소를 시각화하고 상호작용할 수 있게 됩니다.
+아직 아무것도 배포하지 않았기 때문에 현재는 애플리케이션이나 구성 요소가 보이지 않습니다. 워크숍을 진행하면서 이 **토폴로지** 화면에서 애플리케이션의 구성 요소를 시각화하고 상호작용할 수 있게 됩니다.
 
 == 명령줄로 Project 다루기
 
@@ -50,7 +50,7 @@ oc project {ocp4_starter_project}
 Now using project "{ocp4_starter_project}" on server "{ocp4_starter_api_url}"
 ----
 
-이 명령은 현재 컨텍스트를 여러분에게 할당된 Project 내에서 작업하도록 설정합니다. 별도로 지정하지 않는 한, 이후의 모든 ``oc`` 명령은 이 Project 범위 내에서 동작합니다.
+이 명령은 현재 컨텍스트를 {ocp4_starter_project} Project 내에서 작업하도록 설정합니다. 별도로 지정하지 않는 한, 이후의 모든 ``oc`` 명령은 이 Project 범위 내에서 동작합니다.
 
 == 다음 단계
 
