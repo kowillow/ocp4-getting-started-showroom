@@ -3,7 +3,7 @@
 
 include::vars.adoc[]
 
-이 섹션에서는 시각화 애플리케이션(이전 워크숍 섹션에서 배포한 ``parksmap`` 웹 구성 요소)에
+이 섹션에서는 시각화 애플리케이션(이전 워크샵 섹션에서 배포한 ``parksmap`` 웹 구성 요소)에
 두 가지 주요 REST 엔드포인트를 노출하는 백엔드 Service를 배포합니다.
 이 애플리케이션은 MongoDB 데이터베이스에 저장된 각 국립공원의 정보(좌표 포함)를
 조회합니다. 또한 이 애플리케이션은 API를 최종 사용자가 직접 사용할 수 있도록
@@ -15,7 +15,7 @@ image::roadshow-app-architecture-nationalparks-1.png[nationalparks 백엔드를 
 [#source_to_image]
 == 배경 지식: Source-to-Image (S2I)
 
-이전 워크숍 섹션에서는 기존에 존재하는 컨테이너 이미지를 배포하는 방법을 배웠습니다.
+이전 워크샵 섹션에서는 기존에 존재하는 컨테이너 이미지를 배포하는 방법을 배웠습니다.
 이번에는 기존 Git 저장소의 소스 코드로부터 OpenShift가 직접 컨테이너 이미지를 빌드하는 방법을 배웁니다. 이는 Source-to-Image 프로젝트를 통해 이루어집니다.
 
 link:{ocp4_starter_openshift_github}/source-to-image[Source-to-Image (S2I)^]는
@@ -23,18 +23,20 @@ Red Hat이 후원하는 오픈소스 프로젝트로, 다음과 같은 목표를
 
 [quote]
 --
-Source-to-image(S2I)는 재현 가능한 컨테이너 이미지를 빌드하기 위한 도구입니다. S2I는
-소스 코드를 컨테이너 이미지에 주입하고 빌더 이미지와 빌드된 소스를 결합한 새로운
-컨테이너 이미지를 조합하여 즉시 실행 가능한 이미지를 만들어냅니다. 그 결과물은 docker run으로
-바로 사용할 준비가 됩니다. S2I는 이전에 다운로드한 종속성이나 이전에 빌드된
-아티팩트 등을 재사용하는 증분 빌드(incremental build)를 지원합니다.
+Source-to-Image(S2I)는 소스 코드로부터 재현 가능한 컨테이너 이미지를 만들기 위한 툴킷이자
+워크플로입니다. S2I는 소스 코드를 컨테이너 이미지에 주입하고, 컨테이너가 그 소스 코드를
+실행 가능한 상태로 준비하도록 하여 즉시 실행 가능한(ready-to-run) 이미지를 만들어냅니다.
+스스로 조립되는 빌더 이미지(builder image)를 만들어 두면, 런타임 환경을 컨테이너 이미지로
+버전 관리하듯 빌드 환경도 그대로 버전 관리하고 통제할 수 있습니다.
 --
+
+S2I는 이전에 다운로드한 종속성이나 이전에 빌드된 아티팩트를 재사용하는 증분 빌드(incremental build)도 지원합니다.
 
 OpenShift는 Dockerfile의 지시어를 사용한 이미지 빌드나 "custom" 빌드 외에도, S2I를 빌드 메커니즘 중 하나로 사용할 수 있습니다.
 
 OpenShift는 S2I 프로세스를 Build Pod라고 하는 특별한 **Pod** 내부에서 실행합니다. 즉 빌드도 결국 하나의 Pod이므로, 앞으로 배우게 될 쿼터, 제한, 리소스 스케줄링 등 다른 Pod와 동일한 제약을 그대로 받습니다.
 
-S2I에 대한 전체적인 논의는 이 워크숍의 범위를 벗어나지만, 더 자세한 내용은
+S2I에 대한 전체적인 논의는 이 워크샵의 범위를 벗어나지만, 더 자세한 내용은
 link:{ocp4_starter_openshift_docs}/html/images/creating-images[OpenShift S2I 문서^]나
 link:{ocp4_starter_openshift_github}/source-to-image[GitHub^]에서 확인할 수 있습니다. S2I에 대해 기억해야 할 유일한
 핵심 개념은, 여러분이 직접 Dockerfile을 작성하지 않아도 OpenShift가 소스 코드로부터 실행 가능한 이미지를 대신 빌드해 준다는 것입니다.
@@ -60,7 +62,7 @@ GitLab, 또는 Git 프로토콜을 지원하는 다른 어떤 서버든 사용�
 Git 서버에 webhook을 등록하여 애플리케이션 코드가 업데이트될 때마다 OpenShift 빌드가
 시작되도록 할 수도 있습니다!
 
-워크숍 후반부에서는 코드를 변경한 후 애플리케이션을 다시 빌드해 볼 것입니다. 지금은
+워크샵 후반부에서는 코드를 변경한 후 애플리케이션을 다시 빌드해 볼 것입니다. 지금은
 백엔드 Service를 배포하는 방법을 살펴보겠습니다.
 
 [#deploying_the_backend_service]
@@ -231,7 +233,7 @@ oc get routes
 다음과 유사한 결과가 표시됩니다:
 
 [.console-output]
-[source,role="copypaste",subs="attributes"]
+[source,subs="attributes"]
 ----
 NAME            HOST/PORT                                                   PATH      SERVICES        PORT       TERMINATION       WILDCARD
 nationalparks   nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}      nationalparks   8080-tcp        edge
@@ -261,7 +263,7 @@ WARNING: Pod가 Running 상태인데도 애플리케이션이 사용 불가능�
 {"id":"nationalparks","displayName":"National Parks","center":{"latitude":"47.039304","longitude":"14.505178"},"zoom":4}
 ----
 
-워크숍 앞부분에서 다음 내용을 읽었습니다:
+워크샵 앞부분에서 다음 내용을 읽었습니다:
 
 _이 애플리케이션은 MongoDB 데이터베이스에 대해 2D 지리공간 쿼리를 수행합니다_
 

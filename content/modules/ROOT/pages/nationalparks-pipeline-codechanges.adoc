@@ -142,7 +142,7 @@ return new Backend("nationalparks","National Parks", new Coordinates("47.039304"
 
 다음과 같이 변경합니다:
 
-[source,bash,role="copypaste"]
+[source,java,role="copypaste"]
 ----
 return new Backend("nationalparks","Amazing National Parks", new Coordinates("47.039304", "14.505178"), 4);
 ----

@@ -1,9 +1,9 @@
-= 워크숍 링크
-:navtitle: 워크숍 링크
+= 워크샵 링크
+:navtitle: 워크샵 링크
 
 include::vars.adoc[]
 
-이 페이지에서 워크숍 진행 중 필요한 모든 URL, 호스트명, 사용자 이름, 비밀번호를 확인할 수 있습니다.
+이 페이지에서 워크샵 진행 중 필요한 모든 URL, 호스트명, 사용자 이름, 비밀번호를 확인할 수 있습니다.
 
 이 URL들은 각 실습 안에도 포함되어 있으므로, 이 페이지와 실습 사이를 왔다 갔다 하지 않아도 됩니다.
 
@@ -26,6 +26,6 @@ TIP: **OCP Console**과 **Gitea** 웹 인터페이스는 이 페이지 오른쪽
 **비밀번호**: {ocp4_starter_gitea_password}
 
 [#workshop_guides]
-== 워크숍 가이드
+== 워크샵 가이드
 
 **URL**: link:{ocp4_starter_showroom_url}[{ocp4_starter_showroom_url}^]

@@ -115,7 +115,7 @@ oc get cronjob
 
 [source,bash,role="copypaste"]
 ----
-oc get jobs -l app.kubernetes.io/created-by=cronjob-controller
+oc get jobs
 ----
 
 [.bordershadow]

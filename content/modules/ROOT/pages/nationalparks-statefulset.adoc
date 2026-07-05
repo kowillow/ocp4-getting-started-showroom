@@ -5,7 +5,7 @@ include::vars.adoc[]
 
 지금까지 MongoDB는 Deployment로 잘 동작했습니다. 하지만 매번 데이터베이스를 조회하는 대신, 자주 조회되는 응답을 캐시하면 ``nationalparks`` API가 더 빨라질 수 있습니다. 이런 캐시 계층에는 흔히 Redis 같은 인메모리 데이터 저장소를 사용합니다. 이번 섹션에서는 Redis를 **StatefulSet**으로 배포해 봅니다.
 
-NOTE: MongoDB는 Deployment로도 이 워크숍의 목적에는 충분합니다. 다만 Pod의 신원(identity)과 저장 공간이 유지되어야 하는 워크로드(캐시, 데이터베이스 등)에는 일반적으로 Deployment 대신 StatefulSet이 더 적합합니다. 이 모듈에서는 그 차이를 Redis를 통해 직접 확인합니다. 사실 MongoDB는 지금 영구 저장소 없이 임시(ephemeral) 상태로 동작하고 있어 StatefulSet으로 전환하는 것도 좋은 후속 과제가 될 수 있지만, 이미 구성해 둔 MongoDB 설정을 건드리지 않기 위해 이 모듈에서는 Redis로 동일한 StatefulSet 동작 방식을 보여줍니다.
+NOTE: MongoDB는 Deployment로도 이 워크샵의 목적에는 충분합니다. 다만 Pod의 신원(identity)과 저장 공간이 유지되어야 하는 워크로드(캐시, 데이터베이스 등)에는 일반적으로 Deployment 대신 StatefulSet이 더 적합합니다. 이 모듈에서는 그 차이를 Redis를 통해 직접 확인합니다. 사실 MongoDB는 지금 영구 저장소 없이 임시(ephemeral) 상태로 동작하고 있어 StatefulSet으로 전환하는 것도 좋은 후속 과제가 될 수 있지만, 이미 구성해 둔 MongoDB 설정을 건드리지 않기 위해 이 모듈에서는 Redis로 동일한 StatefulSet 동작 방식을 보여줍니다.
 
 [#statefulsets]
 == 배경 지식: StatefulSet과 PersistentVolume
@@ -16,7 +16,7 @@ NOTE: MongoDB는 Deployment로도 이 워크숍의 목적에는 충분합니다.
 * **순서 있는 배포/스케일링**: Pod가 0번부터 순서대로 생성되고, 스케일 다운 시에는 역순으로 종료됩니다.
 * **영구 저장소**: 각 Pod가 자신만의 ``PersistentVolumeClaim``(PVC)을 가지며, Pod가 재시작되어도 같은 볼륨에 다시 연결됩니다.
 
-**StatefulSet**의 ``volumeClaimTemplates`` 필드는 Pod마다 독립된 PVC를 자동으로 생성해 줍니다. Deployment에서는 지원하지 않는 기능입니다. 여기서 **PersistentVolume**(PV)은 클러스터에 실제로 존재하는 저장소 자원이고, PVC는 Pod가 그 저장소를 사용하겠다고 요청하는 수단이라는 점을 구분해 두면 이해하기 쉽습니다. 클러스터에 동적 프로비저닝 스토리지가 설정되어 있다면(워크숍 소개에서 이 환경의 구성 요소로 확인했던 내용입니다), ``storageClassName``을 지정하지 않아도 PVC가 자동으로 바인딩됩니다.
+**StatefulSet**의 ``volumeClaimTemplates`` 필드는 Pod마다 독립된 PVC를 자동으로 생성해 줍니다. Deployment에서는 지원하지 않는 기능입니다. 여기서 **PersistentVolume**(PV)은 클러스터에 실제로 존재하는 저장소 자원이고, PVC는 Pod가 그 저장소를 사용하겠다고 요청하는 수단이라는 점을 구분해 두면 이해하기 쉽습니다. 클러스터에 동적 프로비저닝 스토리지가 설정되어 있다면(워크샵 소개에서 이 환경의 구성 요소로 확인했던 내용입니다), ``storageClassName``을 지정하지 않아도 PVC가 자동으로 바인딩됩니다.
 
 [#deploy_redis_statefulset]
 == 실습: Redis를 StatefulSet으로 배포하기

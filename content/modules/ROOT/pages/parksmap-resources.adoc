@@ -3,7 +3,7 @@
 
 include::vars.adoc[]
 
-프로젝트를 처음 만들 때 살펴봤듯이, 각 Project는 리소스 쿼터나 제한 같은 제약 조건을 가질 수 있습니다. 지금까지는 ``parksmap``을 자유롭게 스케일링했지만, 실제 클러스터는 유한한 자원입니다. 이번 섹션에서는 컨테이너 하나가 사용할 수 있는 자원을 제한하는 방법과, 프로젝트 전체가 사용할 수 있는 총량을 제한하는 방법을 배웁니다.
+각 Project는 리소스 쿼터나 제한 같은 제약 조건을 가질 수 있습니다. 지금까지는 ``parksmap``을 자유롭게 스케일링했지만, 실제 클러스터는 유한한 자원입니다. 이번 섹션에서는 컨테이너 하나가 사용할 수 있는 자원을 제한하는 방법과, 프로젝트 전체가 사용할 수 있는 총량을 제한하는 방법을 배웁니다.
 
 [#requests_and_limits]
 == 배경 지식: Requests와 Limits
@@ -13,7 +13,7 @@ include::vars.adoc[]
 * **Requests**: 스케줄러가 Pod를 배치할 노드를 고를 때 "이 정도는 반드시 확보해 달라"고 보장을 요청하는 값입니다. 요청한 만큼의 자원 여유가 없는 노드에는 Pod가 스케줄링되지 않습니다.
 * **Limits**: 컨테이너가 이 값을 초과해 사용하려 하면 CPU는 스로틀링(제한)되고, 메모리는 OOMKilled(Out Of Memory) 상태로 강제 종료됩니다. 즉, 컨테이너가 사용할 수 있는 **최대치**를 의미합니다.
 
-link:{ocp4_starter_openshift_docs}/html/nodes/working-with-clusters#understanding-resource[Requests와 Limits에 대한 문서^]에서 더 자세히 알아볼 수 있습니다.
+link:{ocp4_starter_openshift_docs}/html/nodes/working-with-pods#nodes-pods-configuring[Requests와 Limits에 대한 문서^]에서 더 자세히 알아볼 수 있습니다.
 
 [#configuring_resources]
 == 실습: Deployment에 Requests/Limits 설정하기
@@ -46,57 +46,56 @@ oc describe deployment parksmap | grep -A 4 Limits
 [#resource_quota]
 == 배경 지식: ResourceQuota
 
-**Requests**/**Limits**가 Pod 하나에 대한 제약이라면, **ResourceQuota**는 Project(namespace) **전체**에 대한 총량 제약입니다. 예를 들어 "이 프로젝트에서 동시에 실행되는 Pod는 최대 6개, 요청 가능한 CPU 합계는 1코어까지"처럼 제한할 수 있습니다. 여러 팀이 하나의 클러스터를 공유할 때, 한 프로젝트가 자원을 독점하지 못하도록 막는 안전장치입니다.
+**Requests**/**Limits**가 Pod 하나에 대한 제약이라면, **ResourceQuota**는 Project(namespace) **전체**에 대한 총량 제약입니다. 예를 들어 "이 프로젝트에서 동시에 실행되는 Pod는 최대 12개, 요청 가능한 CPU 합계는 2코어까지"처럼 제한할 수 있습니다. 여러 팀이 하나의 클러스터를 공유할 때, 한 프로젝트가 자원을 독점하지 못하도록 막는 안전장치입니다.
+
+ResourceQuota에 ``requests.cpu``/``requests.memory``처럼 자원 관련 항목이 하나라도 포함되면, 그 순간부터 이 Project에 생성되는 **모든** Pod는 반드시 requests/limits 값을 가지고 있어야 합니다. 값을 명시하지 않은 Pod가 있으면 그대로 생성이 거부됩니다. 그래서 ResourceQuota는 보통 **LimitRange**와 함께 사용됩니다. LimitRange는 값을 명시하지 않은 컨테이너에 자동으로 기본 requests/limits를 채워주는 역할을 합니다.
 
 [#create_resource_quota]
-== 실습: ResourceQuota 생성하기
+== 실습: 사전 설정된 ResourceQuota 확인하기
 
-ResourceQuota를 새로 만들기 전에, 이 namespace에 이미 적용된 쿼터나 제한이 있는지 먼저 확인하는 것이 좋은 습관입니다:
+일반 사용자 권한으로는 ResourceQuota를 직접 생성할 수 없고, 웹 콘솔의 **Workloads** 메뉴에도 ResourceQuotas 항목이 없습니다. ResourceQuota는 Project 전체의 자원 한도를 정하는 관리자 영역의 오브젝트이기 때문입니다. 그래서 이번 실습에서는 클러스터 관리자가 여러분의 Project에 미리 설정해 둔 ResourceQuota와 LimitRange를 확인하고, 그 한도에 실제로 부딪혀 보겠습니다.
+
+먼저 이 namespace에 이미 적용된 쿼터와 제한을 확인합니다:
 
 [source,bash,role="copypaste"]
 ----
 oc get resourcequota,limitrange
 ----
 
-NOTE: 클러스터 관리자가 플랫폼 차원에서 이미 쿼터를 설정해 두었을 수 있습니다. 이미 쿼터가 있다면, 아래 예시의 숫자가 기존 쿼터보다 커서 효과가 없을 수 있으니 실습 환경에 맞게 숫자를 조정하세요.
-
-**Workloads** → **ResourceQuotas**에서 **Create** → **From YAML**을 선택하고 다음 YAML을 붙여넣습니다:
-
-[source,yaml,role="copypaste",subs="attributes"]
+[.console-output]
+[source]
 ----
-apiVersion: v1
-kind: ResourceQuota
-metadata:
-  name: workshop-quota
-  namespace: {ocp4_starter_project}
-spec:
-  hard:
-    requests.cpu: "1"
-    requests.memory: 1Gi
-    limits.cpu: "2"
-    limits.memory: 2Gi
-    pods: "6"
+NAME                                AGE     REQUEST                                                  LIMIT
+resourcequota/workshop-quota        1d      requests.cpu: 0/2, requests.memory: 0/2Gi                limits.cpu: 0/4, limits.memory: 0/4Gi, pods: 0/12
+
+NAME                            CREATED AT
+limitrange/workshop-limits      ...
 ----
 
-[.bordershadow]
-image::parksmap-resourcequota-create.png[ResourceQuota Create From YAML 다이얼로그,link="self",window=_blank]
-// TODO: 스크린샷 필요 - ResourceQuota Create From YAML 다이얼로그
-
-**Create**를 클릭합니다. 적용된 쿼터와 현재 사용량을 확인합니다:
+적용된 쿼터의 세부 내용을 확인합니다:
 
 [source,bash,role="copypaste"]
 ----
 oc describe resourcequota workshop-quota
 ----
 
-[#quota_in_action]
-== 실습: 쿼터 한도에서 스케일링해보기
-
-이제 ``pods: "6"`` 한도에 부딪힐 때까지 ``parksmap``을 스케일링해 보겠습니다. 현재 이 프로젝트에는 ``parksmap``, ``nationalparks``, ``mongodb`` Pod가 이미 실행 중이므로, 여유는 얼마 남지 않았습니다.
+LimitRange가 명시하지 않은 컨테이너에 어떤 기본값을 채워주는지도 확인합니다:
 
 [source,bash,role="copypaste"]
 ----
-oc scale --replicas=6 deployment/parksmap
+oc describe limitrange workshop-limits
+----
+
+NOTE: 이 ResourceQuota/LimitRange는 이 워크샵 전체에서 계속 적용됩니다. 이후 모듈에서 배포할 ``nationalparks``, MongoDB, Redis 같은 다른 구성 요소들은 자체적으로 requests/limits를 지정하지 않는데, 바로 이 LimitRange의 기본값을 자동으로 받기 때문에 정상적으로 배포될 수 있는 것입니다.
+
+[#quota_in_action]
+== 실습: 쿼터 한도에서 스케일링해보기
+
+이제 ``pods: "12"`` 한도에 부딪힐 때까지 ``parksmap``을 스케일링해 보겠습니다. 지금까지는 ``parksmap``만 배포했으므로, 이 Project에는 아직 ``parksmap`` Pod 1개만 실행 중입니다.
+
+[source,bash,role="copypaste"]
+----
+oc scale --replicas=12 deployment/parksmap
 ----
 
 Pod와 ReplicaSet 상태를 확인합니다:
@@ -111,7 +110,7 @@ oc get events --field-selector reason=FailedCreate
 [source]
 ----
 LAST SEEN   TYPE      REASON        OBJECT                        MESSAGE
-10s         Warning   FailedCreate  replicaset/parksmap-79d5c9f8a2   Error creating: pods "parksmap-79d5c9f8a2-x8k2p" is forbidden: exceeded quota: workshop-quota, requested: pods=1, used: pods=6, limited: pods=6
+10s         Warning   FailedCreate  replicaset/parksmap-79d5c9f8a2   Error creating: pods "parksmap-79d5c9f8a2-x8k2p" is forbidden: exceeded quota: workshop-quota, requested: pods=1, used: pods=12, limited: pods=12
 ----
 
 ``exceeded quota`` 메시지를 통해 ResourceQuota가 실제로 새 Pod 생성을 막고 있음을 확인할 수 있습니다. **ReplicaSet**은 요청받은 개수(``DESIRED``)를 계속 유지하려고 시도하지만, 쿼터 때문에 실제로는(``CURRENT``) 그보다 적은 Pod만 만들어집니다.

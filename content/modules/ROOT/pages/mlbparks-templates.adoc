@@ -11,7 +11,7 @@ include::vars.adoc[]
 image::deprecated/roadshow-app-architecture-mlbparks.png[Application architecture,800,align="center",link="self",window=_blank]
 
 지난 여러 실습에서 수행했던 모든 작업을, 단 한 번의 명령으로 인스턴스화할 수 있는
-**Template**을 사용하여 합쳐보겠습니다. 오늘 워크숍의 모든 내용을 템플릿으로
+**Template**을 사용하여 합쳐보겠습니다. 오늘 워크샵의 모든 내용을 템플릿으로
 배포할 수도 있었지만, 리소스를 직접 생성하고 배포하고 서로 연결하는 방법을
 이해하는 것이 중요하다는 점을 기억하세요.
 

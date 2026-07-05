@@ -3,7 +3,7 @@
 
 include::vars.adoc[]
 
-이 워크숍 섹션에서는 애플리케이션을 외부 사용자가 접근할 수 있도록 만듭니다.
+이 워크샵 섹션에서는 애플리케이션을 외부 사용자가 접근할 수 있도록 만듭니다.
 
 [.bordershadow]
 image::roadshow-app-architecture-parksmap-2.png[Route를 통해 외부 사용자에게 노출되는 ParksMap 애플리케이션 구조도,link="self",window=_blank]
@@ -20,8 +20,8 @@ image::roadshow-app-architecture-parksmap-2.png[Route를 통해 외부 사용자
 **Service**의 엔드포인트로 매핑하며, 들어오는 요청 입장에서는 ``parksmap``이 요청을
 더 잘 처리하게 되었다는 것 외에는 별다른 차이를 느끼지 못합니다.
 
-OpenShift에 이미지를 실행하도록 요청했을 때, OpenShift는 자동으로 **Service**를
-생성해 주었습니다. Service는 클러스터 내부에서만 유효한 가상 IP(ClusterIP)를 가지는 내부 구성 요소라는 점을 기억하세요. 그래서 "외부
+앞서 **컨테이너 이미지** 배포 방식으로 ``parksmap``을 배포했을 때, 이 방식은 Deployment뿐 아니라 **Service**도 함께 자동으로
+생성해 주었습니다(``oc new-app`` 같은 CLI 명령이나 **Git에서 가져오기** 같은 다른 배포 방식들도 마찬가지로 Service를 자동 생성합니다). Service는 클러스터 내부에서만 유효한 가상 IP(ClusterIP)를 가지는 내부 구성 요소라는 점을 기억하세요. 그래서 "외부
 세계"나 OpenShift 환경 바깥에 있는 것들은 이 IP로 Service에 접근할 수 없습니다. 괜찮습니다. 이 문제를 해결하기 위해 잠시 후 **Route**를 사용하는 방법을 배우게 됩니다.
 
 === Service는 Pod를 어떻게 찾는가
@@ -44,12 +44,12 @@ oc get services
 [.console-output]
 [source]
 ----
-NAME       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
-parksmap   ClusterIP   172.31.106.159   <none>        8080/TCP   15m
+NAME       TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+parksmap   ClusterIP   172.30.22.209   <none>        8080/TCP   15m
 ----
 
 위 출력에서, ``parksmap``이라는 이름의 **Service**가
-172.31.106.159라는 IP에 8080/TCP 포트로 연결되어 있는 것을 확인할 수 있습니다. 각
+172.30.22.209라는 IP에 8080/TCP 포트로 연결되어 있는 것을 확인할 수 있습니다. 각
 **Service**는 생성 시 고유한 IP 주소를 받기 때문에 여러분의 IP 주소는 다를 수 있습니다. **Service**의
 IP는 고정되며 해당 **Service**가 존재하는 동안 절대 변경되지 않습니다.
 
@@ -213,7 +213,7 @@ Kubernetes를 먼저 접해봤다면 **Route** 대신 **Ingress**라는 이름�
 |``Ingress`` 오브젝트 작성 + 클러스터에 Ingress Controller 필요(OpenShift는 기본 내장)
 |===
 
-이 워크숍에서는 OpenShift 네이티브 기능인 **Route**를 사용합니다. 다른 Kubernetes 배포판으로 옮겨야 하는 애플리케이션이라면 **Ingress**를 선택해 이식성을 높일 수 있습니다.
+이 워크샵에서는 OpenShift 네이티브 기능인 **Route**를 사용합니다. 다른 Kubernetes 배포판으로 옮겨야 하는 애플리케이션이라면 **Ingress**를 선택해 이식성을 높일 수 있습니다.
 
 [#creating_a_route]
 == 실습: Route 생성하기
@@ -264,8 +264,8 @@ oc get services
 [.console-output]
 [source]
 ----
-NAME       CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
-parksmap   172.30.169.213   <none>        8080/TCP   5h
+NAME       CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+parksmap   172.30.22.209   <none>        8080/TCP   5h
 ----
 
 **Service** 이름을 알고 나면 **Route**를 생성하는 것은 간단한 명령 한 번으로 끝나는 작업입니다:
@@ -290,7 +290,8 @@ route.route.openshift.io/parksmap created
 oc get route
 ----
 
-[source,bash,role="copypaste",subs="attributes"]
+[.console-output]
+[source,subs="attributes"]
 ----
 NAME       HOST/PORT                                                           PATH   SERVICES   PORT       TERMINATION   WILDCARD
 parksmap   parksmap-{ocp4_starter_project}.{ocp4_starter_apps_domain}          parksmap   8080-tcp   edge          None

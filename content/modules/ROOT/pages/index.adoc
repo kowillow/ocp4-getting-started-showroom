@@ -1,11 +1,11 @@
-= OpenShift Getting Started 워크숍에 오신 것을 환영합니다
+= OpenShift Getting Started 워크샵에 오신 것을 환영합니다
 :navtitle: Overview
 
 include::vars.adoc[]
 
 == 개요
 
-이 워크숍은 개발자의 관점에서 OpenShift를 실습 중심으로 소개합니다. 실제로 손으로 해보는 대화형 실습을 통해, OpenShift 플랫폼에서 컨테이너화된 애플리케이션을 빌드하고 배포하고 관리하는 방법을 배웁니다.
+이 워크샵은 개발자의 관점에서 OpenShift를 실습 중심으로 소개합니다. 실제로 손으로 해보는 대화형 실습을 통해, OpenShift 플랫폼에서 컨테이너화된 애플리케이션을 빌드하고 배포하고 관리하는 방법을 배웁니다.
 
 == 배우게 될 내용
 
@@ -45,4 +45,4 @@ include::vars.adoc[]
 * 코드 변경 시 자동으로 애플리케이션이 빌드되도록 webhook 설정하기
 * Job과 CronJob으로 일회성 작업과 예약 작업을 자동화하기
 
-NOTE: 이 워크숍은 Java 애플리케이션을 사용하지만, 여기서 다루는 개념과 기법은 .NET, Node.js, Python 등 다른 런타임으로 빌드된 애플리케이션에도 동일하게 적용됩니다.
+NOTE: 이 워크샵은 Java 애플리케이션을 사용하지만, 여기서 다루는 개념과 기법은 .NET, Node.js, Python 등 다른 런타임으로 빌드된 애플리케이션에도 동일하게 적용됩니다.

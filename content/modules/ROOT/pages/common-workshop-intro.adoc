@@ -14,15 +14,15 @@ link:https://www.redhat.com/en/topics/containers/whats-a-linux-container-vb[컨�
 
 이러한 컨테이너 기반 위에서, link:https://openshift.com/[OpenShift^]는 워크플로우를 간소화하고 검증된 통합 기능을 제공하는 완전한 플랫폼을 통해 효율적인 애플리케이션 개발을 지원합니다. 이는 프로젝트를 신속하게 진행하려는 개발팀과 표준화된 애플리케이션 플랫폼을 찾는 조직에게 이상적입니다.
 
-//이 워크숍은 link:https://dn.dev/openshift-workshop[dn.dev/openshift-workshop^]에서 제공되는 슬라이드 자료와 함께 진행됩니다.
+//이 워크샵은 link:https://dn.dev/openshift-workshop[dn.dev/openshift-workshop^]에서 제공되는 슬라이드 자료와 함께 진행됩니다.
 
-== 이 워크숍의 OpenShift 환경
+== 이 워크샵의 OpenShift 환경
 
 지금까지 OpenShift와 컨테이너가 무엇인지 살펴봤으니, 이제 실습에 사용할 실제 환경을 소개합니다.
 
 image::common-environment-ocp-architecture.png[OpenShift Architecture,link="self",window=_blank]
 
-이 워크숍은 퍼블릭 클라우드에서 실행되는 OpenShift 환경에서 호스팅됩니다. 이 환경은 다음과 같은 시스템으로 구성됩니다:
+이 워크샵은 퍼블릭 클라우드에서 실행되는 OpenShift 환경에서 호스팅됩니다. 이 환경은 다음과 같은 시스템으로 구성됩니다:
 
 * Control Plane 노드
 * Worker 노드(또는 "애플리케이션" 노드)

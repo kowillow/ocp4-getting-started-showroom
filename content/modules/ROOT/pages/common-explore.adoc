@@ -38,7 +38,7 @@ image::openshift-console-dashboard.png[로그인 후 표시되는 OpenShift 웹 
 
 === CLI 설치 확인하기
 
-CLI는 워크숍 환경에 미리 설치되어 있습니다. 오른쪽에서 Terminal 탭을 눌러 사용 가능한지 확인하고 버전을 확인해 보세요.
+CLI는 워크샵 환경에 미리 설치되어 있습니다. 오른쪽에서 Terminal 탭을 눌러 사용 가능한지 확인하고 버전을 확인해 보세요.
 
 [source,bash,role="copypaste",subs="attributes"]
 ----
@@ -66,7 +66,7 @@ Kubernetes Version: v1.33.x
 
 이 명령은 사용자 이름과 비밀번호를 사용하여 클러스터에 인증합니다. ``Use insecure connections? (y/n):`` 라는 메시지가 뜨면 y를 입력하세요.
 
-NOTE: "The server uses a certificate signed by an unknown authority."라는 메시지가 표시되어도 이 워크숍 환경에서는 무시해도 됩니다.
+NOTE: "The server uses a certificate signed by an unknown authority."라는 메시지가 표시되어도 이 워크샵 환경에서는 무시해도 됩니다.
 이는 클러스터의 API 인증서가 자체 서명(self-signed)되었음을 나타내며, 개발 및 테스트 환경에서는 흔한 경우입니다.
 
 [.bordershadow]
@@ -120,7 +120,7 @@ Project는 배포를 구성하고 관리하는 데 도움을 주는 OpenShift의
 
 Project는 여러분(또는 여러분의 팀)이 작업에 사용하는 모든 애플리케이션 서비스와 엔드포인트를 감싸는 "래퍼(wrapper)"라고 생각하면 됩니다. 내부적으로 OpenShift Project는 Kubernetes 네임스페이스(namespace) 위에 구축되지만, Project 추상화는 관리자에게 향상된 역할 기반 접근 제어(RBAC) 같은 추가 기능을 제공합니다.
 
-이 섹션에서는 앞서 익힌 웹 콘솔과 명령줄 인터페이스를 모두 사용하여 Project로 작업하는 방법을 살펴봅니다. 모든 용어를 이해하지 못해도 걱정하지 마세요. 이러한 개념은 워크숍 전체에 걸쳐 자세히 다룰 것입니다.
+이 섹션에서는 앞서 익힌 웹 콘솔과 명령줄 인터페이스를 모두 사용하여 Project로 작업하는 방법을 살펴봅니다. 모든 용어를 이해하지 못해도 걱정하지 마세요. 이러한 개념은 워크샵 전체에 걸쳐 자세히 다룰 것입니다.
 
 === 웹 콘솔에서 Project 살펴보기
 
@@ -140,7 +140,7 @@ Project 내의 애플리케이션과 그 구성 요소를 시각적으로 표현
 [.bordershadow]
 image::openshift-console-topology.png[애플리케이션 구성 요소를 시각적으로 보여주는 토폴로지 화면,link="self",window=_blank]
 
-아직 아무것도 배포하지 않았기 때문에 현재는 애플리케이션이나 구성 요소가 보이지 않습니다. 워크숍을 진행하면서 이 **토폴로지** 화면에서 애플리케이션의 구성 요소를 시각화하고 상호작용할 수 있게 됩니다.
+아직 아무것도 배포하지 않았기 때문에 현재는 애플리케이션이나 구성 요소가 보이지 않습니다. 워크샵을 진행하면서 이 **토폴로지** 화면에서 애플리케이션의 구성 요소를 시각화하고 상호작용할 수 있게 됩니다.
 
 === 명령줄로 Project 다루기
 

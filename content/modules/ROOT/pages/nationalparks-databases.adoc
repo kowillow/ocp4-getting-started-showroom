@@ -16,7 +16,7 @@ image::roadshow-app-architecture-nationalparks-2.png[MongoDB 데이터베이스�
 [#storage]
 == 배경 지식: 데이터베이스 연결 설정
 
-유용한 애플리케이션 대부분은 데이터를 어딘가에 저장해야 하는 "상태를 가진(stateful)" 구성 요소가 필요하며, 보통 데이터베이스가 그 역할을 맡습니다. 이 워크숍 섹션에서는
+유용한 애플리케이션 대부분은 데이터를 어딘가에 저장해야 하는 "상태를 가진(stateful)" 구성 요소가 필요하며, 보통 데이터베이스가 그 역할을 맡습니다. 이 워크샵 섹션에서는
 애플리케이션 아키텍처에 MongoDB를 추가하고, ``nationalparks`` Deployment가 이
 데이터베이스에 연결하도록 구성합니다.
 
@@ -141,7 +141,7 @@ OpenShift에 애플리케이션을 배포할 때는, 종속 시스템에 대한 
 수행하고 데이터베이스 스키마를 생성하는 소스 파일은 다음에서 확인할 수
 있습니다:
 
-[source,bash,role="copypaste",subs="attributes"]
+[source,text,subs="attributes"]
 ----
 {ocp4_starter_openshift_roadshow}/nationalparks/blob/master/src/main/java/com/openshift/evg/roadshow/parks/db/MongoDBConnection.java#L44-l48
 ----

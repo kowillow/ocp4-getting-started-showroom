@@ -8,7 +8,7 @@ include::vars.adoc[]
 
 **Pod**는 스스로를 지키지 않습니다. Pod 하나가 죽거나 실수로 삭제되면, 그 자리를 대신 채워줄 존재가 없는 한 애플리케이션은 그대로 사라진 채로 남습니다.
 
-이 문제를 해결해 주는 것이 **ReplicaSet**(RS)입니다. ReplicaSet은 "정해진 개수의 Pod가 항상 실행되고 있는지" 계속 감시하는 감독관 같은 역할을 합니다. 예를 들어 애플리케이션 서버가 항상 3개의 **Pod**(인스턴스)를 실행하도록 지정해 두면, 그중 하나가 죽거나 삭제되더라도 ReplicaSet이 즉시 새 Pod를 하나 더 만들어 항상 3개를 유지합니다. 이렇게 사람이 개입하지 않아도 스스로 원래 상태를 복구하는 것을 자가 치유(self-healing)라고 부릅니다.
+이 문제를 해결해 주는 것이 **ReplicaSet**입니다. ReplicaSet은 "정해진 개수의 Pod가 항상 실행되고 있는지" 계속 감시하는 감독관 같은 역할을 합니다. 예를 들어 애플리케이션 서버가 항상 3개의 **Pod**(인스턴스)를 실행하도록 지정해 두면, 그중 하나가 죽거나 삭제되더라도 ReplicaSet이 즉시 새 Pod를 하나 더 만들어 항상 3개를 유지합니다. 이렇게 사람이 개입하지 않아도 스스로 원래 상태를 복구하는 것을 자가 치유(self-healing)라고 부릅니다.
 
 link:{ocp4_starter_openshift_docs}/html/building_applications/deployments[Deployment 문서^]에 따르면 다음과 같습니다:
 
@@ -38,7 +38,7 @@ NAME       READY   UP-TO-DATE   AVAILABLE   AGE
 parksmap   1/1     1            1           20m
 ----
 
-더 자세한 내용을 확인하려면 **ReplicaSet**(RS)을 살펴봅니다:
+더 자세한 내용을 확인하려면 **ReplicaSet**을 살펴봅니다:
 
 [source,bash,role="copypaste"]
 ----
@@ -164,13 +164,13 @@ image::parksmap-scaled.png[Developer Perspective에서 확인한 실행 중인 P
 [#application_self_healing]
 == 실습: 애플리케이션 자가 치유(Self Healing) 확인하기
 
-OpenShift의 **RS**는 원하는 개수의 **Pod**가 실행되고 있는지 지속적으로 모니터링하기 때문에, 원하는 레플리카 개수와 현재 개수가 일치하지 않을 경우 OpenShift가 상황을 "고칠" 것이라고 예상할 수 있습니다.
+OpenShift의 **ReplicaSet**은 원하는 개수의 **Pod**가 실행되고 있는지 지속적으로 모니터링하기 때문에, 원하는 레플리카 개수와 현재 개수가 일치하지 않을 경우 OpenShift가 상황을 "고칠" 것이라고 예상할 수 있습니다.
 
 현재 두 개의 **Pod**가 실행 중이므로, "실수로" 하나를 죽이면 어떤 일이 일어나는지 확인해 볼 수 있습니다. ``oc get pods`` 명령을 다시 실행하고 **Pod** 이름 하나를 선택합니다. 그런 다음 다음을 수행합니다:
 
 [source,bash,role="copypaste"]
 ----
-oc delete pod parksmap-7dfd599cd7-vgc7z && oc get pods
+oc delete pod parksmap-65c4f8b676-k5gkk && oc get pods
 ----
 
 [.console-output]
@@ -184,7 +184,7 @@ parksmap-65c4f8b676-fxcrq   1/1     Running             0          4m48s
 
 무언가 눈치채셨나요? 하나의 컨테이너가 삭제되었지만, 이미 그 자리에 새로운 컨테이너가 생성되고 있습니다.
 
-방금 확인한 자가 치유는 **RS가 Pod의 개수만 확인**하는 방식입니다. Pod가 존재하는지만 보고, 그 안의 애플리케이션이 실제로 정상 동작하는지는 신경 쓰지 않습니다. OpenShift는 여기서 한 단계 더 나아가, 애플리케이션 인스턴스의 liveness 및/또는 readiness를 확인하는 별도의 기능도 제공합니다. 기본 확인만으로 충분하지 않은 경우, OpenShift는 확인을 수행하기 위해 컨테이너 내부에서 명령을 실행할 수도 있게 해줍니다. 이 명령은 설치된 어떤 언어로든 작성된 스크립트일 수 있습니다.
+방금 확인한 자가 치유는 **ReplicaSet이 Pod의 개수만 확인**하는 방식입니다. Pod가 존재하는지만 보고, 그 안의 애플리케이션이 실제로 정상 동작하는지는 신경 쓰지 않습니다. OpenShift는 여기서 한 단계 더 나아가, 애플리케이션 인스턴스의 liveness 및/또는 readiness를 확인하는 별도의 기능도 제공합니다. 기본 확인만으로 충분하지 않은 경우, OpenShift는 확인을 수행하기 위해 컨테이너 내부에서 명령을 실행할 수도 있게 해줍니다. 이 명령은 설치된 어떤 언어로든 작성된 스크립트일 수 있습니다.
 
 이러한 health check를 사용하면, Pod 자체는 멀쩡히 떠 있어도 그 안의 ``parksmap`` 애플리케이션이 정상 상태가 아니라고 OpenShift가 판단할 경우 해당 인스턴스를 삭제하고 그 자리에 새 인스턴스를 생성해, 항상 원하는 개수의 "정상" 레플리카가 유지되도록 할 수 있습니다.
 

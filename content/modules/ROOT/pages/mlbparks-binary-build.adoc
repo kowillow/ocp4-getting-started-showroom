@@ -32,7 +32,7 @@ NOTE: 실제로 작업 디렉터리 전체를 S2I 빌더에 전송하여 OpenShi
 
 [#clone_source]
 === 소스 클론하기
-첫 번째 단계는 GitHub에서 MLB 소스 코드를 워크숍 환경으로 클론하는 것입니다:
+첫 번째 단계는 GitHub에서 MLB 소스 코드를 워크샵 환경으로 클론하는 것입니다:
 
 [.console-input]
 [source,bash]
