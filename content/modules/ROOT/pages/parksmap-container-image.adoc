@@ -11,17 +11,17 @@ image::roadshow-app-architecture-parksmap-1.png[ParksMap 프런트엔드와 백�
 [#deploy_your_first_image]
 == 실습: 첫 번째 컨테이너 이미지 배포하기
 
-가장 간단한 방법부터 시작해 보겠습니다 - 평범한 Docker 형식 이미지를 OpenShift에서 실행해 보는 것입니다.
+가장 간단한 방법부터 시작해 보겠습니다. 평범한 Docker 형식 이미지를 OpenShift에서 실행해 보는 것입니다.
 이 작업은 매우 간단하며, OpenShift에서는 웹 콘솔에서 직접 수행할 수 있습니다.
 
-**OCP Console** 탭에서 **{ocp4_starter_project}** Project의 **Topology** 화면으로 이동합니다.
+**OCP Console** 탭에서 **{ocp4_starter_project}** Project의 **토폴로지** 화면으로 이동합니다.
 
-왼쪽 상단의 **+** 아이콘을 클릭합니다. OpenShift에 애플리케이션을 배포할 수 있는 여러 옵션이 있는 메뉴가 표시됩니다. 배포하려는 이미지의 정보를 지정할 수 있는 대화 상자를 열려면 **Container images**를 클릭합니다.
+왼쪽 상단의 **+** 아이콘을 클릭합니다. OpenShift에 애플리케이션을 배포할 수 있는 여러 옵션이 있는 메뉴가 표시됩니다. 배포하려는 이미지의 정보를 지정할 수 있는 대화 상자를 열려면 **컨테이너 이미지**를 클릭합니다.
 
 [.bordershadow]
 image::openshift-console-add-container.png[Container images 배포 옵션을 입력하는 대화 상자,link="self",window=_blank]
 
-**Image Name** 필드에 다음을 복사하여 붙여넣습니다:
+'외부 레지스트리의 이미지 이름' 아래에 **Image Name** 필드에 다음을 복사하여 붙여넣습니다:
 
 [source,bash,role="copypaste",subs="attributes"]
 ----
@@ -35,40 +35,40 @@ image::openshift-console-add-container.png[Container images 배포 옵션을 입
 [.bordershadow]
 image::parksmap-image.png[이미지 이름 입력 후 표시되는 parksmap 이미지 세부 정보 화면,link="self",window=_blank]
 
-**Runtime Icon**에서 OpenShift Topology 화면에 표시할 아이콘을 선택합니다. 이 프런트엔드는 Spring Boot로 만들어졌으므로 **spring-boot**를 선택합니다.
+**런타임 아이콘**에서 OpenShift 토폴록지 화면에 표시할 아이콘을 선택합니다. 이 프런트엔드는 Spring Boot로 만들어졌으므로 **spring-boot**를 선택합니다.
 
 다음 값이 설정되어 있는지 확인합니다:
 
-**Application Name** :
+**애플리케이션 이름** :
 [source,text,role=copypaste]
 ----
 workshop
 ----
 
-**Name** :
+**이름** :
 [source,text,role=copypaste]
 ----
 parksmap
 ----
 
-NOTE: **Application Name**은 전체 애플리케이션의 이름이며, **Name** 필드는 개별 구성 요소에 부여된 이름을 나타냅니다. 이 경우 ``parksmap`` 구성 요소가 배포할 컨테이너입니다.
+NOTE: **애플리케이션 이름**은 전체 애플리케이션의 이름이며, **이름** 필드는 개별 구성 요소에 부여된 이름을 나타냅니다. 이 경우 ``parksmap`` 구성 요소가 배포할 컨테이너입니다.
 
-**Resource type** 섹션에서 **Deployment**가 선택되어 있는지 확인합니다.
+**리소스 유형** 섹션에서 **배포(Deployment)**가 선택되어 있는지 확인합니다.
 
-NOTE: **Resource type**에 대해서는 이후 챕터에서 자세히 다룹니다.
+NOTE: **리소스 유형**에 대해서는 이후 챕터에서 자세히 다룹니다.
 
-**"Advanced options"** 아래에 있는 **Create a route** 옆의 체크박스를 **해제**합니다. 학습을 위해 이 워크숍의 나중 단계에서 애플리케이션용 **Route**를 직접 생성해 볼 것입니다.
+**"고급 옵션"** 아래에 있는 **경로 생성(Create a route)** 옆의 체크박스를 **해제**합니다. 학습을 위해 이 워크숍의 나중 단계에서 애플리케이션용 **경로(Route)**를 직접 생성해 볼 것입니다.
 
-페이지 하단의 Advanced Options 섹션에서 **Labels**를 클릭하고, 나중에 이 배포를 식별하는 데 사용할 수 있는 레이블을 추가합니다. 레이블은 웹 콘솔과 명령줄에서 구성 요소를 식별하고 필터링하는 데 도움이 됩니다.
+페이지 하단의 '이름을 클릭하여 고급 옵션에 액세스합니다' 부분에서 **라벨(Labels)**를 클릭하고, 나중에 이 배포(Deployment)를 식별하는 데 사용할 수 있는 레이블을 추가합니다. 레이블은 웹 콘솔과 명령줄에서 구성 요소를 식별하고 필터링하는 데 도움이 됩니다.
 
-레이블 3개를 추가합니다. 각 레이블에 대해 name=value 쌍을 입력한 후 다음 레이블을 입력하기 전에 kbd:[Return] 키(키보드에 따라 kbd:[Enter] 키)를 누릅니다. 첫 번째 레이블은 애플리케이션의 이름입니다.
+레이블 3개를 추가합니다. 각 레이블에 대해 name=value 쌍을 입력한 후 다음 레이블을 입력하기 전에 kbd:[Return] 키(키보드에 따라 kbd:[Enter] 키)를 누릅니다. 첫 번째 레이블은 전체 애플리케이션의 이름입니다.
 
 [source,text,role=copypaste]
 ----
 app=workshop
 ----
 
-다음은 이 배포의 이름입니다.
+다음은 이 배포(Deployment)의 이름입니다.
 
 [source,text,role=copypaste]
 ----
@@ -88,7 +88,7 @@ image::parksmap-image-options.png[Runtime Icon과 이름 및 레이블을 설정
 [.bordershadow]
 image::parksmap-advanced-image-options.png[Create a route 체크 해제 등 고급 옵션과 레이블 입력 화면,width=600,link="self",window=_blank]
 
-이제 파란색 **Create** 버튼을 클릭합니다. **Topology** 페이지로 이동하며, ``workshop`` 애플리케이션 내 ``parksmap`` 배포 구성에 대한 시각화를 확인할 수 있습니다.
+이제 파란색 **만들기(Create)** 버튼을 클릭합니다. **토폴로지** 페이지로 이동하며, ``workshop`` 애플리케이션 내 ``parksmap`` 배포에 대한 시각화를 확인할 수 있습니다.
 
 [.bordershadow]
 image::parksmap-dc-topology.png[Topology 화면에 표시된 workshop 애플리케이션의 parksmap 배포 아이콘,width=400,link="self",window=_blank]
