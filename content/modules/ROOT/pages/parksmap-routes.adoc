@@ -1,5 +1,5 @@
-= Route
-:navtitle: Route
+= Service와 Route
+:navtitle: Service와 Route
 
 include::vars.adoc[]
 
@@ -7,6 +7,167 @@ include::vars.adoc[]
 
 [.bordershadow]
 image::roadshow-app-architecture-parksmap-2.png[Route를 통해 외부 사용자에게 노출되는 ParksMap 애플리케이션 구조도,link="self",window=_blank]
+
+[#services]
+== 배경 지식: Service
+
+=== Service는 왜 필요한가
+
+**Pod**는 언제든 다시 시작되거나 새로 만들어질 수 있고, 그때마다 새로운 IP 주소를 받습니다. 그래서 다른 무언가가 특정 Pod의 IP 주소를 직접 기억해서 사용한다면, 그 Pod가 재시작되는 순간 연결이 끊어져 버립니다. **Service**는 이 문제를 해결하기 위한 안정적인 창구입니다. Service는 OpenShift 내부에서 트래픽을 **Pod**로 라우팅하는 추상화 계층을 제공하며, 또한 해당 **Pod**로 전송되는 트래픽에 대한 로드 밸런서 역할도 합니다.
+
+예를 들어 증가하는 트래픽을 처리하기 위해 더 많은 ``parksmap`` 인스턴스가 필요하다면,
+**Pod**를 더 늘릴 수 있습니다. OpenShift는 이러한 Pod들을 자동으로
+**Service**의 엔드포인트로 매핑하며, 들어오는 요청 입장에서는 ``parksmap``이 요청을
+더 잘 처리하게 되었다는 것 외에는 별다른 차이를 느끼지 못합니다.
+
+OpenShift에 이미지를 실행하도록 요청했을 때, OpenShift는 자동으로 **Service**를
+생성해 주었습니다. Service는 클러스터 내부에서만 유효한 가상 IP(ClusterIP)를 가지는 내부 구성 요소라는 점을 기억하세요. 그래서 "외부
+세계"나 OpenShift 환경 바깥에 있는 것들은 이 IP로 Service에 접근할 수 없습니다. 괜찮습니다. 이 문제를 해결하기 위해 잠시 후 **Route**를 사용하는 방법을 배우게 됩니다.
+
+=== Service는 Pod를 어떻게 찾는가
+
+**Service**는 **Selector**를 사용하여 여러 **Pod**와 매핑됩니다. **Selector**는 **Labels**(Pod에 붙이는 ``app=parksmap``과 같은 key=value 형태의 태그)를 기준으로 어떤 Pod가 트래픽을 받아야 하는지 결정합니다. 즉 Pod가 몇 개이든, 어떤 이름으로 생성되든 상관없이 정해진 Label만 붙어 있으면 그 Service의 트래픽 대상이 됩니다.
+
+직접 YAML 형식으로 작성하는 방법을 포함하여
+link:{ocp4_starter_openshift_docs}/html/networking_overview[Service^]에 대한 더 많은 정보는, OpenShift 공식 문서에서 확인할 수 있습니다.
+
+이제 **Service**가 무엇인지 기본 개념을 이해했으니, 방금 배포한 이미지에 대해 생성된
+**Service**를 살펴보겠습니다. 여러분의 **Project**에 정의된 **Service**를 확인하려면 다음 명령을 입력합니다:
+
+[source,bash,role="copypaste"]
+----
+oc get services
+----
+
+다음과 유사한 출력이 표시됩니다:
+
+[.console-output]
+[source]
+----
+NAME       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+parksmap   ClusterIP   172.31.106.159   <none>        8080/TCP   15m
+----
+
+위 출력에서, ``parksmap``이라는 이름의 **Service**가
+172.31.106.159라는 IP에 8080/TCP 포트로 연결되어 있는 것을 확인할 수 있습니다. 각
+**Service**는 생성 시 고유한 IP 주소를 받기 때문에 여러분의 IP 주소는 다를 수 있습니다. **Service**의
+IP는 고정되며 해당 **Service**가 존재하는 동안 절대 변경되지 않습니다.
+
+**Topology** 화면에서는 ``parksmap`` Deployment를 클릭한 후 **Resources**를 클릭하면 Service 정보를 확인할 수 있습니다.
+
+[.bordershadow]
+image::parksmap-serviceslist.png[Resources 탭에서 확인한 parksmap Service 연결 정보,link="self",window=_blank]
+
+다음 명령을 사용하여 YAML 형식으로 데이터를 표시함으로써
+**Service**에 대한 더 자세한 정보를 확인할 수도 있습니다:
+
+[source,bash,role="copypaste"]
+----
+oc get service parksmap -o yaml
+----
+
+다음과 유사한 출력이 표시됩니다:
+
+[.console-output]
+[source]
+----
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    openshift.io/generated-by: OpenShiftWebConsole
+  creationTimestamp: "2020-09-30T14:10:12Z"
+  labels:
+    app: workshop
+    app.kubernetes.io/component: parksmap
+    app.kubernetes.io/instance: parksmap
+    app.kubernetes.io/part-of: workshop
+    component: parksmap
+    role: frontend
+  name: parksmap
+  namespace: workshop
+  resourceVersion: "1062269"
+  selfLink: /api/v1/namespaces/workshop/services/parksmap
+  uid: e1ff69c8-cb2f-11e9-82a1-0267eec7e1a0
+spec:
+  clusterIP: 172.30.22.209
+  ports:
+  - name: 8080-tcp
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: parksmap
+    deployment: parksmap
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+----
+
+``selector`` 필드를 주목하고 기억해 두세요. 잠시 후 ``parksmap`` Pod의 Label과 실제로 일치하는지 직접 비교해 보겠습니다.
+
+또는 이전 화면에서 **Service**를 클릭하여 웹 콘솔로 정보를 확인할 수도 있습니다.
+
+[.bordershadow]
+image::parksmap-service.png[웹 콘솔에서 확인한 parksmap Service 상세 정보 화면,link="self",window=_blank]
+
+``parksmap`` **Pod**의 YAML을 확인하여 **Service**
+가 **Selector**를 어떻게 사용하는지 이해해 보세요. 다음 명령을 실행하여 Pod 정보를 확인합니다:
+
+[source,bash,role="copypaste"]
+----
+oc describe pods
+----
+
+``Labels`` 섹션 아래에서 다음을 확인할 수 있습니다:
+
+[.console-output]
+[source]
+----
+app=parksmap
+deployment=parksmap
+----
+
+이 **Pod** 레이블은 **Service**의 **Selector**가 대상으로 하는 레이블과 일치합니다.
+
+NOTE: **Labels**는 단순한 key-value 쌍입니다. 동일한 **Project**(**Namespace**라고도 함) 내에서 **Selector**와
+일치하는 레이블을 가진 모든 **Pod**는 해당 **Service**와 연결됩니다. 이를 직접 확인하려면 다음
+명령을 실행하세요:
+
+[source,bash,role="copypaste"]
+----
+oc describe service parksmap
+----
+
+다음과 유사한 출력이 표시됩니다:
+
+[.console-output]
+[source,text]
+----
+Name:              parksmap
+Namespace:         workshop
+Labels:            app=workshop
+                   app.kubernetes.io/component=parksmap
+                   app.kubernetes.io/instance=parksmap
+                   app.kubernetes.io/part-of=workshop
+                   component=parksmap
+                   role=frontend
+Annotations:       openshift.io/generated-by: OpenShiftWebConsole
+Selector:          app=parksmap,deployment=parksmap
+Type:              ClusterIP
+IP:                172.30.22.209
+Port:              8080-tcp  8080/TCP
+TargetPort:        8080/TCP
+Endpoints:         10.128.2.90:8080
+Session Affinity:  None
+Events:            <none>
+----
+
+왜 엔드포인트가 하나만 나열되는지 궁금할 수 있습니다. 이는 현재 실행 중인
+**Pod**가 하나뿐이기 때문입니다. 다음 실습에서는 애플리케이션을 스케일링하는 방법을 배우게 되며,
+그 시점에는 **Service**에 연결된 여러 엔드포인트를
+확인할 수 있습니다.
 
 [#routes]
 == 배경 지식: Route

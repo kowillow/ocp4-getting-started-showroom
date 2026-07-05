@@ -1,11 +1,11 @@
-= 설정 분리하기: ConfigMap
-:navtitle: 설정 분리하기: ConfigMap
+= 환경변수와 ConfigMap
+:navtitle: 환경변수와 ConfigMap
 
 include::vars.adoc[]
 
-앞서 ``nationalparks`` Deployment에 ``MONGODB_SERVER_HOST``와 ``MONGODB_DATABASE`` 값을 환경 변수로 직접 입력했고, 민감한 자격 증명은 ``mongodb-credentials`` **Secret**에서 가져왔습니다. 그런데 **+Add from ConfigMap or Secret** 대화 상자를 자세히 보면 리소스 종류로 **Secret** 뿐만 아니라 **ConfigMap**도 선택할 수 있었습니다. 지금까지는 한 번도 사용하지 않은 옵션입니다.
+앞서 ``nationalparks`` 애플리케이션을 배포했지만, 아직 연결할 데이터베이스는 없습니다. 이 애플리케이션은 곧 MongoDB에 연결하게 될 텐데, 그때 필요한 연결 정보(호스트 이름, 데이터베이스 이름)를 지금 미리 준비해 두려고 합니다.
 
-민감하지 않은 설정값(호스트 이름, 데이터베이스 이름 등)을 Deployment 스펙에 직접 하드코딩하는 것은 좋은 습관이 아닙니다. 값을 바꾸려면 Deployment 자체를 수정해야 하고, 같은 값을 여러 Deployment에서 재사용하기도 어렵습니다. 이번 섹션에서는 이 두 값을 **ConfigMap**으로 옮겨 이 문제를 해결합니다.
+민감하지 않은 설정값(호스트 이름, 데이터베이스 이름 등)을 Deployment 스펙에 직접 하드코딩하는 것은 좋은 습관이 아닙니다. 값을 바꾸려면 Deployment 자체를 수정해야 하고, 같은 값을 여러 Deployment에서 재사용하기도 어렵습니다. 이번 섹션에서는 이런 값을 **ConfigMap**으로 미리 준비해서 이 문제를 예방합니다.
 
 [#configmaps_vs_secrets]
 == 배경 지식: ConfigMap과 Secret
@@ -17,7 +17,7 @@ include::vars.adoc[]
 * **ConfigMap**은 데이터베이스 호스트 이름, 기능 플래그, 로그 레벨처럼 유출되어도 큰 문제가 없는 설정값에 사용합니다.
 * **Secret**은 비밀번호, 토큰, 인증서처럼 노출되면 안 되는 값에 사용합니다. Secret의 값은 base64로 인코딩되어 저장되지만, 이는 암호화가 아니라 단순 인코딩이라는 점에 유의해야 합니다. 대신 OpenShift는 Secret에 대해 더 제한적인 RBAC(Role-Based Access Control) 접근 제어를 적용할 수 있습니다.
 
-두 오브젝트 모두 애플리케이션 이미지를 다시 빌드하지 않고도 환경별로 다른 값을 주입할 수 있게 해준다는 공통의 목적을 가지고 있습니다.
+두 오브젝트 모두 애플리케이션 이미지를 다시 빌드하지 않고도 환경별로 다른 값을 주입할 수 있게 해준다는 공통의 목적을 가지고 있습니다. 잠시 후 데이터베이스를 실제로 배포할 때는 자격 증명을 Secret으로 준비하게 되는데, 그전에 먼저 민감하지 않은 연결 정보를 ConfigMap으로 준비해 보겠습니다.
 
 [#create_configmap]
 == 실습: ConfigMap 생성하기
@@ -44,14 +44,14 @@ data:
 
 폼 하단의 **Create** 버튼을 클릭합니다.
 
+NOTE: ``MONGODB_SERVER_HOST``의 값 ``mongodb``는 잠시 후 데이터베이스 모듈에서 배포할 MongoDB **Service**의 이름과 미리 맞춰둔 것입니다. 아직 그 Service는 존재하지 않지만, 이름만 미리 정해서 ConfigMap에 담아 두는 것입니다.
+
 [#wire_configmap_env]
 == 실습: ConfigMap 값을 환경 변수로 연결하기
 
-이제 ``nationalparks`` Deployment가 이 두 값을 리터럴 문자열 대신 새로 만든 ConfigMap에서 읽어오도록 바꿉니다. **Topology** 화면에서 ``nationalparks`` Deployment를 클릭하고 _Actions → Edit Deployment_를 선택합니다.
+이제 ``nationalparks`` Deployment에 방금 만든 ConfigMap의 값을 환경 변수로 연결합니다. **Topology** 화면에서 ``nationalparks`` Deployment를 클릭하고 _Actions → Edit Deployment_를 선택합니다.
 
-**Environment Variables** 섹션으로 이동해 기존 ``MONGODB_SERVER_HOST``와 ``MONGODB_DATABASE`` 항목 두 개를 삭제합니다.
-
-**+Add from ConfigMap or Secret**을 클릭하고 이름으로 ``MONGODB_SERVER_HOST``를 입력합니다. 값으로는 resource로 ``nationalparks-config``를, key로 ``MONGODB_SERVER_HOST``를 선택합니다.
+**Environment Variables** 섹션으로 이동해 **+Add from ConfigMap or Secret**을 클릭하고 이름으로 ``MONGODB_SERVER_HOST``를 입력합니다. 값으로는 resource로 ``nationalparks-config``를, key로 ``MONGODB_SERVER_HOST``를 선택합니다.
 
 다시 **+Add from ConfigMap or Secret**을 클릭하고 이름으로 ``MONGODB_DATABASE``를 입력합니다. 값으로는 resource로 ``nationalparks-config``를, key로 ``MONGODB_DATABASE``를 선택합니다.
 
@@ -66,14 +66,14 @@ image::nationalparks-configmap-env-wire.png[Edit Deployment 대화 상자에서 
 oc get rs -l app=nationalparks
 ----
 
-값이 리터럴 문자열이든 ConfigMap 참조든, 컨테이너 안에서 보이는 환경 변수는 동일합니다. 애플리케이션이 여전히 정상 동작하는지 확인해 보세요:
+아직 MongoDB를 배포하지 않았으므로, 이 환경 변수가 가리키는 ``mongodb`` Service는 존재하지 않습니다. 그런데도 애플리케이션이 정상적으로 배포되는지 확인해 보세요:
 
 [source,text,role="copypaste",subs="attributes"]
 ----
 https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/data/all
 ----
 
-이전과 같은 데이터가 그대로 표시된다면, 애플리케이션 동작에는 아무런 변화 없이 설정만 안전하게 리팩터링한 것입니다.
+빈 배열(``[]``)이 반환되지만 오류 화면 없이 정상적으로 응답합니다. 이는 애플리케이션이 데이터베이스 연결이 정의되지 않은 경우를 예외 처리하도록 만들어졌기 때문입니다. 다음 모듈에서 실제로 MongoDB를 배포하는 순간, 지금 준비해 둔 이 환경 변수가 곧바로 살아나 데이터베이스에 연결되는 것을 확인하게 됩니다.
 
 [#mount_configmap_volume]
 == 실습: ConfigMap을 볼륨으로 마운트하기

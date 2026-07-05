@@ -20,7 +20,9 @@ image::roadshow-app-architecture-nationalparks-2.png[MongoDB 데이터베이스�
 애플리케이션 아키텍처에 MongoDB를 추가하고, ``nationalparks`` Deployment가 이
 데이터베이스에 연결하도록 구성합니다.
 
-데이터베이스 접속 정보(호스트, 사용자 이름, 비밀번호 등)를 애플리케이션 이미지에 직접 하드코딩하면, 접속 정보가 바뀔 때마다 이미지를 다시 빌드해야 합니다. 그래서 이런 연결 파라미터는 https://kubernetes.io/docs/concepts/configuration/secret/[Secret^]을 사용해 환경 변수 형태로 Deployment에 전달합니다. 이렇게 하면 소스 코드를 건드리지 않고도 접속 정보만 바꿔서 다른 환경에 재사용할 수 있습니다.
+데이터베이스 접속 정보(호스트, 사용자 이름, 비밀번호 등)를 애플리케이션 이미지에 직접 하드코딩하면, 접속 정보가 바뀔 때마다 이미지를 다시 빌드해야 합니다. 그래서 이런 연결 파라미터는 https://kubernetes.io/docs/concepts/configuration/secret/[Secret^]을 사용해 환경 변수 형태로 Deployment에 전달합니다. 이렇게 하면 소스 코드를 건드리지 않고도 접속 정보만 바꿔서 다른 환경에 재사용할 수 있습니다. 호스트 이름/데이터베이스 이름처럼 민감하지 않은 값은 이미 앞선 모듈에서 **ConfigMap**으로 준비해 두었으니, 이번에는 자격 증명을 담을 Secret을 만듭니다.
+
+데이터베이스에는 자격 증명 외에도 실제로 저장할 데이터가 필요합니다. 컨테이너의 파일 시스템은 컨테이너가 재시작되면 함께 사라지므로, MongoDB가 다시 시작되어도 데이터가 남아있게 하려면 **PersistentVolumeClaim**(PVC)을 통해 별도의 영구 저장 공간을 연결해야 합니다. PVC는 클러스터에 실제로 존재하는 저장 공간(PersistentVolume)을 Pod가 사용할 수 있도록 요청하는 오브젝트입니다. 이 섹션에서는 Secret과 PVC를 함께 준비해 MongoDB를 배포합니다.
 
 [#create_mongodb_instance]
 == 실습: MongoDB 배포하기
@@ -72,12 +74,16 @@ image::mongodb_deploy_image_image.png[mongo 컨테이너 이미지와 Runtime �
     - 여기에서 앞서 생성한 ``mongodb-credentials`` Secret에서 값을 가져오는 두 개의 환경 변수를 추가합니다.
     - **+Add from ConfigMap or Secret**을 클릭하고 이름으로 ``MONGO_INITDB_ROOT_USERNAME``을 입력합니다. 값으로는 resource로 ``mongodb-credentials``를, key로 ``admin-usr``을 선택합니다.
     - 다시 **+Add from ConfigMap or Secret**을 클릭하고 이름으로 ``MONGO_INITDB_ROOT_PASSWORD``를 입력합니다. 값으로는 resource로 ``mongodb-credentials``를, key로 ``admin-pwd``를 선택합니다.
+    - 이어서 같은 화면의 **Volumes** 섹션에서 **Add Volume**을 클릭하고 다음과 같이 PVC 기반 볼륨을 추가합니다: Volume 이름 ``mongodb-data``, Source는 **PersistentVolumeClaim**을 선택한 후 **Create new claim**으로 새 PVC를 생성(용량 예: ``1Gi``, Access mode는 ``ReadWriteOnce``)하고, Mount path에 ``/data/db``를 입력합니다. ``/data/db``는 MongoDB가 실제 데이터 파일을 저장하는 디렉터리입니다.
 
 * Advanced options:
     - Create a route → 데이터베이스는 OpenShift 클러스터 외부의 클라이언트가 접근하지 않을 것이므로 **체크 해제**합니다.
 
 [.bordershadow]
 image::mongodb_deploy_image_general.png[MongoDB 배포의 환경 변수와 Create a route 옵션이 표시된 General 섹션,link="self",window=_blank]
+// TODO: 스크린샷 필요 - Volumes 섹션에서 PVC 기반 볼륨을 추가하는 화면
+
+이렇게 하면 MongoDB Pod가 재시작되거나 다시 스케줄링되더라도, PVC에 연결된 저장 공간 덕분에 데이터가 사라지지 않습니다.
 
 마지막으로, 페이지 하단의 **Create** 버튼을 클릭하여 MongoDB 컨테이너를 배포합니다.
 
@@ -113,14 +119,7 @@ NOTE: 프로덕션 환경에서는 컨테이너 entrypoint를 수정하거나 ht
 [.bordershadow]
 image::nationalparks_deployment_edit.png[nationalparks Deployment의 Actions 메뉴에서 Edit Deployment 선택,link="self",window=_blank]
 
-**Edit Deployment** 대화 상자에서 아래로 스크롤하여 **Environment Variables** 섹션으로 이동하고 다음 네 개의 항목을 추가합니다. 먼저 서버 호스트와 데이터베이스를 설정합니다:
-
-    - ``MONGODB_SERVER_HOST``: ``mongodb``
-    - ``MONGODB_DATABASE``: ``parksapp``
-
-``MONGODB_SERVER_HOST``의 값 ``mongodb``는 MongoDB 컨테이너 이미지를 배포할 때 생성된 MongoDB **Service**로 해석됩니다.
-
-나머지 두 개의 자격 증명은 ``mongodb-credentials`` Secret에서 가져옵니다.
+**Edit Deployment** 대화 상자에서 아래로 스크롤하여 **Environment Variables** 섹션으로 이동합니다. 서버 호스트(``MONGODB_SERVER_HOST``)와 데이터베이스 이름(``MONGODB_DATABASE``)은 이미 앞선 모듈에서 ConfigMap을 통해 연결해 두었으니, 이번에는 자격 증명 두 개만 ``mongodb-credentials`` Secret에서 가져오면 됩니다.
 
 **+Add from ConfigMap or Secret**을 클릭하고 이름으로 ``MONGODB_USER``를 입력합니다. 값으로는 resource로 ``mongodb-credentials``를, key로 ``app-usr``을 선택합니다.
 
@@ -134,7 +133,8 @@ image::nationalparks_deployment_env_vars_secrets.png[Secret에서 가져온 MONG
 
 [NOTE]
 ====
-데이터베이스 연결이 어떻게 마법처럼 동작하기 시작했는지 궁금하실 겁니다.
+``MONGODB_SERVER_HOST``의 값 ``mongodb``는 지금 막 배포한 MongoDB 컨테이너 이미지가 생성한 MongoDB **Service**의 이름과 정확히 일치합니다. 앞선 모듈에서 이 값을 ConfigMap에 미리 담아 nationalparks Deployment에 연결해 두었는데, 그때는 아직 MongoDB가 없어서 연결 대상이 없었습니다. 이제 MongoDB가 실제로 존재하게 되었으니, 그 환경 변수가 비로소 의미를 가지게 되어 연결이 마법처럼 동작하기 시작합니다.
+
 OpenShift에 애플리케이션을 배포할 때는, 종속 시스템에 대한 연결 파라미터를 정의할 때
 항상 Secret이나 ConfigMap을 사용하여 환경 변수를 생성하는 것이 좋습니다. 이렇게 하면
 소스 코드를 수정하지 않고도 다양한 환경에서 애플리케이션을 이식할 수 있습니다. 연결을
