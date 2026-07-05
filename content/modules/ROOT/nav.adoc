@@ -11,10 +11,10 @@
 * xref:parksmap-routes.adoc[Service와 Route]
 ** xref:parksmap-routes.adoc#services[Service]
 ** xref:parksmap-routes.adoc#route_group[Route]
-* Part 2
 * xref:parksmap-scaling.adoc[애플리케이션 스케일링]
 ** xref:parksmap-scaling.adoc#deployment_replicaset_group[Deployment와 ReplicaSet]
 ** xref:parksmap-scaling.adoc#scaling_group[스케일링과 자가 치유]
+* Part 2
 * xref:parksmap-resources.adoc[리소스 관리와 쿼터]
 ** xref:parksmap-resources.adoc#requests_limits_group[Requests와 Limits]
 ** xref:parksmap-resources.adoc#resourcequota_group[ResourceQuota]
