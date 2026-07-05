@@ -6,13 +6,13 @@ include::vars.adoc[]
 [#deployments_and_replication_controllers]
 == 배경 지식: Deployment와 ReplicaSet
 
-**Service**는 생성되고 사라지기를 반복할 수 있는 **Pod**에 대한 라우팅과 로드 밸런싱을 제공하는 반면, **ReplicaSet**(RS)과 **ReplicationController**(RC)는 원하는 개수의 **Pod**(레플리카)가 실행되도록 지정하고 보장하는 역할을 합니다. 예를 들어 애플리케이션 서버가 항상 3개의 **Pod**(인스턴스)를 실행하도록 하려면 **ReplicaSet**이 필요합니다. RS가 없으면 종료되거나 죽은 **Pod**는 자동으로 다시 시작되지 않습니다. **ReplicaSet**과 **ReplicationController**는 OpenShift에서 자가 치유(self-healing) 기능을 제공합니다. **Deployment**는 **ReplicaSet**을 제어하고, **ReplicationController**는 **DeploymentConfig**가 제어합니다.
+**Service**는 생성되고 사라지기를 반복할 수 있는 **Pod**에 대한 라우팅과 로드 밸런싱을 제공하는 반면, **ReplicaSet**(RS)은 원하는 개수의 **Pod**(레플리카)가 실행되도록 지정하고 보장하는 역할을 합니다. 예를 들어 애플리케이션 서버가 항상 3개의 **Pod**(인스턴스)를 실행하도록 하려면 **ReplicaSet**이 필요합니다. RS가 없으면 종료되거나 죽은 **Pod**는 자동으로 다시 시작되지 않습니다. **ReplicaSet**은 OpenShift에서 자가 치유(self-healing) 기능을 제공합니다. **Deployment**는 이 **ReplicaSet**을 제어합니다.
 
 link:{ocp4_starter_openshift_docs}/html/building_applications/deployments[Deployment 문서^]에 따르면 다음과 같습니다:
 
 [quote]
 __
-ReplicationController와 유사하게, ReplicaSet은 지정된 개수의 Pod 레플리카가 항상 실행되도록 보장하는 네이티브 Kubernetes API 오브젝트입니다. ReplicaSet과 ReplicationController의 차이는, ReplicaSet은 집합 기반(set-based) selector 요구 사항을 지원하는 반면 ReplicationController는 동등 기반(equality-based) selector 요구 사항만 지원한다는 점입니다.
+ReplicaSet은 지정된 개수의 Pod 레플리카가 항상 실행되도록 보장하는 네이티브 Kubernetes API 오브젝트입니다.
 __
 
 Kubernetes에서 **Deployment**는 무언가가 어떻게 배포되어야 하는지를 정의합니다. 거의 모든 경우에 **Pod**, **Service**, **ReplicaSet**, **Deployment** 리소스를 함께 사용하게 됩니다. 웹 콘솔이나 CLI로 컨테이너 이미지를 배포하면 OpenShift가 이 모든 것을 대신 생성해 줍니다.

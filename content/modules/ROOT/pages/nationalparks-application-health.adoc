@@ -84,6 +84,35 @@ Readiness probe와 liveness probe만으로는 부족한 경우가 있습니다. 
 
 Startup probe가 설정되어 있으면, 다른 모든 probe는 startup probe가 성공할 때까지 비활성화됩니다. 즉, 애플리케이션이 충분히 여유 있게 시작할 시간을 벌어준 다음에야 liveness/readiness probe가 정상적으로 동작하기 시작합니다.
 
+세 가지 probe의 차이를 표로 정리하면 다음과 같습니다:
+
+[cols="1,2,2,2",options="header"]
+|===
+|항목 |Startup Probe |Readiness Probe |Liveness Probe
+
+|목적
+|시작이 느린 애플리케이션에 충분한 준비 시간을 확보해 준다
+|지금 이 순간 트래픽을 받을 준비가 되었는지 판단한다
+|계속 정상 동작 중인 상태인지 판단한다
+
+|동작 시점
+|Pod가 시작될 때 딱 한 번만 통과하면 그 뒤로는 다시 확인하지 않는다
+|Pod가 살아있는 동안 계속 반복해서 확인한다
+|Pod가 살아있는 동안 계속 반복해서 확인한다
+
+|실패했을 때
+|계속 실패하면 컨테이너가 재시작된다(Liveness와 결과가 같음)
+|컨테이너는 재시작되지 않고 Service의 트래픽 대상에서만 빠진다
+|컨테이너가 재시작된다
+
+|다른 probe와의 관계
+|성공하기 전까지는 Readiness/Liveness probe 자체가 동작하지 않는다
+|Startup probe가 성공한 뒤부터 독립적으로 동작한다
+|Startup probe가 성공한 뒤부터 독립적으로 동작한다
+|===
+
+NOTE: 이 실습에서는 세 probe가 모두 같은 경로(``/ws/healthz/``)를 확인합니다. 경로가 같아도 역할은 다릅니다. Startup probe는 이제 막 시작한 애플리케이션이 준비될 때까지 기다려 주는 문지기 역할이고, Readiness probe는 지금 이 순간 트래픽을 보내도 되는지를 계속 감시하는 역할입니다.
+
 **Topology** 화면에서 ``nationalparks``를 클릭합니다. 사이드 패널에서 **Actions** 드롭다운 메뉴를 클릭하고 **Add Health Checks**를 선택합니다.
 
 **Add Startup Probe**를 클릭하고 **Path** 필드에 다음을 추가합니다:

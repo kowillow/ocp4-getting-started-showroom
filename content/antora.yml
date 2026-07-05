@@ -12,6 +12,7 @@ start_page: ROOT:index.adoc
 asciidoc:
   attributes:
     page-pagination: true
+    lab_name: OCP4 Getting Started Workshop
     openshift_console_url: https://console.apps.cluster.example.com
     openshift_cluster_ingress_domain: apps.cluster.example.com
     user: userX

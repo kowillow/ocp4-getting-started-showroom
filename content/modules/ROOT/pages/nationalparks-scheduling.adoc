@@ -18,6 +18,35 @@ WARNING: 이 실습 환경의 클러스터는 **여러 학습자가 함께 사�
 * **Pod Affinity/Anti-Affinity**: 특정 노드가 아니라 **다른 Pod와의 관계**를 기준으로 배치합니다. 예를 들어 "같은 앱의 Pod들은 서로 다른 노드에 분산시켜라"처럼 지정할 수 있습니다.
 * **Taint와 Toleration**: 관리자가 노드에 "이 노드는 특별한 워크로드만 받는다"는 표시(taint)를 남기고, 그 워크로드의 Pod에는 이를 허용하는 표시(toleration)를 붙이는 방식입니다.
 
+네 가지 방식은 모두 "Pod를 어디에 배치할지"를 다루지만, 무엇을 기준으로 판단하는지와 그 방향이 서로 다릅니다:
+
+[cols="1,2,2,2",options="header"]
+|===
+|항목 |판단 기준 |동작 방향 |강제 여부
+
+|nodeSelector
+|노드에 붙은 라벨
+|Pod가 조건에 맞는 노드를 찾아감
+|강제 (조건에 맞는 노드가 없으면 ``Pending``)
+
+|Node Affinity
+|노드에 붙은 라벨
+|Pod가 조건에 맞는 노드를 찾아감
+|강제 또는 선호 중 선택 가능
+
+|Pod Affinity/Anti-Affinity
+|다른 Pod의 존재 여부(노드 라벨이 아님)
+|Pod가 다른 Pod와의 관계를 기준으로 배치됨
+|강제 또는 선호 중 선택 가능
+
+|Taint와 Toleration
+|노드에 관리자가 남긴 taint 표시
+|노드가 기본적으로 Pod를 거부하고, toleration이 있는 Pod만 예외적으로 허용
+|taint의 effect(``NoSchedule`` 등) 설정에 따라 다름
+|===
+
+NOTE: nodeSelector/Node Affinity와 Taint/Toleration은 방향이 반대입니다. nodeSelector는 "Pod가 원하는 노드를 골라가는" 방식이고, Taint/Toleration은 "노드가 원치 않는 Pod를 걸러내는" 방식입니다. Pod Affinity/Anti-Affinity는 아예 노드가 아니라 다른 Pod를 기준으로 판단한다는 점에서 나머지 셋과 축 자체가 다릅니다.
+
 WARNING: ``oc adm taint``, ``oc label node``, ``oc adm cordon`` 등은 클러스터 관리자가 수행하는 작업이며, 공유 클러스터의 모든 학습자에게 영향을 줍니다. 이 워크숍에서는 다루지 않습니다.
 
 [#exploring_nodes]
