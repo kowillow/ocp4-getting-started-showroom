@@ -32,14 +32,12 @@ Source-to-image(S2I)는 재현 가능한 컨테이너 이미지를 빌드하기 
 
 OpenShift는 Dockerfile의 지시어를 사용한 이미지 빌드나 "custom" 빌드 외에도, S2I를 빌드 메커니즘 중 하나로 사용할 수 있습니다.
 
-OpenShift는 S2I 프로세스를 Build Pod라고 하는 특별한 **Pod** 내부에서
-실행하므로, 빌드 역시 쿼터, 제한, 리소스 스케줄링 등 OpenShift의
-다른 요소들과 마찬가지로 이러한 제약을 받습니다.
+OpenShift는 S2I 프로세스를 Build Pod라고 하는 특별한 **Pod** 내부에서 실행합니다. 즉 빌드도 결국 하나의 Pod이므로, 앞으로 배우게 될 쿼터, 제한, 리소스 스케줄링 등 다른 Pod와 동일한 제약을 그대로 받습니다.
 
 S2I에 대한 전체적인 논의는 이 워크숍의 범위를 벗어나지만, 더 자세한 내용은
 link:{ocp4_starter_openshift_docs}/html/images/creating-images[OpenShift S2I 문서^]나
 link:{ocp4_starter_openshift_github}/source-to-image[GitHub^]에서 확인할 수 있습니다. S2I에 대해 기억해야 할 유일한
-핵심 개념은, 이것이 마법 같다는 것입니다.
+핵심 개념은, 여러분이 직접 Dockerfile을 작성하지 않아도 OpenShift가 소스 코드로부터 실행 가능한 이미지를 대신 빌드해 준다는 것입니다.
 
 [#creating_a_application]
 == 실습: 백엔드 애플리케이션 생성하기
@@ -97,7 +95,7 @@ image::nationalparks-import-strategy.png[Edit Import Strategy 옵션 선택 화�
 
 * **Devfile**: link:{ocp4_starter_devfile_docs}[devfile^] 스펙을 사용하여 애플리케이션 스택을 생성합니다. 저장소에는 devfile 형식의 ``devfile.yaml`` 파일이 있어야 합니다.
 * **Dockerfile**: 소스 Git 저장소에 있는 기존 Dockerfile로 컨테이너 이미지를 생성합니다.
-* **Builder Image**: Source-to-Image라는 메커니즘을 사용하여 소스 코드로부터 직접 컨테이너 이미지를 자동으로 생성합니다 - Dockerfile이 필요하지 않습니다.
+* **Builder Image**: Source-to-Image라는 메커니즘을 사용하여 소스 코드로부터 직접 컨테이너 이미지를 자동으로 생성합니다. Dockerfile이 필요하지 않습니다.
 
 다음 섹션에서 다룰 내용처럼 소스 코드로부터 컨테이너 이미지를 생성할 것이므로 **Builder Image**를 선택합니다.
 

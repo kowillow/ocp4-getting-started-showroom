@@ -8,14 +8,14 @@ OpenShift에 내장된 구성 요소 외에도, OpenShift Pipelines는 link:http
 [#webhooks]
 == 배경 지식: Web Hook
 
-대부분의 Git 저장소 서버는 web hook이라는 개념을 지원합니다. 코드 저장소에
+대부분의 Git 저장소 서버는 Web Hook이라는 개념을 지원합니다. 코드 저장소에
 변경이 발생하면 HTTP(S)를 통해 외부 소스를 호출하는 것입니다.
-OpenShift는 빌드를 트리거하기 위해 원격 시스템으로부터 hook을 수신할 수 있는 API
-엔드포인트를 제공합니다. 코드 저장소의 hook을 OpenShift Pipelines 리소스로
-지정하면, 자동화된 코드/빌드/배포 파이프라인을 구현할 수 있습니다.
+OpenShift는 빌드를 트리거하기 위해 원격 시스템으로부터 Web Hook을 수신할 수 있는 API
+엔드포인트를 제공합니다. 이 Web Hook을 바로 다음 섹션에서 만들 TriggerTemplate/TriggerBinding/EventListener와
+연결하면, 자동화된 코드/빌드/배포 파이프라인을 구현할 수 있습니다.
 
 [#adding_triggers_to_your_pipeline]
-== 파이프라인에 트리거 추가하기
+== 실습: 파이프라인에 트리거 추가하기
 
 Tekton **Trigger**를 사용하면 Web Hook 같은 외부 이벤트(Git push 이벤트, pull request 등)에 반응하도록 Pipeline을 구성할 수 있습니다.
 
@@ -63,7 +63,7 @@ oc create -f {ocp4_starter_gitea_url}/{ocp4_starter_gitea_user}/nationalparks/ra
 // ----
 // ====
 
-이렇게 하면 GitHub에 Webhook을 설정하여 Pipeline의 자동 시작을 트리거하는 데 사용할 수 있는 Route가 있는 새 Pod가 생성됩니다.
+이렇게 하면 GitHub에 Web Hook을 설정하여 Pipeline의 자동 시작을 트리거하는 데 사용할 수 있는 Route가 있는 새 Pod가 생성됩니다.
 
 **Topology** 화면에서 ``EventListener``를 위한 새 Deployment **el-nationalparks**가 생성되었는지 확인합니다:
 
@@ -73,7 +73,7 @@ image::devops-pipeline-triggers-eventlistener.png[Topology 화면의 el-national
 [#configuring_webhooks]
 == 실습: Gitea Web Hook 구성하기
 
-이 섹션에서는 nationalparks Gitea 저장소에 변경이 있을 때마다 파이프라인 실행을 트리거하는 빌드 webhook을 사용해 봅니다.
+이 섹션에서는 nationalparks Gitea 저장소에 변경이 있을 때마다 파이프라인 실행을 트리거하는 빌드 Web Hook을 사용해 봅니다.
 
 URL을 클립보드에 복사한 후, 이 페이지 오른쪽의 **Gitea** 탭을 클릭하여 Gitea에 있는
 코드 저장소로 이동한 다음 ``nationalparks`` 저장소를 엽니다.
@@ -100,8 +100,8 @@ image::nationalparks-codechanges-settings.png[Gitea 저장소 화면 우측 상�
 [.bordershadow]
 image::nationalparks-codechanges-add-webhook.png[Webhooks 메뉴에서 Add Webhook과 Gitea를 선택하는 화면,link="self",window=_blank]
 
-이전 섹션에서 생성한 EventListener를 사용하여 Gitea에 webhook을 구성합니다.
-``EventListener``에는 webhook의 URL로 사용할 OpenShift ``Route``가 노출되어 있습니다.
+이전 섹션에서 생성한 EventListener를 사용하여 Gitea에 Web Hook을 구성합니다.
+``EventListener``에는 Web Hook의 URL로 사용할 OpenShift ``Route``가 노출되어 있습니다.
 
 [source,text,role=copypaste,subs=attributes]
 ----

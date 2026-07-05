@@ -27,7 +27,9 @@ TLS 같은 보안 설정을 정의할 수 있습니다. **Service**, 그리고 �
 
 Kubernetes를 먼저 접해봤다면 **Route** 대신 **Ingress**라는 이름이 익숙할 수 있습니다. 둘은 같은 문제(외부 트래픽을 클러스터 내부 **Service**로 전달하는 것)를 해결하지만, 등장한 배경과 기능 범위가 다릅니다.
 
-**Route**는 OpenShift가 Kubernetes보다 먼저 갖추고 있던 네이티브 오브젝트입니다. Kubernetes 커뮤니티는 이후 벤더 중립적인 표준으로 **Ingress**를 도입했습니다. 오늘날 OpenShift는 두 가지를 모두 지원하며, 클러스터 내부의 OpenShift Router가 **Ingress** 오브젝트를 자동으로 감지해 **Route**로 동기화해 줍니다. 즉 **Ingress**를 만들어도 동작하지만, **Route**가 제공하는 몇 가지 기능은 **Ingress** API만으로는 표현할 수 없습니다.
+**Route**는 OpenShift가 Kubernetes보다 먼저 갖추고 있던 네이티브 오브젝트입니다. Kubernetes 커뮤니티는 이후 벤더 중립적인 표준으로 **Ingress**를 도입했습니다.
+
+오늘날 OpenShift는 두 가지를 모두 지원하며, 클러스터 내부의 OpenShift Router가 **Ingress** 오브젝트를 자동으로 감지해 **Route**로 동기화해 줍니다. 즉 **Ingress**를 만들어도 동작하지만, **Route**가 제공하는 몇 가지 기능은 **Ingress** API만으로는 표현할 수 없습니다.
 
 [cols="1,2,2",options="header"]
 |===
@@ -37,7 +39,7 @@ Kubernetes를 먼저 접해봤다면 **Route** 대신 **Ingress**라는 이름�
 |OpenShift 전용(비표준)
 |Kubernetes 표준(모든 배포판에서 동작)
 
-|TLS Termination 옵션
+|TLS(Transport Layer Security) Termination 옵션
 |Edge, Passthrough, Re-encrypt를 세밀하게 선택 가능
 |TLS 활성화 여부만 지정, 세부 termination 방식은 Ingress Controller 구현에 따라 다름
 

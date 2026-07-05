@@ -14,7 +14,7 @@ include::vars.adoc[]
 . 새 ReplicaSet의 Pod를 조금씩 늘립니다.
 . 새 Pod가 준비(Ready)되면 기존 ReplicaSet의 Pod를 조금씩 줄입니다.
 
-이 과정은 ``maxSurge``(한 번에 몇 개까지 초과로 띄울 수 있는지)와 ``maxUnavailable``(한 번에 몇 개까지 사용 불가 상태를 허용할지) 두 값으로 세밀하게 제어할 수 있습니다.
+이 과정은 ``maxSurge``(한 번에 몇 개까지 초과로 띄울 수 있는지)와 ``maxUnavailable``(한 번에 몇 개까지 사용 불가 상태를 허용할지) 두 값으로 세밀하게 제어할 수 있습니다. 이 실습에서는 두 값 모두 기본값을 그대로 사용하며 직접 조정하지 않지만, 예를 들어 무중단이 반드시 보장되어야 하는 서비스라면 ``maxUnavailable``을 0으로 설정하는 식으로 롤아웃 중 허용 범위를 세밀하게 통제할 수 있습니다.
 
 앞서 ``parksmap-scaling.adoc``에서 살펴본 Deployment/ReplicaSet 관계를 그대로 활용하는 개념입니다. 다만 이번에는 레플리카 **개수**가 아니라 Pod **내용물**이 바뀝니다.
 

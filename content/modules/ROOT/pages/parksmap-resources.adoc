@@ -11,7 +11,7 @@ include::vars.adoc[]
 컨테이너마다 CPU와 메모리에 대해 두 가지 값을 지정할 수 있습니다:
 
 * **Requests**: 스케줄러가 Pod를 배치할 노드를 고를 때 "이 정도는 반드시 확보해 달라"고 보장을 요청하는 값입니다. 요청한 만큼의 자원 여유가 없는 노드에는 Pod가 스케줄링되지 않습니다.
-* **Limits**: 컨테이너가 사용할 수 있는 **최대치**입니다. CPU limit을 초과하면 컨테이너는 스로틀링(제한)됩니다. 메모리 limit을 초과하면 컨테이너는 OOMKilled(Out Of Memory) 상태로 강제 종료됩니다.
+* **Limits**: 컨테이너가 이 값을 초과해 사용하려 하면 CPU는 스로틀링(제한)되고, 메모리는 OOMKilled(Out Of Memory) 상태로 강제 종료됩니다. 즉, 컨테이너가 사용할 수 있는 **최대치**를 의미합니다.
 
 link:{ocp4_starter_openshift_docs}/html/nodes/working-with-clusters#understanding-resource[Requests와 Limits에 대한 문서^]에서 더 자세히 알아볼 수 있습니다.
 

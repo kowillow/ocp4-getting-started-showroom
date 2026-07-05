@@ -3,9 +3,9 @@
 
 include::vars.adoc[]
 
+[#readiness_and_liveness_probes]
 == 배경 지식: Readiness Probe와 Liveness Probe
-앞서 UI의 경고 메시지를 통해 확인했듯이, OpenShift에는 애플리케이션 상태 확인이라는
-개념이 있습니다. 여기에는 두 가지 종류가 있습니다:
+애플리케이션이 "실행 중"인 것과 "요청을 처리할 준비가 된 것"은 다른 이야기입니다. 예를 들어 컨테이너 프로세스 자체는 멀쩡히 떠 있어도, 내부적으로 멈춰버렸거나(deadlock) 아직 초기화가 끝나지 않아 요청을 제대로 처리하지 못하는 상태일 수 있습니다. OpenShift는 이 두 가지 상황을 각각 확인하기 위해 애플리케이션 상태 확인이라는 기능을 제공하며, 여기에는 두 가지 종류가 있습니다:
 
 * Readiness probe
 * Liveness probe
@@ -17,16 +17,14 @@ Health^] 섹션에는 다음과 같이 정의되어 있습니다:
 [glossary]
 Liveness Probe::
   Liveness probe는 해당 프로브가 설정된 컨테이너가 여전히
-  실행 중인지 확인합니다. Liveness probe가 실패하면 kubelet은 컨테이너를 종료하며,
+  실행 중인지 확인합니다. Liveness probe가 실패하면 ``kubelet``(각 노드에서 컨테이너를 실제로 실행하고 관리하는 에이전트)이 컨테이너를 종료하며,
   이후 재시작 정책의 적용을 받습니다. Pod 설정의
-  ``template.spec.containers.livenessprobe`` 항목을 설정하여 liveness check를 지정합니다.
+  ``spec.containers[].livenessProbe`` 항목을 설정하여 liveness check를 지정합니다.
 Readiness Probe::
   Readiness probe는 컨테이너가 요청을 처리할 준비가 되었는지 판단합니다. 만약
-  readiness probe가 실패하면, endpoints controller는 해당 컨테이너의 IP 주소가 모든
-  service의 엔드포인트에서 제거되도록 합니다.
-  readiness probe는 컨테이너가 실행 중이더라도 프록시로부터 트래픽을 받아서는 안 된다는 것을
-  endpoints controller에 알리는 용도로 사용할 수 있습니다.
-  Pod 설정의 ``template.spec.containers.readinessprobe`` 항목을 설정하여 readiness check를 지정합니다.
+  readiness probe가 실패하면, OpenShift는 해당 컨테이너의 IP 주소를 Service의
+  엔드포인트 목록에서 제거해, 컨테이너가 실행 중이더라도 준비되기 전까지는 트래픽을 받지 않도록 합니다.
+  Pod 설정의 ``spec.containers[].readinessProbe`` 항목을 설정하여 readiness check를 지정합니다.
 
 복잡하게 들리지만 실제로는 그렇지 않습니다. 웹 콘솔을 사용하여
 ``nationalparks`` 애플리케이션에 이러한 probe를 추가해 보겠습니다.
