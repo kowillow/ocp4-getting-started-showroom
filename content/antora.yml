@@ -1,5 +1,5 @@
 name: modules
-title: OCP4 Getting Started Workshop
+title: OpenShift와 함께하는 Kubernetes 핸즈온 워크샵
 version: master
 nav:
   - modules/ROOT/nav.adoc
@@ -12,7 +12,7 @@ start_page: ROOT:index.adoc
 asciidoc:
   attributes:
     page-pagination: true
-    lab_name: OCP4 Getting Started Workshop
+    lab_name: OpenShift와 함께하는 Kubernetes 핸즈온 워크샵
     openshift_console_url: https://console.apps.cluster.example.com
     openshift_cluster_ingress_domain: apps.cluster.example.com
     user: userX

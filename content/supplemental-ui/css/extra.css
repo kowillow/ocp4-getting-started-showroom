@@ -8,3 +8,23 @@
     border: solid 1px black;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
+
+/* style unlinked nav.adoc entries (e.g. "Part 1") as non-interactive section dividers */
+.nav-menu .nav-text {
+    display: block;
+    margin-top: 1.25em;
+    padding-top: 0.5em;
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85em;
+    color: #6a737d;
+    cursor: default;
+}
+
+.nav-menu .nav-list > .nav-item:first-child .nav-text {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
