@@ -112,8 +112,7 @@ image::mongodb_deploy_image_general.png[MongoDB 배포의 환경 변수와 Creat
 이 배포 마법사에는 볼륨을 추가하는 항목이 없으므로, 영구 저장소는 배포가 끝난 뒤 별도로 연결합니다. 일반적으로는 **Topology** 화면에서 구성 요소를 클릭하고 사이드 패널의 **Actions** 드롭다운에서 **Add Storage**를 선택한 뒤, PVC Name/Access Mode/Size/Mount Path만 입력하면 손쉽게 스토리지를 붙일 수 있습니다.
 
 [.bordershadow]
-image::mongodb_deploy_image_volume.png[Actions 드롭다운에서 Add Storage를 선택하는 화면,link=self,window=blank]
-// TODO: 스크린샷 필요 - Actions 드롭다운에서 Add Storage를 선택하는 화면
+image::mongodb_deploy_image_volume.png[Add Storage 과정에서 경고가 뜨는 화면,link=self,window=blank]
 
 하지만 MongoDB는 예외적인 경우입니다. ``mongo`` 컨테이너 이미지는 자체적으로 ``/data/db``와 ``/data/configdb`` 두 경로를 볼륨으로 선언해 두고 있어서, OpenShift가 Deployment를 생성하는 시점에 이 두 경로에 임시 저장소(``emptyDir``)를 이미 자동으로 마운트해 둔 상태입니다(볼륨이 2개 자동 생성되므로, 그중 어떤 것이 ``/data/db``용인지는 인덱스가 아니라 마운트 경로로 찾아야 합니다). 그래서 Add Storage로 같은 경로(``/data/db``)에 PVC를 추가하려 하면 "이미 사용 중인 경로"라는 경고가 뜨고, 그대로 진행해도 기존 ``emptyDir``이 그대로 남아있어 PVC가 실제로는 연결되지 않습니다.
 
