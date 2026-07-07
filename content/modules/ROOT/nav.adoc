@@ -55,7 +55,7 @@
 ** xref:nationalparks-jobs.adoc#cronjob_as_template[CronJob 템플릿 활용]
 * xref:nationalparks-statefulset-daemonset.adoc[StatefulSet과 DaemonSet]
 ** xref:nationalparks-statefulset-daemonset.adoc#statefulset_group[StatefulSet]
-** xref:nationalparks-statefulset-daemonset.adoc#daemonset_connectivity_check[DaemonSet]
+** xref:nationalparks-statefulset-daemonset.adoc#daemonset_node_reporter[DaemonSet]
 * 보너스
 * xref:nationalparks-pipeline.adoc[지속적 통합과 파이프라인]
 ** xref:nationalparks-pipeline.adoc#pipeline_group[파이프라인 생성과 실행]
