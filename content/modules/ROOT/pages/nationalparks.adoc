@@ -126,12 +126,12 @@ nationalparks
 
 **Deploy** 섹션에서 **Deployment**를 선택합니다.
 
+[.bordershadow]
+image::nationalparks-configure-service1.png[Build 및 Deploy 설정 화면,link=self,window=blank]
+
 **Advanced Options** 아래에서 **Create a route**가 **체크**되어 있는지 확인합니다. 이번에는 이 화면에서 직접 또 다른 **Secure Route**를 생성하게 됩니다.
 
 **Show advanced Routing options**를 클릭합니다. 기본 옵션은 그대로 두고 **Security** 섹션으로 이동합니다. **Secure Route** 옵션을 체크합니다. **TLS termination** 아래에서 **Edge**를 선택합니다.
-
-[.bordershadow]
-image::nationalparks-configure-service1.png[Secure Route와 Edge TLS termination 설정 화면,link=self,window=blank]
 
 [.bordershadow]
 image::nationalparks-configure-service2.png[Advanced Routing 옵션의 Security 설정 상세 화면,link=self,window=blank]
