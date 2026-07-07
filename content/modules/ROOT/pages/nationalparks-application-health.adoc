@@ -1,5 +1,5 @@
-= 애플리케이션 상태 확인(Healthcheck)
-:navtitle: 애플리케이션 상태 확인(Healthcheck)
+= 애플리케이션 상태 확인
+:navtitle: 애플리케이션 상태 확인
 
 include::vars.adoc[]
 
