@@ -1,5 +1,5 @@
-= Pod가 어디에서 실행될지 결정하기: 노드 스케줄링
-:navtitle: Pod가 어디에서 실행될지 결정하기: 노드 스케줄링
+= Pod가 어디에서 실행될지 결정하기: Affinity와 Toleration
+:navtitle: Pod가 어디에서 실행될지 결정하기: Affinity와 Toleration
 
 include::vars.adoc[]
 
