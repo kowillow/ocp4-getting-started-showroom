@@ -68,7 +68,8 @@ oc create -f {ocp4_starter_gitea_url}/{ocp4_starter_gitea_user}/nationalparks/ra
 
 이렇게 하면 GitHub에 Web Hook을 설정하여 Pipeline의 자동 시작을 트리거하는 데 사용할 수 있는 Route가 있는 새 Pod가 생성됩니다.
 
-**Topology** 화면에서 ``EventListener``를 위한 새 Deployment **el-nationalparks**가 생성되었는지 확인합니다:
+**Topology** 화면에서 ``EventListener``를 위한 새 Deployment **el-nationalparks**가 생성되었는지 확인합니다.
+(아이콘 이미지는 스크린샷과 다를 수도 있습니다.)
 
 [.bordershadow]
 image::devops-pipeline-triggers-eventlistener.png[Topology 화면의 el-nationalparks EventListener Deployment,width=500,link=self,window=blank]
@@ -81,7 +82,7 @@ image::devops-pipeline-triggers-eventlistener.png[Topology 화면의 el-national
 
 이 섹션에서는 nationalparks Gitea 저장소에 변경이 있을 때마다 파이프라인 실행을 트리거하는 빌드 Web Hook을 사용해 봅니다.
 
-URL을 클립보드에 복사한 후, 이 페이지 오른쪽의 **Gitea** 탭을 클릭하여 Gitea에 있는
+이 가이드 페이지 오른쪽의 **Gitea** 탭을 클릭하여 Gitea에 있는
 코드 저장소로 이동한 다음 ``nationalparks`` 저장소를 엽니다.
 
 화면 오른쪽 상단의 버튼을 사용하여 로그인합니다.
@@ -101,12 +102,12 @@ password: {ocp4_starter_gitea_password}
 [.bordershadow]
 image::nationalparks-codechanges-settings.png[Gitea 저장소 화면 우측 상단의 Settings 링크,link=self,window=blank]
 
-**Webhooks**를 클릭한 후 **Add Webhook** 버튼을 클릭하고, 마지막으로 **Gitea**를 선택합니다.
+왼쪽 탭에서 **웹훅(Webhooks)**를 클릭한 후 **Webhook 추가(Add Webhook)** 버튼을 클릭하고, 마지막으로 **Gitea**를 선택합니다.
 
 [.bordershadow]
 image::nationalparks-codechanges-add-webhook.png[Webhooks 메뉴에서 Add Webhook과 Gitea를 선택하는 화면,link=self,window=blank]
 
-이전 섹션에서 생성한 EventListener를 사용하여 Gitea에 Web Hook을 구성합니다.
+이전 섹션에서 생성한 EventListener를 사용하여 Gitea에 Web Hook을 구성합니다. 
 ``EventListener``에는 Web Hook의 URL로 사용할 OpenShift ``Route``가 노출되어 있습니다.
 
 [source,text,role=copypaste,subs=attributes]
@@ -114,11 +115,11 @@ image::nationalparks-codechanges-add-webhook.png[Webhooks 메뉴에서 Add Webho
 http://el-nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/
 ----
 
-복사한 링크를 "Payload URL" 필드에 붙여넣습니다.
+복사한 링크를 "대상 URL(Payload URL)" 필드에 붙여넣습니다.
 
 ``Content Type``을 ``application/json``으로 변경합니다.
 
-마지막으로 **Update Webhook**을 클릭합니다.
+마지막으로 **Webhook 추가(Update Webhook)**을 클릭합니다.
 
 [.bordershadow]
 image::nationalparks-codechanges-config-webhook.png[Payload URL과 Content Type을 설정하는 Webhook 구성 화면,link=self,window=blank]
@@ -139,14 +140,7 @@ OpenShift에서 새로운 빌드와 배포가 발생합니다. 직접 시도해
 
 image::nationalparks-codechanges-change-code.png[Gitea file editor showing the edit button for BackendController.java,link=self,window=blank]
 
-20번째 줄을 다음과 같이:
-
-[source,java]
-----
-return new Backend("nationalparks","National Parks", new Coordinates("47.039304", "14.505178"), 4);
-----
-
-다음과 같이 변경합니다:
+20번째 줄을 다음과 같이 변경합니다. (National Parks -> Amazing National Parks)
 
 [source,java,role="copypaste"]
 ----
@@ -183,6 +177,6 @@ nationalparks-2   Source    Git@3b26e1a   Running    43 seconds ago
 
 link:http://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/info/[National Parks Info Page^]
 
-반환된 JSON 문자열에서 방금 설정한 새 이름을 확인할 수 있을 것입니다.
+이미지가 자동으로 새로 빌드되어 배포까지 완료되었다면, 반환된 JSON 문자열에서 DisplayName이 방금 설정한 새 이름(`Amazing National Parks`)으로 변경된 것을 확인할 수 있을 것입니다.
 
 NOTE: 지도의 범례(legend)에서도 이를 확인하려면, parksmap을 0으로 스케일 다운한 후 다시 1로 스케일 업하여 앱이 캐시를 새로고침하도록 강제해야 합니다.
