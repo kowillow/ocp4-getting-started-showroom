@@ -94,21 +94,19 @@ parksmap-79d5c9f8a2-k5gkk   1/1     Running                0          5m
 parksmap-8f7b6d4c9-p2x91    0/1     CreateContainerError   0          20s
 ----
 
-새 Pod는 ``CreateContainerError`` 상태에 머물러 있지만, 기존 Pod는 여전히 ``Running`` 상태로 서비스를 계속 처리하고 있습니다. RollingUpdate 전략 덕분에 **새 Pod가 준비되기 전까지 기존 Pod를 종료하지 않기 때문**입니다. 이것이 사용자 입장에서 다운타임이 없는 이유입니다.
+새 Pod는 ``CreateContainerError`` 상태에 머물러 있지만, 기존 Pod는 여전히 ``Running`` 상태로 서비스를 계속 처리하고 있습니다. RollingUpdate 전략 덕분에 **새 Pod가 준비되기 전까지 기존 Pod를 종료하지 않기 때문**입니다. 이것이 사용자 입장에서 다운타임이 없는 이유입니다. 실제 현업에서는 잘못된 커맨드뿐 아니라 이미지 태그 오타, 잘못된 설정값 등 다양한 이유로 새 버전이 뜨지 못할 수 있는데, RollingUpdate는 원인과 무관하게 항상 같은 방식으로 서비스를 보호합니다.
 
-``oc describe pod``로 원인을 직접 확인할 수도 있습니다:
+``oc describe pod``로 원인을 직접 확인할 수도 있습니다. 이미지를 내려받는 등 정상적인 ``Normal`` 이벤트가 먼저 몇 줄 나오므로, 문제를 알려주는 ``Warning`` 이벤트만 걸러서 봅니다:
 
 [source,bash,role="copypaste"]
 ----
-oc describe pod -l app=parksmap | grep -A 5 Events:
+oc describe pod -l app=parksmap | grep -A 3 Warning
 ----
 
 [.console-output]
 [source]
 ----
-Events:
-  ...
-  Warning  Failed  5s (x2 over 15s)  kubelet  Error: failed to create containerd task: OCI runtime create failed: unable to start container process: exec: "/this-command-does-not-exist": stat /this-command-does-not-exist: no such file or directory: unknown
+Warning  Failed  5s (x2 over 15s)  kubelet  Error: failed to create containerd task: OCI runtime create failed: unable to start container process: exec: "/this-command-does-not-exist": stat /this-command-does-not-exist: no such file or directory: unknown
 ----
 
 지정한 커맨드가 컨테이너 이미지 안에 존재하지 않아 시작 자체가 실패한 것을 확인할 수 있습니다.
@@ -132,6 +130,14 @@ deployment.apps/parksmap rolled back
 ----
 oc rollout status deployment/parksmap
 oc get pods -l app=parksmap
+----
+
+[.console-output]
+[source]
+----
+deployment "parksmap" successfully rolled out
+NAME                        READY   STATUS    RESTARTS   AGE
+parksmap-79d5c9f8a2-k5gkk   1/1     Running   0          8m
 ----
 
 마지막으로 히스토리를 다시 확인해 보세요. revision 번호가 하나 더 늘어난 것을 볼 수 있습니다. rollback도 새로운 롤아웃으로 기록되기 때문입니다:
