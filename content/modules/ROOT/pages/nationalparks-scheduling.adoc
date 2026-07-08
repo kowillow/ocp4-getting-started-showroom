@@ -132,6 +132,13 @@ nationalparks-789c6bc4f4-9p2wr   1/1     Running   0          10s   10.131.0.62 
 oc scale deployment/nationalparks --replicas=1
 ----
 
+affinity 설정도 제거합니다:
+
+[source,bash,role="copypaste"]
+----
+oc patch deployment nationalparks --type='json' -p='[{"op":"remove","path":"/spec/template/spec/affinity"}]'
+----
+
 [#tolerations]
 === 실습: Toleration으로 Taint가 걸린 노드에 배치하기
 
