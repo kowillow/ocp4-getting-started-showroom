@@ -39,7 +39,7 @@ PVC를 만들 때 StorageClass를 지정하면(또는 클러스터의 기본 Sto
 === 실습: MongoDB 배포하기
 
 첫 번째 단계는 데이터베이스 연결 자격 증명 같은 민감한 정보를 저장하는 데 사용할 **Secret**을 생성하는 것입니다.
-**Workloads** → **Secrets**에서 오른쪽 상단의 **Create** 버튼을 클릭하고 **From YAML**을 선택합니다.
+**워크로드(Workloads)** → **시크릿(Secrets)**에서 오른쪽 상단의 **만들기(Create)** 버튼을 클릭하고 **출처: YAMl(From YAML)**을 선택합니다.
 
 [.bordershadow]
 image::mongodb_create_secret.png[Secrets 화면에서 Create → From YAML을 선택하는 메뉴,link=self,window=blank]
@@ -79,9 +79,9 @@ Secret이 준비되었으니, 이전에 다른 애플리케이션을 추가할 �
 [.bordershadow]
 image::mongodb_deploy_image_image.png[mongo 컨테이너 이미지와 Runtime 아이콘을 지정하는 Image 섹션,link=self,window=blank]
 
-* Resource type 드롭다운이 **Deployment** 옵션으로 설정되어 있는지 확인합니다.
+* 리소스 유형(Resource type) 드롭다운이 **배포(Deployment)** 옵션으로 설정되어 있는지 확인합니다.
 
-* **Show advanced Deployment options**를 클릭합니다. 여기에서 앞서 생성한 ``mongodb-credentials`` Secret에서 값을 가져오는 두 개의 환경 변수를 추가합니다.
+* **고급 배포 옵션 표시(how advanced Deployment options)**를 클릭합니다. 여기에서 앞서 생성한 ``mongodb-credentials`` Secret에서 값을 가져오는 두 개의 환경 변수를 추가합니다.
 
 **+Add from ConfigMap or Secret**을 클릭하고 이름으로 다음을 입력합니다:
 

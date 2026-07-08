@@ -46,16 +46,16 @@ data:
   MONGODB_DATABASE: parksapp
 ----
 
-폼 하단의 **Create** 버튼을 클릭합니다.
+폼 하단의 **만들기(Create)** 버튼을 클릭합니다.
 
 NOTE: ``MONGODB_SERVER_HOST``의 값 ``mongodb``는 잠시 후 데이터베이스 모듈에서 배포할 MongoDB **Service**의 이름과 미리 맞춰둔 것입니다. 아직 그 Service는 존재하지 않지만, 이름만 미리 정해서 ConfigMap에 담아 두는 것입니다.
 
 [#wire_configmap_env]
 === 실습: ConfigMap 값을 환경 변수로 연결하기
 
-이제 ``nationalparks`` Deployment에 방금 만든 ConfigMap의 값을 환경 변수로 연결합니다. **Topology** 화면에서 ``nationalparks`` Deployment를 클릭하고 __Actions → Edit Deployment__를 선택합니다.
+이제 ``nationalparks`` Deployment에 방금 만든 ConfigMap의 값을 환경 변수로 연결합니다. **Topology** 화면에서 ``nationalparks`` Deployment를 클릭하고 __동작(Actions) → Deployment 편집(Edit Deploymen)__를 선택합니다.
 
-**Environment Variables** 섹션으로 이동해 **+Add from ConfigMap or Secret**을 클릭하고 이름으로 다음을 입력합니다:
+**환경 변수(Environment Variables)** 섹션으로 이동해 **+구성 맵 또는 시크릿에서 추가(Add from ConfigMap or Secret)**을 클릭하고 이름으로 다음을 입력합니다:
 
 [source,text,role=copypaste]
 ----
@@ -64,7 +64,7 @@ MONGODB_SERVER_HOST
 
 값으로는 resource로 ``nationalparks-config``를, key로 ``MONGODB_SERVER_HOST``를 선택합니다.
 
-다시 **+Add from ConfigMap or Secret**을 클릭하고 이름으로 다음을 입력합니다:
+다시 **+구성 맵 또는 시크릿에서 추가(Add from ConfigMap or Secret)**을 클릭하고 이름으로 다음을 입력합니다:
 
 [source,text,role=copypaste]
 ----
@@ -75,13 +75,12 @@ MONGODB_DATABASE
 
 [.bordershadow]
 image::nationalparks-configmap-env-wire.png[Edit Deployment 대화 상자에서 ConfigMap을 참조하는 환경 변수 추가 화면,link=self,window=blank]
-// TODO: 스크린샷 필요 - Edit Deployment 대화 상자에서 +Add from ConfigMap or Secret (resource=ConfigMap)
 
-대화 상자 하단의 **Save** 버튼을 클릭합니다. 새 **ReplicaSet**이 롤아웃되는 것을 확인할 수 있습니다:
+대화 상자 하단의 **저장(Save)** 버튼을 클릭합니다. 새 **ReplicaSet**이 롤아웃되는 것을 확인할 수 있습니다:
 
 [source,bash,role="copypaste"]
 ----
 oc get rs -l app=nationalparks
 ----
 
-지금까지 살펴본 것처럼 ConfigMap 값은 환경 변수 외에 **볼륨**으로도 Pod에 마운트할 수 있습니다. 파일 형태의 설정(예: ``.properties``, ``.conf`` 파일)을 다뤄야 할 때 유용한 방식이며, 방식만 다를 뿐 ConfigMap을 만들고 Deployment에 연결하는 기본 흐름은 지금 실습한 것과 동일합니다.
+지금은 ConfigMap 값을 환경 변수에 삽입했지만, 이 외에 **볼륨**으로도 Pod에 마운트할 수 있습니다. 파일 형태의 설정(예: ``.properties``, ``.conf`` 파일)을 다뤄야 할 때 유용한 방식이며, 방식만 다를 뿐 ConfigMap을 만들고 Deployment에 연결하는 기본 흐름은 지금 실습한 것과 동일합니다.
