@@ -179,7 +179,7 @@ NOTE: 프로덕션 환경에서는 컨테이너 entrypoint를 수정하거나 ht
 { ok: 1 }
 ----
 
-이제 데이터베이스와 관련된 모든 준비가 끝났으니 다시 nationalparks 애플리케이션으로 초점을 돌려보겠습니다. **Topology** 화면으로 돌아가서 **nationalparks Deployment**를 클릭하고 오른쪽 화면의 드롭다운에서 __Actions → Edit Deployment__를 선택합니다.
+이제 데이터베이스와 관련된 모든 준비가 끝났으니 다시 nationalparks 애플리케이션으로 초점을 돌려보겠습니다. **Topology** 화면으로 돌아가서 **nationalparks Deployment**를 클릭하고 오른쪽 화면의 드롭다운에서 __동작(Actions) → Deployment 편집(Edit Deployment)__를 선택합니다.
 
 [.bordershadow]
 image::nationalparks_deployment_edit.png[nationalparks Deployment의 Actions 메뉴에서 Edit Deployment 선택,link=self,window=blank]
@@ -233,12 +233,13 @@ OpenShift에 애플리케이션을 배포할 때는, 종속 시스템에 대한 
 [#adding_labels]
 === 실습: 레이블 추가하기
 
-이제 MongoDB 배포에 지정된 레이블을 수정해 보겠습니다. **Topology** 화면에서 MongoDB 배포를 선택하고 __Actions → Edit Labels__를 선택합니다.
+이제 MongoDB 배포에 지정된 레이블을 수정해 보겠습니다. 이전 다른 앱들처럼 배포 시에도 레이블을 추가할 수 있지만, 이미 배포된 Deployment도 다음 방법에 따라 레이블을 수정할 수 있습니다. 
+**Topology** 화면에서 MongoDB 배포를 선택하고 __동작(Actions) → 라벨 편집(Edit Labels)__를 선택합니다.
 
 [.bordershadow]
 image::mongodb_deployment_labels.png[MongoDB 배포의 Actions 메뉴에서 Edit Labels 선택,link=self,window=blank]
 
-이전과 마찬가지로 레이블 3개를 추가합니다:
+이전과 마찬가지로 레이블 3개를 추가합니다. 텍스트를 복사하여 붙여넣은 후, 키보드의 return 또는 enter를 누르면 레이블이 입력됩니다. 
 
 Application 그룹의 이름입니다:
 
@@ -309,9 +310,8 @@ NOTE: Firefox 54 같은 일부 브라우저에서는 결과 JSON을 제대로 �
 https://parksmap-{ocp4_starter_project}.{ocp4_starter_apps_domain}
 ----
 
-한 가지 문제가 있습니다. 메인 지도에는 **여전히** 공원이 표시되지 않습니다.
-이는 프런트엔드가 올바른 **Label**을 가진 service에만 통신을 시도하기 때문입니다.
-
+그러나 한 가지 문제가 있습니다. 백엔드 앱에 데이터를 삽입했는데도 메인 지도(프런트엔드 앱)에는 **여전히** 공원이 표시되지 않습니다. 
+이는 현재 프런트엔드 앱이 특정 **Label**을 가진 route에만 통신을 시도하려고 하기 때문입니다.
 
 [#working_with_labels]
 === 실습: 레이블 다루기
@@ -324,17 +324,17 @@ key=value 쌍입니다. 예를 들면:
 * ``pet=dog``
 * ``openshift=awesome``
 
-parksmap의 경우, 애플리케이션은 실제로 OpenShift
-API를 조회하여 project 내의 **Route**와 **Service**에 대해 질의합니다. 그중 어떤 것이
+parksmap 프런트앱의 경우, 애플리케이션은 실제로 OpenShift
+API를 조회하여 project 내의 **Route**와 **Service**에 대해 질의하도록 구성되어 있습니다. 그중 어떤 것이
 ``type=parksmap-backend``라는 **Label**을 가지고 있다면, 애플리케이션은 지도 데이터를 조회하기 위해
 해당 엔드포인트에 접속해야 한다는 것을 알게 됩니다.
 이 작업을 수행하는 코드는
 link:{ocp4_starter_openshift_roadshow}/parksmap-web/blob/master/src/main/java/com/openshift/evg/roadshow/rest/RouteWatcher.java#L20[RouteWatcher.java 파일^]에서 확인할 수 있습니다.
 
-NOTE: API Gateway 역할을 하는 구성 요소가 백엔드 목록을 얻기 위해 어떤 API를 조회하는 것 자체는 흔한 패턴입니다(Consul, Eureka 같은 서비스 레지스트리가 대표적입니다). parksmap이 조금 특이한 지점은, 이런 용도의 별도 서비스 레지스트리를 두는 대신 **Kubernetes/OpenShift의 컨트롤 플레인 API(Route/Service 오브젝트)를 직접 애플리케이션 수준의 서비스 레지스트리처럼 사용**한다는 것입니다. 그러려면 애플리케이션이 Route의 Label을 조회할 수 있는 권한이 있어야 하는데, 이 권한을 직접 설정하는 실습은 이 워크숍 범위에서 생략되었고 실습 환경에 미리 구성해 두었습니다. 대부분의 서비스는 이 정도로 넓은 API 조회 권한이 필요 없고, 연결할 서비스 이름을 환경 변수로 전달받아 Kubernetes DNS로 호출하는 것으로 충분합니다(예: 이 워크숍에서 ``nationalparks``가 ``MONGODB_SERVER_HOST`` 환경 변수로 ``mongodb``를 찾았던 것처럼). parksmap처럼 "관리자가 새로운 백엔드를 언제든 추가/제거해도 재배포 없이 자동으로 찾아서 보여줘야" 하는 동적 애그리게이터 역할에는 이런 폭넓은 조회 권한이 필요해지는데, 오늘날에는 서비스 메시(Istio 등)가 이런 문제를 애플리케이션 코드 밖에서 더 깔끔하게 풀어주기도 합니다. 이 개념은 이후 실습에서 다루게 됩니다.
+NOTE: API Gateway 역할을 하는 구성 요소가 백엔드 목록을 얻기 위해 어떤 API를 조회하는 것 자체는 흔한 패턴입니다(Consul, Eureka 같은 서비스 레지스트리가 대표적입니다). 다만 **parksmap 프런트앱이 조금 특이한 부분**은, 이런 용도의 별도 서비스 레지스트리를 두는 대신 **Kubernetes/OpenShift의 컨트롤 플레인 API(Route/Service 오브젝트)를 직접 애플리케이션 수준의 서비스 레지스트리처럼 사용**한다는 것입니다. 그러려면 애플리케이션이 Route의 Label을 조회할 수 있는 권한이 있어야 하는데, 이 권한을 직접 설정하는 실습은 이 워크숍 범위에서 생략되었고 실습 환경에 미리 구성해 두었습니다. **대부분의 서비스는 이 정도로 넓은 API 조회 권한이 필요 없고, 연결할 서비스 이름을 환경 변수로 전달받아 Kubernetes DNS로 호출하는 것으로 충분합니다**(예: 이 워크숍에서 ``nationalparks``가 ``MONGODB_SERVER_HOST`` 환경 변수로 ``mongodb``를 찾았던 것처럼). parksmap 프런트엔드 앱처럼 "관리자가 새로운 백엔드를 언제든 추가/제거해도 재배포 없이 자동으로 찾아서 보여줘야" 하는 동적 애그리게이터 역할을 위해, 오늘날에는 서비스 메시(Istio 등)가 이런 문제를 애플리케이션 코드 밖에서 더 깔끔하게 풀어주기도 합니다. 이 개념은 이후 실습에서 다루게 됩니다.
 
-다행히 명령줄은 레이블을 조작할 수 있는 편리한 방법을 제공합니다. ``nationalparks``
-service를 ``describe``해 보세요:
+아까는 웹콘솔을 통해서 mongodb에 레이블을 추가했었죠? 
+CLI 명령어를 사용해도 손쉽게 레이블을 조작할 수 있습니다. ``nationalparks`` route를 ``describe``해 보세요:
 
 [source,bash,role=copypaste]
 ----
