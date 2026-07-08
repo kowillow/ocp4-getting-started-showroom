@@ -30,15 +30,17 @@ include::vars.adoc[]
 
 **데이터베이스 연동:**
 
-* OpenShift 서비스 카탈로그에서 데이터베이스 배포하기
+* 컨테이너 이미지로 데이터베이스를 배포하고 영구 저장소 연결하기
 * 데이터베이스에 연결하여 사용하도록 애플리케이션 구성하기
 
 **설정과 상태 관리:**
 
 * ConfigMap과 Secret으로 애플리케이션 설정을 코드와 분리하기
-* StatefulSet으로 안정적인 네트워크 식별자와 저장소가 필요한 워크로드 배포하기
+* Readiness/Liveness/Startup Probe로 애플리케이션 상태를 확인하고 자동으로 복구하기
+* StatefulSet으로 안정적인 네트워크 식별자가 필요한 워크로드 배포하기
+* DaemonSet으로 모든 노드에 에이전트를 배포하기
 * Requests/Limits와 ResourceQuota로 컨테이너와 프로젝트의 자원 사용량 관리하기
-* nodeSelector와 Pod Anti-Affinity로 Pod가 배치되는 노드를 제어하기
+* Pod Anti-Affinity와 Toleration으로 Pod가 배치되는 노드를 제어하기
 
 **협업과 자동화:**
 
