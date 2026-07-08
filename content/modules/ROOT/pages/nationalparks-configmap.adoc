@@ -27,11 +27,10 @@ include::vars.adoc[]
 [#create_configmap]
 === 실습: ConfigMap 생성하기
 
-**Workloads** → **ConfigMaps**에서 오른쪽 상단의 **Create** 버튼을 클릭하고 **From YAML**을 선택합니다.
+**워크로드(Workloads)** → **구성 맵(ConfigMaps)**에서 오른쪽 상단의 **ConfigMap 만들기(Create Configmap)** 버튼을 클릭하고 **From YAML**을 선택합니다.
 
 [.bordershadow]
 image::nationalparks-configmap-create.png[ConfigMap Create From YAML 다이얼로그,link=self,window=blank]
-// TODO: 스크린샷 필요 - ConfigMap Create From YAML 다이얼로그
 
 에디터에 다음 YAML을 붙여넣습니다:
 

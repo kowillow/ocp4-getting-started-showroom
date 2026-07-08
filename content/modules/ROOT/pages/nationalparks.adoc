@@ -77,18 +77,18 @@ Topology 화면에서 헤더의 **+** 버튼을 클릭하고 **Import from Git**
 [.bordershadow]
 image::nationalparks-show-add-options.png[Topology 화면의 + 버튼과 Import from Git 메뉴,link=self,window=blank]
 
-**Import from Git** 워크플로우는 몇 가지 선택 사항을 통해 앱 배포 과정을 안내해 줍니다.
+**Git에서 가져오기(Import from Git)** 워크플로우는 몇 가지 선택 사항을 통해 앱 배포 과정을 안내해 줍니다.
 
-Git Repo URL에 다음을 입력합니다:
+Git 리포지토리 URL(Git Repo URL)에 다음을 입력합니다:
 
 [source,bash,role=copypaste,subs="attributes"]
 ----
 {ocp4_starter_openshift_roadshow}/nationalparks.git
 ----
 
-OpenShift가 소스 코드에서 사용된 프로그래밍 언어를 자동으로 감지합니다. **Import Strategy**를 선택할 수 있는 옵션이 있습니다.
+OpenShift가 소스 코드에서 사용된 프로그래밍 언어를 자동으로 감지합니다. **가져오기 전략(Import Strategy)**를 선택할 수 있는 옵션이 있습니다.
 
-**Edit Import Strategy**를 클릭합니다.
+**가져오기 전략 편집(Edit Import Strategy)**를 클릭합니다.
 
 [.bordershadow]
 image::nationalparks-import-strategy.png[Edit Import Strategy 옵션 선택 화면,width=500,link=self,window=blank]
@@ -106,9 +106,9 @@ image::nationalparks-import-strategy-build.png[Builder Image 임포트 전략 �
 
 TIP: 저장소에는 멀티 스테이지 Dockerfile도 포함되어 있으므로 Dockerfile을 사용할 수도 있습니다. 이 실습의 목표는 OpenShift의 Builder Image 기능을 경험해 보는 것입니다.
 
-Builder Image로 **Java**가 선택되었는지 확인하고, OpenJDK 11을 사용하도록 버전 **openjdk-11-ubi8**이 선택되어 있는지 확인하세요.
+빌더 이미지(Builder Image)로 **Java**가 선택되었는지 확인하고, OpenJDK 11을 사용하도록 버전 **openjdk-11-ubi8**이 선택되어 있는지 확인하세요.
 
-아래로 스크롤하여 **General** 섹션으로 이동합니다. 다음을 추가합니다:
+아래로 스크롤하여 **일반(General)** 섹션으로 이동합니다. 다음을 추가합니다.
 
 **Application Name** :
 [source,text,role=copypaste]
@@ -122,14 +122,14 @@ workshop
 nationalparks
 ----
 
-**Build** 섹션에서 **BuildConfig**를 선택합니다.
+**빌드(Build)** 섹션에서 **빌드 구성(BuildConfig)**를 선택합니다.
 
-**Deploy** 섹션에서 **Deployment**를 선택합니다.
+**배포(Deploy)** 섹션에서 **배포(Deployment)**를 선택합니다.
 
 [.bordershadow]
 image::nationalparks-configure-service1.png[Build 및 Deploy 설정 화면,link=self,window=blank]
 
-**Advanced Options** 아래에서 **Create a route**가 **체크**되어 있는지 확인합니다. 이번에는 이 화면에서 직접 또 다른 **Secure Route**를 생성하게 됩니다.
+**Advanced Options** 아래에서 **Create a route**가 **체크**되어 있는지 확인합니다. 이번에는 체크를 해제하지 않고 이 화면에서 직접 **Secure Route**를 생성해보겠습니다.
 
 **Show advanced Routing options**를 클릭합니다. 기본 옵션은 그대로 두고 **Security** 섹션으로 이동합니다. **Secure Route** 옵션을 체크합니다. **TLS termination** 아래에서 **Edge**를 선택합니다.
 
@@ -205,10 +205,10 @@ oc logs -f builds/nationalparks-1
 빌드가 성공적으로 완료되면:
 
 * S2I 프로세스가 결과 이미지를 내부 OpenShift 이미지 레지스트리에 푸시합니다
-* **Deployment**(D)가 이미지가 변경된 것을 감지하고, 이로 인해
+* **Deployment**가 이미지가 변경된 것을 감지하고, 이로 인해
   새로운 배포가 발생합니다.
-* 이 새 배포를 위한 **ReplicaSet**(RS)이 생성됩니다.
-* 기본 레플리카 개수가 1이므로, RS는 실행 중인 **Pod**가 없음을 감지하고 하나를 배포합니다.
+* 이 새 배포를 위한 **ReplicaSet**이 생성됩니다.
+* 기본 레플리카 개수가 1이므로, ReplicaSet은 실행 중인 **Pod**가 없음을 감지하고 하나를 배포합니다.
 
 결국 ``oc get pods`` 명령을 실행하면, 빌드 Pod는
 완료(종료)되었고 애플리케이션 **Pod**는 준비되어 실행 중인 상태인 것을 확인할 수 있습니다:
