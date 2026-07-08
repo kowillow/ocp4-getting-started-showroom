@@ -21,7 +21,7 @@ Deployment(상시 실행, 재시작하면 안 됨)와 Job(완료되면 끝, 재�
 [#automate_data_load]
 === 실습: 데이터 적재를 Job으로 자동화하기
 
-**Workloads** → **Jobs**에서 **Create** → **From YAML**을 선택하고 다음 YAML을 붙여넣습니다:
+**워크로드(Workloads)** → **작업(Jobs)**에서 **작업 만들기(Create Job)**을 선택하고 다음 YAML을 붙여넣습니다:
 
 [source,yaml,role="copypaste",subs="attributes"]
 ----
@@ -46,7 +46,6 @@ spec:
 
 [.bordershadow]
 image::nationalparks-job-create.png[Job Create From YAML 다이얼로그,link=self,window=blank]
-// TODO: 스크린샷 필요 - Job Create From YAML 다이얼로그
 
 **Create**를 클릭합니다. Job 상태를 확인합니다:
 
@@ -70,10 +69,7 @@ oc logs job/nationalparks-data-load
 ----
 
 [.bordershadow]
-image::nationalparks-job-topology.png[Topology 화면에서 완료된 Job Pod,link=self,window=blank]
-// TODO: 스크린샷 필요 - Topology 화면에서 완료된 Job Pod
-
-NOTE: 이미 데이터가 적재되어 있다면 애플리케이션이 중복 삽입을 방지할 수도 있습니다. 로그 내용은 ``nationalparks`` 애플리케이션의 구현에 따라 달라집니다.
+image::nationalparks-job-logs.png[완료된 Job Pod의 로그 확인,link=self,window=blank]
 
 [#cronjob_as_template]
 == 실습: CronJob을 데이터 적재 템플릿으로 활용하기
@@ -82,7 +78,7 @@ NOTE: 이미 데이터가 적재되어 있다면 애플리케이션이 중복 �
 
 이럴 때 **CronJob**을 "예약 실행"이 아니라 **재사용 가능한 템플릿**으로 활용하는 방법이 있습니다. 스케줄을 실제로는 절대 도래하지 않는 시각(예: 존재하지 않는 2월 31일)으로 지정해 두면, CronJob은 자동으로는 절대 실행되지 않지만, 웹 콘솔에서 버튼 클릭 한 번으로 이 템플릿을 이용해 새 Job을 언제든 수동으로 만들어낼 수 있습니다.
 
-**Workloads** → **CronJobs**에서 **Create** → **From YAML**을 선택합니다:
+**워크로드(Workloads)** → **CronJobs**에서 **CronJob 만들기(Create Cronjob)**을 선택하고 다음을 붙여넣습니다.
 
 [source,yaml,role="copypaste",subs="attributes"]
 ----
@@ -110,41 +106,18 @@ spec:
 
 NOTE: ``schedule: "0 2 31 2 *"``는 "2월 31일 새벽 2시"를 의미합니다. 2월에는 31일이 없어서 이 일정은 영원히 도래하지 않습니다. cron 표현식 자체는 유효한 값(일 1~31, 월 1~12)이라 OpenShift는 그대로 받아들이지만, 실제로 자동 트리거되는 일은 없습니다.
 
-[.bordershadow]
-image::nationalparks-cronjob-create.png[CronJob Create From YAML 다이얼로그,link=self,window=blank]
-// TODO: 스크린샷 필요 - CronJob Create From YAML 다이얼로그
+**Create**를 클릭합니다. 
 
-**Create**를 클릭합니다. CronJob이 등록되었는지 확인합니다:
-
-[source,bash,role="copypaste"]
-----
-oc get cronjob
-----
-
-이 CronJob은 스케줄이 도래하지 않으므로 저절로 Job을 만들지 않습니다. 필요할 때마다 웹 콘솔에서 수동으로 실행해 봅니다. **Workloads** → **CronJobs**에서 ``nationalparks-data-load-template``을 클릭하고, 사이드 패널의 **Actions** 드롭다운에서 **Run Job**을 선택합니다.
+이 CronJob은 스케줄이 도래하지 않으므로 저절로 Job을 만들지 않습니다. 필요할 때마다 웹 콘솔에서 수동으로 실행해 봅니다. 
+생성 완료되어 현재 웹콘솔에 표시된 `nationalparks-data-load-template` 페이지에서 바로 동작(Action) 드롭다운을 클릭하고 **작업 시작(Start Job)**을 선택해도 되고,
+만약 웹콘솔에서 다른 페이지로 이미 이동했다면 **Workloads** → **CronJobs**에서 ``nationalparks-data-load-template``의 오른쪽 ...을 클릭해서 **작업 시작(Start Job)**을 선택해도 됩니다.
 
 [.bordershadow]
 image::nationalparks-cronjob-run-job.png[Actions 드롭다운에서 Run Job을 선택하는 화면,link=self,window=blank]
-// TODO: 스크린샷 필요 - Actions 드롭다운에서 Run Job을 선택하는 화면
 
 새로 생성된 Job을 확인합니다:
 
-[source,bash,role="copypaste"]
-----
-oc get jobs
-----
-
-[.console-output]
-[source]
-----
-NAME                                     COMPLETIONS   DURATION   AGE
-nationalparks-data-load                  1/1           3s         10m
-nationalparks-data-load-template-29xkq   1/1           2s         5s
-----
+[.bordershadow]
+image::nationalparks-cronjob-created-job.png[생성된 Job을 확인하는 화면,link=self,window=blank]
 
 **Run Job**을 클릭할 때마다 이렇게 새로운 Job이 하나씩 만들어지는 것을 확인할 수 있습니다. YAML을 다시 작성할 필요 없이, 필요할 때마다 버튼 클릭 한 번으로 같은 작업을 반복 실행할 수 있는 것입니다. 실습이 끝나면 템플릿을 정리합니다:
-
-[source,bash,role="copypaste"]
-----
-oc delete cronjob nationalparks-data-load-template
-----
