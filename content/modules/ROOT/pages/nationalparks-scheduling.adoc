@@ -87,9 +87,9 @@ oc describe node $WORKER
 
 ``nationalparks`` Deployment에 Pod Anti-Affinity 규칙을 추가해, 같은 앱의 Pod들이 서로 다른 노드에 분산되도록 만들어 보겠습니다. 이 규칙은 자신의 namespace 안에서만 동작하며 노드 자체는 변경하지 않습니다.
 
-**Topology** 화면에서 ``nationalparks`` Deployment를 클릭하고 __Actions → Edit Deployment__를 선택합니다. YAML에서 ``spec.template.spec``에 다음 ``affinity`` 블록을 추가합니다:
+Pod 스펙(``spec.template.spec``)에 다음과 같은 ``affinity`` 블록을 추가할 것입니다:
 
-[source,yaml,role="copypaste"]
+[source,yaml]
 ----
 affinity:
   podAntiAffinity:
@@ -102,7 +102,14 @@ affinity:
 
 NOTE: ``requiredDuringSchedulingIgnoredDuringExecution``(필수, hard)를 사용했습니다. 이는 "반드시 지켜라"는 의미로, 조건을 만족하는 노드가 없으면 Pod는 스케줄링되지 않고 ``Pending`` 상태로 남습니다. 이 클러스터는 노드가 충분하므로 안전하게 사용할 수 있습니다. 노드가 부족한 환경이라면 대신 ``preferredDuringSchedulingIgnoredDuringExecution``(선호, soft)를 사용해 "가능하면 지켜라"는 완화된 조건으로 바꿀 수도 있습니다.
 
-**Save**를 클릭한 후 2개로 스케일링해 실제로 다른 노드에 배치되는지 확인합니다:
+CLI로 바로 적용합니다:
+
+[source,bash,role="copypaste"]
+----
+oc patch deployment nationalparks --type='json' -p='[{"op":"add","path":"/spec/template/spec/affinity","value":{"podAntiAffinity":{"requiredDuringSchedulingIgnoredDuringExecution":[{"labelSelector":{"matchLabels":{"app":"nationalparks"}},"topologyKey":"kubernetes.io/hostname"}]}}}]'
+----
+
+2개로 스케일링해 실제로 다른 노드에 배치되는지 확인합니다:
 
 [source,bash,role="copypaste"]
 ----

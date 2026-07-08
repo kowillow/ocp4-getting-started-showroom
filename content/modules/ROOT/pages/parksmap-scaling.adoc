@@ -172,11 +172,11 @@ image::parksmap-scaled.png[Developer Perspective에서 확인한 실행 중인 P
 
 OpenShift의 **ReplicaSet**은 원하는 개수의 **Pod**가 실행되고 있는지 지속적으로 모니터링하기 때문에, 원하는 레플리카 개수와 현재 개수가 일치하지 않을 경우 OpenShift가 상황을 "고칠" 것이라고 예상할 수 있습니다.
 
-현재 두 개의 **Pod**가 실행 중이므로, "실수로" 하나를 죽이면 어떤 일이 일어나는지 확인해 볼 수 있습니다. ``oc get pods`` 명령을 다시 실행하고 **Pod** 이름 하나를 선택합니다. 그런 다음 다음을 수행합니다:
+현재 두 개의 **Pod**가 실행 중이므로, "실수로" 하나를 죽이면 어떤 일이 일어나는지 확인해 볼 수 있습니다. 다음 명령이 **Pod** 하나를 자동으로 골라 삭제합니다:
 
 [source,bash,role="copypaste"]
 ----
-oc delete pod parksmap-65c4f8b676-k5gkk && oc get pods
+oc delete pod $(oc get pods -l app=parksmap -o jsonpath='{.items[0].metadata.name}') --wait=false && oc get pods -l app=parksmap
 ----
 
 [.console-output]
@@ -202,6 +202,11 @@ link:{ocp4_starter_openshift_docs}/html/building_applications/application-health
 === 실습: 스케일 다운
 
 계속 진행하기 전에, 애플리케이션을 다시 인스턴스 1개로 스케일 다운하세요. 원하는
-방법을 자유롭게 사용하면 됩니다.
+방법을 자유롭게 사용하면 되고, CLI를 쓴다면 다음 명령으로 바로 할 수 있습니다:
+
+[source,bash,role="copypaste"]
+----
+oc scale --replicas=1 deployment/parksmap
+----
 
 WARNING: Pod를 1개로 스케일 다운하지 않으면 이후 섹션에서 예기치 않은 동작이 발생할 수 있습니다. 이는 애플리케이션이 코딩된 방식 때문이며 OpenShift와는 관련이 없습니다.

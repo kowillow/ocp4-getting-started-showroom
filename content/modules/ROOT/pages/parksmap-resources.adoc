@@ -44,6 +44,8 @@ NAME                        READY   STATUS             RESTARTS      AGE
 parksmap-65c4f8b676-k5gkk   0/1     CrashLoopBackOff   3 (20s ago)   90s
 ----
 
+NOTE: 확인하는 시점에 따라 ``STATUS``가 아직 ``Running``이나 ``OOMKilled``로 보일 수도 있습니다. 컨테이너가 강제 종료와 재시작을 반복하는 과정 중 어느 순간을 포착했는지에 따라 달라지는 것뿐이니, 명확하지 않다면 몇 초 후 같은 명령을 다시 실행해 보세요. 이때 가장 확실한 신호는 ``RESTARTS`` 열입니다 — 이 값이 0보다 크고 계속 늘어나고 있다면, 어떤 ``STATUS``가 보이든 컨테이너가 정상적으로 뜨지 못하고 있다는 뜻입니다. 상태 변화를 계속 지켜보고 싶다면 ``watch oc get pods -l app=parksmap``을 사용할 수도 있습니다(``Ctrl+C``로 종료).
+
 원인을 자세히 확인합니다:
 
 [source,bash,role="copypaste"]
