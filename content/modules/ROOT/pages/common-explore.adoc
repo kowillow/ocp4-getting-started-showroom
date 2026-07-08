@@ -39,6 +39,7 @@ image::openshift-console-dashboard.png[로그인 후 표시되는 OpenShift 웹 
 === CLI 설치 확인하기
 
 CLI는 워크샵 환경에 미리 설치되어 있습니다. 오른쪽에서 Terminal 탭을 눌러 사용 가능한지 확인하고 버전을 확인해 보세요.
+**오른쪽의 노란색 아이콘을 클릭하면 명령어가 복사됩니다.**
 
 [source,bash,role="copypaste",subs="attributes"]
 ----
@@ -135,7 +136,7 @@ image::openshift-console-project.png[OpenShift 웹 콘솔의 Project 개요 화�
 
 Project 내의 애플리케이션과 그 구성 요소를 시각적으로 표현해 주는 토폴로지 화면을 살펴보세요.
 
-왼쪽 메뉴에서 **워크로드**로 이동한 후 **토폴로지**를 선택합니다.
+왼쪽 메뉴에서 **워크로드(Workload)**로 이동한 후 **토폴로지(Topology)**를 선택합니다.
 
 [.bordershadow]
 image::openshift-console-topology.png[애플리케이션 구성 요소를 시각적으로 보여주는 토폴로지 화면,link=self,window=blank]

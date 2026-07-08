@@ -172,11 +172,18 @@ image::parksmap-scaled.png[Developer Perspective에서 확인한 실행 중인 P
 
 OpenShift의 **ReplicaSet**은 원하는 개수의 **Pod**가 실행되고 있는지 지속적으로 모니터링하기 때문에, 원하는 레플리카 개수와 현재 개수가 일치하지 않을 경우 OpenShift가 상황을 "고칠" 것이라고 예상할 수 있습니다.
 
-현재 두 개의 **Pod**가 실행 중이므로, "실수로" 하나를 죽이면 어떤 일이 일어나는지 확인해 볼 수 있습니다. 다음 명령이 **Pod** 하나를 자동으로 골라 삭제합니다:
+현재 두 개의 **Pod**가 실행 중이므로, "실수로" 하나를 죽이면 어떤 일이 일어나는지 확인해 볼 수 있습니다. 다음 명령이 **Pod** 하나를 자동으로 골라 삭제합니다.
 
 [source,bash,role="copypaste"]
 ----
-oc delete pod $(oc get pods -l app=parksmap -o jsonpath='{.items[0].metadata.name}') --wait=false && oc get pods -l app=parksmap
+oc delete pod $(oc get pods -l app=parksmap -o jsonpath='{.items[0].metadata.name}') --wait=false
+----
+
+그런 다음 다시 Pod 목록을 바로 확인합니다.
+
+[source,bash,role="copypaste"]
+----
+oc get pods -l app=parksmap
 ----
 
 [.console-output]

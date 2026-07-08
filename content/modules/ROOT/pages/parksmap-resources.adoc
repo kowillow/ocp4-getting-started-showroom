@@ -74,7 +74,7 @@ oc set resources deployment/parksmap --requests=cpu=100m,memory=512Mi --limits=c
 
 [source,bash,role="copypaste"]
 ----
-oc describe deployment parksmap | grep -A 4 Limits
+oc describe deployment parksmap | grep -A 5 Limits
 ----
 
 [.console-output]
@@ -95,7 +95,7 @@ Pod가 정상적으로 ``Running`` 상태가 되는지 확인합니다:
 oc get pods -l app=parksmap
 ----
 
-다음과 유사한 출력이 표시됩니다:
+다음과 유사한 출력이 표시되면서, Pod가 실행되고 있음을 알 수 있습니다. 
 
 [.console-output]
 [source]
@@ -103,8 +103,6 @@ oc get pods -l app=parksmap
 NAME                        READY   STATUS    RESTARTS   AGE
 parksmap-79d5c9f8a2-x8k2p   1/1     Running   0          30s
 ----
-
-NOTE: CPU도 너무 낮게 잡으면 스로틀링 때문에 애플리케이션 응답이 느려질 수 있으므로, 여유를 두고 ``500m``(0.5코어)로 설정합니다.
 
 [#resourcequota_group]
 == ResourceQuota

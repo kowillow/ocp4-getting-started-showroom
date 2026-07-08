@@ -24,14 +24,7 @@ include::vars.adoc[]
 [#trigger_rolling_update]
 === 실습: Pod Template 변경으로 Rolling Update 트리거하기
 
-이미지 태그를 바꾸지 않아도, Pod template이 바뀌기만 하면 rolling update가 시작됩니다. 환경 변수 하나를 추가해 새 ReplicaSet이 생성되는 것을 관찰해 보겠습니다.
-
-현재 이미지를 확인합니다:
-
-[source,bash,role="copypaste"]
-----
-oc get deployment parksmap -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
-----
+Pod template이 바뀌기만 하면 rolling update가 시작됩니다. 환경 변수 하나를 추가해 새 ReplicaSet이 생성되는 것을 관찰해 보겠습니다.
 
 환경 변수를 추가해 새 롤아웃을 트리거합니다:
 
