@@ -349,7 +349,7 @@ https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/data/
 배포한 다음 데이터베이스를 배포했습니다. 하지만 실제로 데이터베이스
 **안에** 데이터를 로드한 적은 없습니다.
 
-애플리케이션은 바로 이 작업을 수행하는 엔드포인트를 제공합니다. 웹 브라우저에서 이 URL을 열어 ``nationalparks`` 애플리케이션이 MongoDB에 샘플 데이터셋을 삽입하도록 해보세요:
+nationalparks 애플리케이션은 바로 이 작업을 수행하는 엔드포인트도 제공합니다. 웹 브라우저에서 이 URL을 열어 ``nationalparks`` 애플리케이션이 MongoDB에 샘플 데이터셋을 삽입하도록 해보세요:
 
 [source,text,role="copypaste",subs="attributes"]
 ----
