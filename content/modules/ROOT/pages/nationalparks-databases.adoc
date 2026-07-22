@@ -3,36 +3,50 @@
 
 include::vars.adoc[]
 
-이 섹션에서는 `nationalparks` 애플리케이션이 위치 정보를 저장하는 데 사용할
+이 섹션에서는 ``nationalparks`` 애플리케이션이 위치 정보를 저장하는 데 사용할
 MongoDB 데이터베이스를 배포하고 연결합니다.
 
-마지막으로, `nationalparks` 애플리케이션을 지도 시각화 도구의 백엔드로 지정하여,
-OpenShift 디스커버리 메커니즘을 통해 `parksmap` 구성 요소가 이를 동적으로 검색하고
+마지막으로, ``nationalparks`` 애플리케이션을 지도 시각화 도구의 백엔드로 지정하여,
+OpenShift 디스커버리 메커니즘을 통해 ``parksmap`` 구성 요소가 이를 동적으로 검색하고
 지도 데이터가 자동으로 표시되도록 합니다.
 
 [.bordershadow]
-image::roadshow-app-architecture-nationalparks-2.png[link="self",window=_blank]
+image::roadshow-app-architecture-nationalparks-2.png[MongoDB 데이터베이스를 포함한 애플리케이션 아키텍처 다이어그램,link=self,window=blank]
+
+[#mongodb_deploy_group]
+== MongoDB 배포와 연결
 
 [#storage]
-== 배경 지식: 스토리지
+=== 배경 지식: 데이터베이스 연결 설정
 
-유용한 애플리케이션 대부분은 어떤 식으로든 "상태를 가지거나(stateful)" "동적(dynamic)"이며,
-이는 보통 데이터베이스나 다른 형태의 데이터 저장소로 구현됩니다. 이 워크숍 섹션에서는
-애플리케이션 아키텍처에 MongoDB를 추가하고, `nationalparks` Deployment가 이
-데이터베이스에 연결하도록 구성합니다. 연결 파라미터는 https://kubernetes.io/docs/concepts/configuration/secret/[Secret, window="_blank"]을 사용하여 환경 변수 형태로 Deployment에 전달됩니다.
+유용한 애플리케이션 대부분은 데이터를 어딘가에 저장해야 하는 "상태를 가진(stateful)" 구성 요소가 필요하며, 보통 데이터베이스가 그 역할을 맡습니다. 이 워크샵 섹션에서는
+애플리케이션 아키텍처에 MongoDB를 추가하고, ``nationalparks`` Deployment가 이
+데이터베이스에 연결하도록 구성합니다.
+
+데이터베이스 접속 정보(호스트, 사용자 이름, 비밀번호 등)를 애플리케이션 이미지에 직접 하드코딩하면, 접속 정보가 바뀔 때마다 이미지를 다시 빌드해야 합니다. 그래서 이런 연결 파라미터는 https://kubernetes.io/docs/concepts/configuration/secret/[Secret^]을 사용해 환경 변수 형태로 Deployment에 전달합니다. 이렇게 하면 소스 코드를 건드리지 않고도 접속 정보만 바꿔서 다른 환경에 재사용할 수 있습니다. 호스트 이름/데이터베이스 이름처럼 민감하지 않은 값은 이미 앞선 모듈에서 **ConfigMap**으로 준비해 두었으니, 이번에는 자격 증명을 담을 Secret을 만듭니다.
+
+NOTE: Secret을 환경 변수로 전달하면 값이 컨테이너 안에 그대로 노출된다는 한계가 있습니다. 애플리케이션이 오류 발생 시 환경 변수 전체를 로그로 남기는 경우가 흔한데, 이 경우 Secret 값이 로그에 그대로 찍혀버릴 수 있습니다. 그래서 실제 프로덕션 환경에서는 Secret을 환경 변수 대신 **볼륨으로 마운트**해서 앱이 파일로 읽게 하거나(Secret이 변경되면 Pod 재시작 없이도 파일 내용이 자동으로 갱신됩니다), HashiCorp Vault 같은 외부 Secret 관리 도구와 연동하는 경우가 많습니다. 다만 이는 이 워크샵의 범위를 벗어나므로, 개념을 익히는 단계인 여기서는 더 간단한 환경 변수 방식을 사용합니다.
+
+데이터베이스에는 자격 증명 외에도 실제로 저장할 데이터가 필요합니다. 컨테이너의 파일 시스템은 컨테이너가 재시작되면 함께 사라지므로, MongoDB가 다시 시작되어도 데이터가 남아있게 하려면 영구 저장소를 연결해야 합니다. 이 영구 저장소는 세 가지 오브젝트로 이루어집니다:
+
+* **PersistentVolume**(PV): 클러스터에 실제로 존재하는 저장 공간 하나를 나타내는 오브젝트입니다. 클라우드 블록 스토리지나 NFS 같은 실제 스토리지 시스템의 용량을 클러스터가 사용할 수 있도록 등록해 둔 것입니다.
+* **StorageClass**: PV를 어떤 방식으로 만들지 정의해 둔 일종의 설계도입니다. 클러스터 관리자가 미리 여러 StorageClass를 만들어 두면, 사용자는 그중 하나를 골라 요청하기만 하면 됩니다.
+* **PersistentVolumeClaim**(PVC): Pod가 "이 정도 용량과 접근 방식의 저장 공간이 필요합니다"라고 요청하는 오브젝트입니다.
+
+PVC를 만들 때 StorageClass를 지정하면(또는 클러스터의 기본 StorageClass가 자동으로 적용되면), 클러스터가 그 설계도에 따라 PV를 자동으로 만들어 PVC와 연결해 줍니다. 이를 동적 프로비저닝(dynamic provisioning)이라고 하며, 대부분의 경우 PV를 직접 만들 필요 없이 PVC만 요청하면 충분합니다. 이 섹션에서는 Secret과 PVC를 함께 준비해 MongoDB를 배포합니다.
 
 [#create_mongodb_instance]
-== 실습: MongoDB 배포하기
+=== 실습: MongoDB 배포하기
 
-첫 번째 단계는 데이터베이스 연결 자격 증명 같은 민감한 정보를 저장하는 데 사용할 *Secret*을 생성하는 것입니다.
-*Workloads* → *Secrets*에서 오른쪽 상단의 *Create* 버튼을 클릭하고 *From YAML*을 선택합니다.
+첫 번째 단계는 데이터베이스 연결 자격 증명 같은 민감한 정보를 저장하는 데 사용할 **Secret**을 생성하는 것입니다.
+**워크로드(Workloads)** → **시크릿(Secrets)**에서 오른쪽 상단의 **만들기(Create)** 버튼을 클릭하고 **출처: YAMl(From YAML)**을 선택합니다.
 
 [.bordershadow]
-image::mongodb_create_secret.png[link="self",window=_blank]
+image::mongodb_create_secret.png[Secrets 화면에서 Create → From YAML을 선택하는 메뉴,link=self,window=blank]
 
 에디터에 다음 YAML을 붙여넣습니다:
 
-[source,role="copypaste",subs="attributes"]
+[source,yaml,role="copypaste",subs="attributes"]
 ----
 apiVersion: v1
 kind: Secret
@@ -48,56 +62,114 @@ stringData:
 ----
 
 [.bordershadow]
-image::mongodb_create_secret_dialog.png[link="self",window=_blank]
+image::mongodb_create_secret_dialog.png[mongodb-credentials Secret YAML이 입력된 편집기 화면,link=self,window=blank]
 
-폼 하단의 *Create* 버튼을 클릭합니다.
+폼 하단의 **Create** 버튼을 클릭합니다.
 
-Secret이 준비되었으니, 이전에 다른 애플리케이션을 추가할 때처럼 오른쪽 상단의 *+* 아이콘을 클릭합니다. *Container images* 옵션을 선택합니다. 다음 세부 정보를 입력합니다:
+Secret이 준비되었으니, 이전에 다른 애플리케이션을 추가할 때처럼 오른쪽 상단의 **+** 아이콘을 클릭합니다. **Container images** 옵션을 선택합니다.
 
-* Image 섹션:
-    - Image name from external registry → `mongo:6.0.4`
-    - Runtime icon → `mongodb` 선택
+Image 섹션의 **Image name from external registry** 필드에 다음을 입력합니다:
 
-* General 섹션:
-    - Application → `workshop`
-    - Name → `mongodb`
+[source,text,role=copypaste]
+----
+mongo:6.0.4
+----
+
+**Runtime icon**은 ``mongodb``를 선택합니다.
+
+General 섹션의 **Application**은 ``workshop``으로 둡니다. **Name** 필드에는 다음을 입력합니다:
+
+[source,text,role=copypaste]
+----
+mongodb
+----
 
 [.bordershadow]
-image::mongodb_deploy_image_image.png[link="self",window=_blank]
+image::mongodb_deploy_image_image.png[mongo 컨테이너 이미지와 Runtime 아이콘을 지정하는 Image 섹션,link=self,window=blank]
 
-* Resource type 드롭다운이 *Deployment* 옵션으로 설정되어 있는지 확인합니다.
+* 리소스 유형(Resource type) 드롭다운이 **배포(Deployment)** 옵션으로 설정되어 있는지 확인합니다.
 
-* *Show advanced Deployment options*를 클릭합니다.
-    - 여기에서 앞서 생성한 `mongodb-credentials` Secret에서 값을 가져오는 두 개의 환경 변수를 추가합니다.
-    - *+Add from ConfigMap or Secret*을 클릭하고 이름으로 `MONGO_INITDB_ROOT_USERNAME`을 입력합니다. 값으로는 resource로 `mongodb-credentials`를, key로 `admin-usr`을 선택합니다.
-    - 다시 *+Add from ConfigMap or Secret*을 클릭하고 이름으로 `MONGO_INITDB_ROOT_PASSWORD`를 입력합니다. 값으로는 resource로 `mongodb-credentials`를, key로 `admin-pwd`를 선택합니다.
+* **고급 배포 옵션 표시(how advanced Deployment options)**를 클릭합니다. 여기에서 앞서 생성한 ``mongodb-credentials`` Secret에서 값을 가져오는 두 개의 환경 변수를 추가합니다.
+
+**+Add from ConfigMap or Secret**을 클릭하고 이름으로 다음을 입력합니다:
+
+[source,text,role=copypaste]
+----
+MONGO_INITDB_ROOT_USERNAME
+----
+
+값으로는 resource로 ``mongodb-credentials``를, key로 ``admin-usr``을 선택합니다.
+
+다시 **+Add from ConfigMap or Secret**을 클릭하고 이름으로 다음을 입력합니다:
+
+[source,text,role=copypaste]
+----
+MONGO_INITDB_ROOT_PASSWORD
+----
+
+값으로는 resource로 ``mongodb-credentials``를, key로 ``admin-pwd``를 선택합니다.
 
 * Advanced options:
-    - Create a route → 데이터베이스는 OpenShift 클러스터 외부의 클라이언트가 접근하지 않을 것이므로 *체크 해제*합니다.
+    - Create a route → 데이터베이스는 OpenShift 클러스터 외부의 클라이언트가 접근하지 않을 것이므로 **체크 해제**합니다.
 
 [.bordershadow]
-image::mongodb_deploy_image_general.png[link="self",window=_blank]
+image::mongodb_deploy_image_general.png[MongoDB 배포의 환경 변수와 Create a route 옵션이 표시된 General 섹션,link=self,window=blank]
 
-마지막으로, 페이지 하단의 *Create* 버튼을 클릭하여 MongoDB 컨테이너를 배포합니다.
+마지막으로, 페이지 하단의 **Create** 버튼을 클릭하여 MongoDB 컨테이너를 배포합니다.
 
-다음 단계는 nationalparks 애플리케이션이 연결을 생성하는 데 사용할 특정 사용자를 이 MongoDB 인스턴스에 생성하는 것입니다. 이를 위해 Topology 화면에서 *MongoDB Deployment*를 클릭한 후, 오른쪽 화면에 표시되는 해당 *Pod*를 클릭합니다.
-
-[.bordershadow]
-image::mongodb_deployment_topology_pod.png[link="self",window=_blank]
-
-Pod 세부 정보 화면으로 이동하며, 여기에서 *Terminal*을 클릭하면 해당 컨테이너에서 터미널 세션을 시작할 수 있습니다.
+이 배포 마법사에는 볼륨을 추가하는 항목이 없으므로, 영구 저장소는 배포가 끝난 뒤 별도로 연결합니다. 일반적으로는 **Topology** 화면에서 구성 요소를 클릭하고 사이드 패널의 **Actions** 드롭다운에서 **Add Storage**를 선택한 뒤, PVC Name/Access Mode/Size/Mount Path만 입력하면 손쉽게 스토리지를 붙일 수 있습니다.
 
 [.bordershadow]
-image::mongodb_pod_details_terminal.png[link="self",window=_blank]
+image::mongodb_deploy_image_volume.png[Add Storage 과정에서 경고가 뜨는 화면,link=self,window=blank]
+
+하지만 MongoDB는 예외적인 경우입니다. ``mongo`` 컨테이너 이미지는 자체적으로 ``/data/db``와 ``/data/configdb`` 두 경로를 볼륨으로 선언해 두고 있어서, OpenShift가 Deployment를 생성하는 시점에 이 두 경로에 임시 저장소(``emptyDir``)를 이미 자동으로 마운트해 둔 상태입니다(볼륨이 2개 자동 생성되므로, 그중 어떤 것이 ``/data/db``용인지는 인덱스가 아니라 마운트 경로로 찾아야 합니다). 그래서 Add Storage로 같은 경로(``/data/db``)에 PVC를 추가하려 하면 "이미 사용 중인 경로"라는 경고가 뜨고, 그대로 진행해도 기존 ``emptyDir``이 그대로 남아있어 PVC가 실제로는 연결되지 않습니다.
+
+NOTE: ``/data/configdb``는 MongoDB가 **샤딩된 클러스터의 config server** 역할을 할 때만 사용하는 디렉터리이며, 이 워크샵처럼 단일 mongod 인스턴스(standalone)로 실행할 때는 사용되지 않습니다. 그래서 이 경로는 PVC로 바꾸지 않고 ``emptyDir``로 남겨 둬도, Pod가 재시작될 때 실질적으로 잃을 데이터가 없습니다. 실제 데이터가 저장되는 ``/data/db``만 PVC로 교체하면 충분합니다.
+
+이런 경우에는 CLI로 기존 볼륨을 PVC로 **교체(overwrite)**해야 합니다. 먼저 ``/data/db``에 실제로 마운트되어 있는 볼륨의 이름을 마운트 경로 기준으로 찾습니다:
+
+[source,bash,role="copypaste"]
+----
+oc get deployment mongodb -o jsonpath='{.spec.template.spec.containers[0].volumeMounts[?(@.mountPath=="/data/db")].name}{"\n"}'
+----
+
+그 이름을 그대로 사용해, 같은 이름의 볼륨을 새 PVC로 덮어씁니다:
+
+[source,bash,role="copypaste"]
+----
+VOL_NAME=$(oc get deployment mongodb -o jsonpath='{.spec.template.spec.containers[0].volumeMounts[?(@.mountPath=="/data/db")].name}')
+oc set volume deployment/mongodb --add --overwrite --name=$VOL_NAME -t pvc --claim-name=mongodb-data --claim-size=500Mi --mount-path=/data/db
+----
+
+PVC가 정상적으로 생성되고 연결되었는지 확인합니다:
+
+[source,bash,role="copypaste"]
+----
+oc get pvc mongodb-data
+----
+
+``Bound`` 상태라면 정상입니다. 이렇게 하면 MongoDB Pod가 재시작되거나 다시 스케줄링되더라도, PVC에 연결된 저장 공간 덕분에 데이터가 사라지지 않습니다.
+
+다음 단계는 nationalparks 애플리케이션이 연결을 생성하는 데 사용할 특정 사용자를 이 MongoDB 인스턴스에 생성하는 것입니다. 이를 위해 Topology 화면에서 **MongoDB Deployment**를 클릭한 후, 오른쪽 화면에 표시되는 해당 **Pod**를 클릭합니다.
+
+[.bordershadow]
+image::mongodb_deployment_topology_pod.png[Topology 화면에서 MongoDB Deployment의 Pod를 선택하는 화면,link=self,window=blank]
+
+Pod 세부 정보 화면으로 이동하며, 여기에서 **Terminal**을 클릭하면 해당 컨테이너에서 터미널 세션을 시작할 수 있습니다.
+
+[.bordershadow]
+image::mongodb_pod_details_terminal.png[Pod 세부 정보 화면의 Terminal 탭,link=self,window=blank]
 
 다음 스니펫을 복사하여 터미널 창에 붙여넣어, 올바른 설정과 역할을 가진 데이터베이스 사용자를 생성합니다:
 
-[source,role=copypaste]
+[source,bash,role=copypaste]
 ----
 mongosh -u admin -p secret --authenticationDatabase admin --eval 'use parksapp' --eval 'db.createUser({user: "parksapp", pwd: "keepsafe", roles: [{ role: "dbAdmin", db: "parksapp" },{ role: "readWrite", db: "parksapp" }]})' --quiet
 ----
 
-NOTE: 프로덕션 환경에서는 컨테이너 entrypoint를 수정하거나 https://kubernetes.io/docs/concepts/workloads/pods/init-containers/[init container, window="_blank"]를 사용하여 데이터베이스 설정을 관리할 수 있습니다.
+WARNING: 이 명령을 실행해야 nationalparks 애플리케이션이 사용할 ``parksapp`` 데이터베이스 사용자가 생성됩니다. 이 단계를 건너뛰면 이후 데이터를 적재하는 과정이 인증 실패로 진행되지 않으므로 반드시 실행해야 합니다.
+
+NOTE: 프로덕션 환경에서는 컨테이너 entrypoint를 수정하거나 https://kubernetes.io/docs/concepts/workloads/pods/init-containers/[init container^]를 사용하여 데이터베이스 설정을 관리할 수 있습니다.
 
 명령이 성공하면 다음과 같은 출력이 표시됩니다:
 
@@ -107,107 +179,96 @@ NOTE: 프로덕션 환경에서는 컨테이너 entrypoint를 수정하거나 ht
 { ok: 1 }
 ----
 
-이제 데이터베이스와 관련된 모든 준비가 끝났으니 다시 nationalparks 애플리케이션으로 초점을 돌려보겠습니다. *Topology* 화면으로 돌아가서 *nationalparks Deployment*를 클릭하고 오른쪽 화면의 드롭다운에서 _Actions → Edit Deployment_를 선택합니다.
+이제 데이터베이스와 관련된 모든 준비가 끝났으니 다시 nationalparks 애플리케이션으로 초점을 돌려보겠습니다. **Topology** 화면으로 돌아가서 **nationalparks Deployment**를 클릭하고 오른쪽 화면의 드롭다운에서 __동작(Actions) → Deployment 편집(Edit Deployment)__를 선택합니다.
 
 [.bordershadow]
-image::nationalparks_deployment_edit.png[link="self",window=_blank]
+image::nationalparks_deployment_edit.png[nationalparks Deployment의 Actions 메뉴에서 Edit Deployment 선택,link=self,window=blank]
 
-*Edit Deployment* 대화 상자에서 아래로 스크롤하여 *Environment Variables* 섹션으로 이동하고 다음 네 개의 항목을 추가합니다. 먼저 서버 호스트와 데이터베이스를 설정합니다:
+**Edit Deployment** 대화 상자에서 아래로 스크롤하여 **Environment Variables** 섹션으로 이동합니다. 서버 호스트(``MONGODB_SERVER_HOST``)와 데이터베이스 이름(``MONGODB_DATABASE``)은 이미 앞선 모듈에서 ConfigMap을 통해 연결해 두었으니, 이번에는 자격 증명 두 개만 ``mongodb-credentials`` Secret에서 가져오면 됩니다.
 
-    - `MONGODB_SERVER_HOST`: `mongodb`
-    - `MONGODB_DATABASE`: `parksapp`
+**+Add from ConfigMap or Secret**을 클릭하고 이름으로 다음을 입력합니다:
 
-`MONGODB_SERVER_HOST`의 값 `mongodb`는 MongoDB 컨테이너 이미지를 배포할 때 생성된 MongoDB *Service*로 해석됩니다.
+[source,text,role=copypaste]
+----
+MONGODB_USER
+----
 
-나머지 두 개의 자격 증명은 `mongodb-credentials` Secret에서 가져옵니다.
+값으로는 resource로 ``mongodb-credentials``를, key로 ``app-usr``을 선택합니다.
 
-*+Add from ConfigMap or Secret*을 클릭하고 이름으로 `MONGODB_USER`를 입력합니다. 값으로는 resource로 `mongodb-credentials`를, key로 `app-usr`을 선택합니다.
+다시 **+Add from ConfigMap or Secret**을 클릭하고 이름으로 다음을 입력합니다:
 
-다시 *+Add from ConfigMap or Secret*을 클릭하고 이름으로 `MONGODB_PASSWORD`를 입력합니다. 값으로는 resource로 `mongodb-credentials`를, key로 `app-pwd`를 선택합니다.
+[source,text,role=copypaste]
+----
+MONGODB_PASSWORD
+----
+
+값으로는 resource로 ``mongodb-credentials``를, key로 ``app-pwd``를 선택합니다.
 
 [.bordershadow]
-image::nationalparks_deployment_env_vars_secrets.png[link="self",window=_blank]
+image::nationalparks_deployment_env_vars_secrets.png[Secret에서 가져온 MONGODB_USER와 MONGODB_PASSWORD 환경 변수 목록,link=self,window=blank]
 
-마지막으로 대화 상자 하단의 *Save* 버튼을 클릭합니다. 이렇게 하면 애플리케이션의 새 버전이 롤아웃되면서 방금 배포한 MongoDB 인스턴스와 연결됩니다.
+마지막으로 대화 상자 하단의 **Save** 버튼을 클릭합니다. 이렇게 하면 애플리케이션의 새 버전이 롤아웃되면서 방금 배포한 MongoDB 인스턴스와 연결됩니다.
 
 
 [NOTE]
 ====
-데이터베이스 연결이 어떻게 마법처럼 동작하기 시작했는지 궁금하실 겁니다.
+``MONGODB_SERVER_HOST``의 값 ``mongodb``는 지금 막 배포한 MongoDB 컨테이너 이미지가 생성한 MongoDB **Service**의 이름과 정확히 일치합니다. 앞선 모듈에서 이 값을 ConfigMap에 미리 담아 nationalparks Deployment에 연결해 두었는데, 그때는 아직 MongoDB가 없어서 연결 대상이 없었습니다. 이제 MongoDB가 실제로 존재하게 되었으니, 그 환경 변수가 비로소 의미를 가지게 되어 연결이 마법처럼 동작하기 시작합니다.
+
 OpenShift에 애플리케이션을 배포할 때는, 종속 시스템에 대한 연결 파라미터를 정의할 때
 항상 Secret이나 ConfigMap을 사용하여 환경 변수를 생성하는 것이 좋습니다. 이렇게 하면
 소스 코드를 수정하지 않고도 다양한 환경에서 애플리케이션을 이식할 수 있습니다. 연결을
 수행하고 데이터베이스 스키마를 생성하는 소스 파일은 다음에서 확인할 수
 있습니다:
 
-[source,role="copypaste",subs="attributes"]
+[source,text,subs="attributes"]
 ----
 {ocp4_starter_openshift_roadshow}/nationalparks/blob/master/src/main/java/com/openshift/evg/roadshow/parks/db/MongoDBConnection.java#L44-l48
 ----
 
-데이터베이스 연결이 정의되지 않은 경우 애플리케이션이 예외를 처리하는 것을 확인해 보세요. 이 덕분에 애플리케이션이 충돌하지 않고 배포될 수 있었던 것입니다.
-
 ====
 
-[#adding_labels]
-== 실습: 레이블 추가하기
+[#label_discovery_group]
+== 레이블 기반 서비스 디스커버리
 
-이제 MongoDB 배포에 지정된 레이블을 수정해 보겠습니다. *Topology* 화면에서 MongoDB 배포를 선택하고 _Actions → Edit Labels_를 선택합니다.
+[#adding_labels]
+=== 실습: 레이블 추가하기
+
+이제 MongoDB 배포에 지정된 레이블을 수정해 보겠습니다. 이전 다른 앱들처럼 배포 시에도 레이블을 추가할 수 있지만, 이미 배포된 Deployment도 다음 방법에 따라 레이블을 수정할 수 있습니다. 
+**Topology** 화면에서 MongoDB 배포를 선택하고 __동작(Actions) → 라벨 편집(Edit Labels)__를 선택합니다.
 
 [.bordershadow]
-image::mongodb_deployment_labels.png[link="self",window=_blank]
+image::mongodb_deployment_labels.png[MongoDB 배포의 Actions 메뉴에서 Edit Labels 선택,link=self,window=blank]
 
-이전과 마찬가지로 레이블 3개를 추가합니다:
+이전과 마찬가지로 레이블 3개를 추가합니다. 텍스트를 복사하여 붙여넣은 후, 키보드의 return 또는 enter를 누르면 레이블이 입력됩니다. 
 
 Application 그룹의 이름입니다:
 
-[source,role=copypaste]
+[source,text,role=copypaste]
 ----
 app=workshop
 ----
 
 다음은 이 배포의 이름입니다:
 
-[source,role=copypaste]
+[source,text,role=copypaste]
 ----
 component=nationalparks
 ----
 
 마지막으로, 이 구성 요소가 전체 애플리케이션에서 수행하는 역할입니다:
 
-[source,role=copypaste]
+[source,text,role=copypaste]
 ----
 role=database
 ----
 
-[#exploring_openshift_magic]
-== 실습: OpenShift Magic 살펴보기
-
-데이터베이스 연결 환경 변수로 `nationalparks` Deployment를 업데이트한 후, 약간의
-마법이 일어났습니다. OpenShift는 *ReplicaSet*을 업데이트하여 새 변수를 사용하는 애플리케이션의 새
-버전을 롤아웃했습니다. `oc get rs -l app=nationalparks`의 출력을 확인하여 이를
-검증할 수 있습니다:
-
-[.console-output]
-[source]
-----
-NAME                       DESIRED   CURRENT   READY   AGE
-nationalparks-58bd4758fc   0         0         0       4m58s
-nationalparks-7445576cd9   0         0         0       6m42s
-nationalparks-789c6bc4f4   1         1         1       41s
-----
-
-현재 ReplicaSet과 이전 ReplicaSet의 DESIRED, CURRENT 인스턴스 수를 확인할 수 있습니다. 이전 인스턴스의 desired와 current 값은 모두 0입니다.
-이는 OpenShift가 이전 애플리케이션 Pod를 새로운 설정을 사용하는 새 Pod로 무중단으로 교체했다는 의미입니다.
-
-
 [#data_data_everywhere]
-== 실습: 데이터, 데이터, 어디에나
+=== 실습: 데이터, 데이터, 어디에나
 
-이제 데이터베이스가 배포되었으니, `nationalparks` 웹
+이제 데이터베이스가 배포되었으니, ``nationalparks`` 웹
 서비스를 다시 방문하여 데이터를 조회해 볼 수 있습니다:
 
-[source,role="copypaste",subs="attributes"]
+[source,text,role="copypaste",subs="attributes"]
 ----
 https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/data/all
 ----
@@ -222,11 +283,11 @@ https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/data/
 
 데이터는 어디에 있을까요? 지금까지 진행한 과정을 생각해 보세요. 애플리케이션을
 배포한 다음 데이터베이스를 배포했습니다. 하지만 실제로 데이터베이스
-*안에* 데이터를 로드한 적은 없습니다.
+**안에** 데이터를 로드한 적은 없습니다.
 
-애플리케이션은 바로 이 작업을 수행하는 엔드포인트를 제공합니다. 웹 브라우저에서 이 URL을 열어 `nationalparks` 애플리케이션이 MongoDB에 샘플 데이터셋을 삽입하도록 해보세요:
+애플리케이션은 바로 이 작업을 수행하는 엔드포인트를 제공합니다. 웹 브라우저에서 이 URL을 열어 ``nationalparks`` 애플리케이션이 MongoDB에 샘플 데이터셋을 삽입하도록 해보세요:
 
-[source,role="copypaste",subs="attributes"]
+[source,text,role="copypaste",subs="attributes"]
 ----
 https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/data/load
 ----
@@ -239,42 +300,43 @@ https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/data/
 Items inserted in database: 2893
 ----
 
-이제 다시 `/ws/data/all`로 이동하면 엄청난 양의 JSON 데이터를 확인할 수 있습니다.
+이제 다시 ``/ws/data/all``로 이동하면 엄청난 양의 JSON 데이터를 확인할 수 있습니다.
 
 NOTE: Firefox 54 같은 일부 브라우저에서는 결과 JSON을 제대로 파싱하지 못해 오류가 보고되는 경우가 있습니다. 이는
 브라우저 문제이며 애플리케이션은 정상적으로 동작하고 있습니다.
 
-[source,role="copypaste",subs="attributes"]
+[source,text,role="copypaste",subs="attributes"]
 ----
 https://parksmap-{ocp4_starter_project}.{ocp4_starter_apps_domain}
 ----
 
-한 가지 문제가 있습니다. 메인 지도에는 *여전히* 공원이 표시되지 않습니다.
-이는 프런트엔드가 올바른 *Label*을 가진 service에만 통신을 시도하기 때문입니다.
-
+그러나 한 가지 문제가 있습니다. 백엔드 앱에 데이터를 삽입했는데도 메인 지도(프런트엔드 앱)에는 **여전히** 공원이 표시되지 않습니다. 
+이는 현재 프런트엔드 앱이 특정 **Label**을 가진 route에만 통신을 시도하려고 하기 때문입니다.
 
 [#working_with_labels]
-== 실습: 레이블 다루기
+=== 실습: 레이블 다루기
 
-앞서 *Service*, *Route*, *Selector*를 살펴볼 때 *Label*이 단순한 key-value 쌍이라는 것을
-알아보았습니다. 일반적으로 *Label*은 단순히 임의의
+앞서 **Service**, **Route**, **Selector**를 살펴볼 때 **Label**이 단순한 key-value 쌍이라는 것을
+알아보았습니다. 일반적으로 **Label**은 단순히 임의의
 key=value 쌍입니다. 예를 들면:
 
-* `pizza=pepperoni`
-* `pet=dog`
-* `openshift=awesome`
+* ``pizza=pepperoni``
+* ``pet=dog``
+* ``openshift=awesome``
 
-parksmap의 경우, 애플리케이션은 실제로 OpenShift
-API를 조회하여 project 내의 *Route*와 *Service*에 대해 질의합니다. 그중 어떤 것이
-`type=parksmap-backend`라는 *Label*을 가지고 있다면, 애플리케이션은 지도 데이터를 조회하기 위해
+parksmap 프런트앱의 경우, 애플리케이션은 실제로 OpenShift
+API를 조회하여 project 내의 **Route**와 **Service**에 대해 질의하도록 구성되어 있습니다. 그중 어떤 것이
+``type=parksmap-backend``라는 **Label**을 가지고 있다면, 애플리케이션은 지도 데이터를 조회하기 위해
 해당 엔드포인트에 접속해야 한다는 것을 알게 됩니다.
 이 작업을 수행하는 코드는
-link:{ocp4_starter_openshift_roadshow}/parksmap-web/blob/master/src/main/java/com/openshift/evg/roadshow/rest/RouteWatcher.java#L20[RouteWatcher.java 파일,window='_blank']에서 확인할 수 있습니다.
+link:{ocp4_starter_openshift_roadshow}/parksmap-web/blob/master/src/main/java/com/openshift/evg/roadshow/rest/RouteWatcher.java#L20[RouteWatcher.java 파일^]에서 확인할 수 있습니다.
 
-다행히 명령줄은 레이블을 조작할 수 있는 편리한 방법을 제공합니다. `nationalparks`
-service를 `describe`해 보세요:
+NOTE: API Gateway 역할을 하는 구성 요소가 백엔드 목록을 얻기 위해 어떤 API를 조회하는 것 자체는 흔한 패턴입니다(Consul, Eureka 같은 서비스 레지스트리가 대표적입니다). 다만 **parksmap 프런트앱이 조금 특이한 부분**은, 이런 용도의 별도 서비스 레지스트리를 두는 대신 **Kubernetes/OpenShift의 컨트롤 플레인 API(Route/Service 오브젝트)를 직접 애플리케이션 수준의 서비스 레지스트리처럼 사용**한다는 것입니다. 그러려면 애플리케이션이 Route의 Label을 조회할 수 있는 권한이 있어야 하는데, 이 권한을 직접 설정하는 실습은 이 워크숍 범위에서 생략되었고 실습 환경에 미리 구성해 두었습니다. **대부분의 서비스는 이 정도로 넓은 API 조회 권한이 필요 없고, 연결할 서비스 이름을 환경 변수로 전달받아 Kubernetes DNS로 호출하는 것으로 충분합니다**(예: 이 워크숍에서 ``nationalparks``가 ``MONGODB_SERVER_HOST`` 환경 변수로 ``mongodb``를 찾았던 것처럼). parksmap 프런트엔드 앱처럼 "관리자가 새로운 백엔드를 언제든 추가/제거해도 재배포 없이 자동으로 찾아서 보여줘야" 하는 동적 애그리게이터 역할을 위해, 오늘날에는 서비스 메시(Istio 등)가 이런 문제를 애플리케이션 코드 밖에서 더 깔끔하게 풀어주기도 합니다. 이 개념은 이후 실습에서 다루게 됩니다.
 
-[source,role=copypaste]
+아까는 웹콘솔을 통해서 mongodb에 레이블을 추가했었죠? 
+CLI 명령어를 사용해도 손쉽게 레이블을 조작할 수 있습니다. ``nationalparks`` route를 ``describe``해 보세요:
+
+[source,bash,role=copypaste]
 ----
 oc describe route nationalparks
 ----
@@ -307,9 +369,9 @@ Weight:                 100 (100%)
 Endpoints:              10.1.9.8:8080
 ----
 
-이미 몇 개의 레이블이 지정되어 있는 것을 확인할 수 있습니다. `oc label`을 사용하여 RouteWatcher가 백엔드를 검색하는 데 필요한 레이블을 추가합니다:
+이미 몇 개의 레이블이 지정되어 있는 것을 확인할 수 있습니다. ``oc label``을 사용하여 RouteWatcher가 백엔드를 검색하는 데 필요한 레이블을 추가합니다:
 
-[source,role=copypaste]
+[source,bash,role=copypaste]
 ----
 oc label route nationalparks type=parksmap-backend
 ----
@@ -324,12 +386,12 @@ route.route.openshift.io/nationalparks labeled
 
 이제 parksmap URL을 방문하여 브라우저에서 확인해 보세요:
 
-[source,role="copypaste",subs="attributes"]
+[source,text,role="copypaste",subs="attributes"]
 ----
 https://parksmap-{ocp4_starter_project}.{ocp4_starter_apps_domain}
 ----
 
 [.bordershadow]
-image::nationalparks-databases-new-parks.png[link="self",window=_blank]
+image::nationalparks-databases-new-parks.png[parksmap 지도에 국립공원 마커가 표시된 화면,link=self,window=blank]
 
 이제 공원들이 갑자기 나타나는 것을 확인할 수 있습니다. 정말 멋지네요!

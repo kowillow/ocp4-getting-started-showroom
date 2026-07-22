@@ -79,9 +79,9 @@ Events:            <none>
 oc port-forward svc/mlbparks 8787:8787
 ----
 
-이제 `localhost:8787`로 연결하면 pod 안에서 실행 중인 mlbparks 인스턴스로 전달됩니다.
+이제 ``localhost:8787``로 연결하면 pod 안에서 실행 중인 mlbparks 인스턴스로 전달됩니다.
 
-NOTE: 포트 포워딩은 `oc port-forward` 명령이 실행되는 동안에만 유지됩니다. 포그라운드에서 실행하고 있으므로 kbd:[CTRL+c](Mac에서는 kbd:[CMD+c])를 눌러 포트 포워딩을 중지할 수 있습니다.
+NOTE: 포트 포워딩은 ``oc port-forward`` 명령이 실행되는 동안에만 유지됩니다. 포그라운드에서 실행하고 있으므로 kbd:[CTRL+c](Mac에서는 kbd:[CMD+c])를 눌러 포트 포워딩을 중지할 수 있습니다.
 
 이제 해당 포트에 연결할 디버거만 찾으면 됩니다.
 
@@ -98,7 +98,7 @@ Console::
 
 .NOTE
 ****
-이 안내는 Java 명령줄 디버거인 `jdb`가 설치되어 있다고 가정합니다. 설치되어 있지 않다면, Maven과 `jdb`가 모두 설치된 docker 컨테이너를 실행하는 방법을 xref::mlbparks-binary-build.adoc#docker_for_maven[여기서] 확인할 수 있습니다. 해당 안내를 완료했다면, <<Port-Forwarding through a Service to our local machine,위에서 설명한>> 대로 컨테이너 안에서 포트 포워딩을 설정하세요. 그런 다음 컨테이너 안에서 아래 안내를 따르세요.
+이 안내는 Java 명령줄 디버거인 ``jdb``가 설치되어 있다고 가정합니다. 설치되어 있지 않다면, Maven과 ``jdb``가 모두 설치된 docker 컨테이너를 실행하는 방법을 xref::mlbparks-binary-build.adoc#docker_for_maven[여기서] 확인할 수 있습니다. 해당 안내를 완료했다면, <<Port-Forwarding through a Service to our local machine,위에서 설명한>> 대로 컨테이너 안에서 포트 포워딩을 설정하세요. 그런 다음 컨테이너 안에서 아래 안내를 따르세요.
 ****
 
 . 로컬에 클론한 mlbparks git 저장소의 루트에서 다음 명령을 실행합니다:
@@ -118,7 +118,7 @@ Initializing jdb ...
 >
 ----
 +
-. 다음으로, 디버거에서 다음 명령을 실행하여 `BackendController` 클래스에 중단점을 설정합니다:
+. 다음으로, 디버거에서 다음 명령을 실행하여 ``BackendController`` 클래스에 중단점을 설정합니다:
 +
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
@@ -140,7 +140,7 @@ Set breakpoint com.openshift.evg.roadshow.rest.BackendController.get
 curl http://mlbparks-workshop.{ocp4_starter_apps_domain}/ws/info
 ----
 +
-. 이제 디버거가 `BackendController.get` 메서드의 첫 줄에서 "중단"되어 있을 것입니다.
+. 이제 디버거가 ``BackendController.get`` 메서드의 첫 줄에서 "중단"되어 있을 것입니다.
 +
 [.console-output]
 [source,java,subs="+macros,+attributes"]
@@ -150,10 +150,10 @@ Breakpoint hit: "thread=default task-4", com.openshift.evg.roadshow.rest.Backend
 ----
 +
 . jdb 명령들을 자유롭게 사용해 보세요. 몇 가지 예시는 다음과 같습니다:
-** `list`: 중단점 주변 소스를 더 넓게 확인합니다
-** `where`: 스레드의 현재 스택을 출력합니다
-** `print`: 변수의 값을 출력합니다. 예를 들어 `print this`로 BackendController를 문자열로 확인할 수 있습니다
-** `cont`: 프로그램 실행을 계속합니다
+** ``list``: 중단점 주변 소스를 더 넓게 확인합니다
+** ``where``: 스레드의 현재 스택을 출력합니다
+** ``print``: 변수의 값을 출력합니다. 예를 들어 ``print this``로 BackendController를 문자열로 확인할 수 있습니다
+** ``cont``: 프로그램 실행을 계속합니다
 --
 IntelliJ::
 +
@@ -163,12 +163,12 @@ Run 메뉴(kbd:[ALT + u]) 아래에서 edit configurations를 선택합니다. �
 
 왼쪽 상단의 플러스(+) 버튼을 클릭하고 아래로 스크롤하여 Remote JVM Debug를 선택합니다.
 
-image::deprecated/mlbparks-debugging-intellij-debug-new.png[IntelliJ run and debug configurations dialog,link="self",window=_blank]
+image::deprecated/mlbparks-debugging-intellij-debug-new.png[IntelliJ run and debug configurations dialog,link=self,window=blank]
 
 표시되는 대화 상자 페이지에서 상단의 이름을 "on OpenShift"나 원하는 이름으로 변경합니다. 그런 다음
 오른쪽 하단에서 포트 번호를 8787로 변경합니다. 완료했다면 "OK"를 클릭합니다.
 
-image::deprecated/mlbparks-debugging-intellij-debug-info.png[IntelliJ remote debug configuration with port 8787,link="self",window=_blank]
+image::deprecated/mlbparks-debugging-intellij-debug-info.png[IntelliJ remote debug configuration with port 8787,link=self,window=blank]
 
 이제 IntelliJ에서 Debug 아이콘을 클릭하면 디버거가 열리고 OpenShift 위의 pod에 있는 JVM에 연결됩니다.
 원하는 어떤 클래스에든 중단점을 설정해 보세요. 평소처럼 익숙하고 편한 방식으로 디버깅할 수 있습니다!

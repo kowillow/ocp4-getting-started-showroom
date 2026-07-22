@@ -8,10 +8,10 @@ include::vars.adoc[]
 이미 연결되어 있고 그렇게 지정되어 있으므로, 애플리케이션이 빌드되고 배포되고 나면
 새로운 지도를 확인할 수 있습니다.
 
-image::deprecated/roadshow-app-architecture-mlbparks.png[Application architecture,800,align="center",link="self",window=_blank]
+image::deprecated/roadshow-app-architecture-mlbparks.png[Application architecture,800,align="center",link=self,window=blank]
 
 지난 여러 실습에서 수행했던 모든 작업을, 단 한 번의 명령으로 인스턴스화할 수 있는
-*Template*을 사용하여 합쳐보겠습니다. 오늘 워크숍의 모든 내용을 템플릿으로
+**Template**을 사용하여 합쳐보겠습니다. 오늘 워크샵의 모든 내용을 템플릿으로
 배포할 수도 있었지만, 리소스를 직접 생성하고 배포하고 서로 연결하는 방법을
 이해하는 것이 중요하다는 점을 기억하세요.
 
@@ -20,12 +20,12 @@ image::deprecated/roadshow-app-architecture-mlbparks.png[Application architectur
 == 실습: 템플릿 인스턴스화하기
 
 지금까지 작업해 온 프런트엔드 애플리케이션은 생성된 만큼의 백엔드 서비스 데이터를
-모두 표시합니다. 올바른 *Label*을 붙여 더 많은 것을 추가하면 지도에 더 많은 것이
+모두 표시합니다. 올바른 **Label**을 붙여 더 많은 것을 추가하면 지도에 더 많은 것이
 표시됩니다.
 
 이제 템플릿을 사용하여 미국 메이저리그 야구 경기장의 지도를 배포해 보겠습니다. 이
 템플릿은 백엔드 Java 애플리케이션을 빌드하고 MongoDB 데이터베이스를 배포하도록
-미리 구성되어 있습니다. 또한 *Hook*을 사용하여 `/ws/data/load` 엔드포인트를 호출해서
+미리 구성되어 있습니다. 또한 **Hook**을 사용하여 ``/ws/data/load`` 엔드포인트를 호출해서
 소스 코드 저장소에 있는 JSON 파일의 데이터가 데이터베이스에 로드되도록 합니다.
 다음 명령을 실행하세요:
 
@@ -35,8 +35,8 @@ image::deprecated/roadshow-app-architecture-mlbparks.png[Application architectur
 oc create -f https://raw.githubusercontent.com/openshift-roadshow/mlbparks/master/ose3/application-template-eap.json -n {ocp4_starter_project}
 ----
 
-방금 무슨 일이 일어난 걸까요? 무엇을 `create`한 걸까요? `create` 명령에 전달한 항목은
-*Template*입니다. `create`는 단순히 해당 템플릿을 여러분의 *Project*에서 사용할 수 있게
+방금 무슨 일이 일어난 걸까요? 무엇을 ``create``한 걸까요? ``create`` 명령에 전달한 항목은
+**Template**입니다. ``create``는 단순히 해당 템플릿을 여러분의 **Project**에서 사용할 수 있게
 만드는 것뿐입니다. 다음 명령으로 확인할 수 있습니다:
 
 [.console-input]
@@ -110,7 +110,7 @@ oc new-app mlbparks -p APPLICATION_NAME=mlbparks
 ** 자동 생성된 사용자, 비밀번호, 데이터베이스 이름을 사용합니다
 * 앱이 DB에 연결하도록 환경 변수를 구성합니다
 * 올바른 Service를 생성합니다
-* 앱 service에 `type=parksmap-backend` 레이블을 지정합니다
+* 앱 service에 ``type=parksmap-backend`` 레이블을 지정합니다
 
 이 모든 것이 명령 하나로 이루어집니다!
 
@@ -121,19 +121,19 @@ oc new-app mlbparks -p APPLICATION_NAME=mlbparks
 새로운 기능을 개발하거나, 마이크로서비스를 만들거나, 버그를 수정하는 등의 작업을 할 수
 있습니다.
 
-TIP: 앱들이 이미 `workshop` 애플리케이션 그룹 안에 있고 멋진 EAP와 MongoDB 아이콘을 가지고 있는 것을 확인할 수 있습니다. 이는 템플릿이 두 DeploymentConfig에 이미 설정해 둔 `app.kubernetes.io/part-of`와 `app.kubernetes.io/name` 레이블 덕분입니다.
+TIP: 앱들이 이미 ``workshop`` 애플리케이션 그룹 안에 있고 멋진 EAP와 MongoDB 아이콘을 가지고 있는 것을 확인할 수 있습니다. 이는 템플릿이 두 DeploymentConfig에 이미 설정해 둔 ``app.kubernetes.io/part-of``와 ``app.kubernetes.io/name`` 레이블 덕분입니다.
 
-image::deprecated/mlbparks-templates-complete-overview.png[Complete overview,link="self",window=_blank]
+image::deprecated/mlbparks-templates-complete-overview.png[Complete overview,link=self,window=blank]
 
-위에서처럼 명령줄에서 템플릿을 인스턴스화할 수 있는 것 외에도, 웹 콘솔의 Developer Perspective에서도 템플릿을 인스턴스화할 수 있습니다. *+Add*를 클릭한 후 *From Catalog*를 클릭하고 `mlb`를 검색합니다. `MLBparks`에 대한 결과가 표시될 것입니다.
+위에서처럼 명령줄에서 템플릿을 인스턴스화할 수 있는 것 외에도, 웹 콘솔의 Developer Perspective에서도 템플릿을 인스턴스화할 수 있습니다. **+Add**를 클릭한 후 **From Catalog**를 클릭하고 ``mlb``를 검색합니다. ``MLBparks``에 대한 결과가 표시될 것입니다.
 
-image::deprecated/mlbparks-templates-dev-catalog.png[Template in Developer Catalog,link="self",window=_blank]
+image::deprecated/mlbparks-templates-dev-catalog.png[Template in Developer Catalog,link=self,window=blank]
 
-`MLBparks`를 클릭한 후 *Instantiate Template* 버튼을 클릭하면, 이 템플릿을 인스턴스화하는 데 필요한 여러 필수 및 선택 파라미터를 안내하는 폼이 표시됩니다.
+``MLBparks``를 클릭한 후 **Instantiate Template** 버튼을 클릭하면, 이 템플릿을 인스턴스화하는 데 필요한 여러 필수 및 선택 파라미터를 안내하는 폼이 표시됩니다.
 
 CAUTION: 이미 명령줄로 인스턴스화를 완료했으므로 지금 웹 콘솔에서 실제로 템플릿을 인스턴스화하지는 마세요.
 
-마지막 실습으로, *mlbparks* 애플리케이션의 리소스를 생성하는 데 사용된 템플릿을
+마지막 실습으로, **mlbparks** 애플리케이션의 리소스를 생성하는 데 사용된 템플릿을
 살펴보겠습니다.
 
 [.console-input]
@@ -142,10 +142,10 @@ CAUTION: 이미 명령줄로 인스턴스화를 완료했으므로 지금 웹 �
 oc get template mlbparks -o yaml
 ----
 
-하지만 언제나처럼, OpenShift 웹 콘솔에서도 동일한 작업을 할 수 있습니다. Developer Perspective에서 왼쪽 내비게이션의 *Advanced -> Search*를 클릭한 후, 드롭다운에서 *Template*을 선택하고 *mlbparks*를 클릭합니다.
+하지만 언제나처럼, OpenShift 웹 콘솔에서도 동일한 작업을 할 수 있습니다. Developer Perspective에서 왼쪽 내비게이션의 **Advanced -> Search**를 클릭한 후, 드롭다운에서 **Template**을 선택하고 **mlbparks**를 클릭합니다.
 
-image::deprecated/mlbparks-templates-yaml-menu.png[Complete overview,link="self",window=_blank]
+image::deprecated/mlbparks-templates-yaml-menu.png[Complete overview,link=self,window=blank]
 
-다음 페이지에서 *YAML*을 클릭하면 여기서 YAML을 확인하거나 편집할 수 있습니다.
+다음 페이지에서 **YAML**을 클릭하면 여기서 YAML을 확인하거나 편집할 수 있습니다.
 
-image::deprecated/mlbparks-templates-yaml-edit.png[Template YAML edit,link="self",window=_blank]
+image::deprecated/mlbparks-templates-yaml-edit.png[Template YAML edit,link=self,window=blank]

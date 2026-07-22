@@ -1,6 +1,6 @@
 ---
 site:
-  title: OCP4 Getting Started Workshop
+  title: OpenShift와 함께하는 Kubernetes 핸즈온 워크샵
   start_page: modules::index.adoc
 
 content:
