@@ -371,10 +371,10 @@ NOTE: Firefox 54 같은 일부 브라우저에서는 결과 JSON을 제대로 �
 
 [source,text,role="copypaste",subs="attributes"]
 ----
-https://parksmap-{ocp4_starter_project}.{ocp4_starter_apps_domain}
+https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/data/all
 ----
 
-이제 parksmap URL을 방문하여 브라우저에서 확인해 보세요:
+이제 프런트엔드 앱인 parksmap URL을 방문하여 브라우저에서 지도를 다시 확인해보세요.
 
 [source,text,role="copypaste",subs="attributes"]
 ----
