@@ -295,7 +295,7 @@ MONGODB_PASSWORD
 값으로는 resource로 ``mongodb-credentials``를, key로 ``app-pwd``를 선택합니다.
 
 [.bordershadow]
-image::nationalparks-env-vars-al.png[Edit Deployment 대화 상자에 ConfigMap과 Secret에서 가져온 환경 변수 4개가 모두 추가된 화면,link=self,window=blank]
+image::nationalparks-env-vars-all.png[Edit Deployment 대화 상자에 ConfigMap과 Secret에서 가져온 환경 변수 4개가 모두 추가된 화면,link=self,window=blank]
 
 대화 상자 하단의 **저장(Save)** 버튼을 클릭합니다. 
 그리고 다음 명령어를 실행하면, 새로운 환경변수를 가진 Pod들이 새 **ReplicaSet**으로 롤아웃되는 것을 확인할 수 있습니다.
