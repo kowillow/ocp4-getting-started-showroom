@@ -128,12 +128,10 @@ MONGO_INITDB_ROOT_PASSWORD
 [.bordershadow]
 image::mongodb_deploy_image_general.png[MongoDB 배포의 환경 변수와 Create a route 옵션이 표시된 General 섹션,link=self,window=blank]
 
-///////////
-/// 수정
+페이지 하단의 '이름을 클릭하여 고급 옵션에 액세스합니다(Click on the names to access advanced options for)' 부분에서 **라벨(Labels)**를 클릭하고, 3개를 추가합니다. 텍스트를 복사하여 붙여넣은 후, 키보드의 return 또는 enter를 누르면 입력됩니다.
+
 [.bordershadow]
 image::nationalparks-configure-service4.png[Labels 섹션을 펼쳐 레이블을 추가하는 화면,link=self,window=blank]
-
-페이지 하단의 '이름을 클릭하여 고급 옵션에 액세스합니다(Click on the names to access advanced options for)' 부분에서 **라벨(Labels)**를 클릭하고, 3개를 추가합니다. 텍스트를 복사하여 붙여넣은 후, 키보드의 return 또는 enter를 누르면 입력됩니다.
 
 Application 그룹의 이름입니다:
 
@@ -155,9 +153,6 @@ component=nationalparks
 ----
 role=database
 ----
-
-///
-//////////
 
 마지막으로, 페이지 하단의 **Create** 버튼을 클릭하여 MongoDB 컨테이너를 배포합니다.
 
