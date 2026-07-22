@@ -43,8 +43,6 @@
 *** xref:nationalparks.adoc#monitoring-the-build[빌드 모니터링하기]
 * xref:nationalparks-databases.adoc[데이터베이스에 접속하기]
 ** xref:nationalparks-databases.adoc#mongodb_deploy_group[MongoDB 배포와 연결]
-** xref:nationalparks-databases.adoc#configmap_group[ConfigMap 생성과 환경 변수 연결]
-** xref:nationalparks-databases.adoc#label_discovery_group[레이블 기반 서비스 디스커버리]
 * Part 3
 * xref:nationalparks-scheduling.adoc[Affinity와 Toleration]
 ** xref:nationalparks-scheduling.adoc#node_scheduling_group[노드와 스케줄링 개념]
