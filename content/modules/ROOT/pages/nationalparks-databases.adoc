@@ -366,15 +366,14 @@ Items inserted in database: 2893
 
 이제 다시 ``/ws/data/all``로 이동하면 엄청난 양의 JSON 데이터를 확인할 수 있습니다.
 
-NOTE: Firefox 54 같은 일부 브라우저에서는 결과 JSON을 제대로 파싱하지 못해 오류가 보고되는 경우가 있습니다. 이는
-브라우저 문제이며 애플리케이션은 정상적으로 동작하고 있습니다.
-
 [source,text,role="copypaste",subs="attributes"]
 ----
 https://nationalparks-{ocp4_starter_project}.{ocp4_starter_apps_domain}/ws/data/all
 ----
 
-이제 프런트엔드 앱인 parksmap URL을 방문하여 브라우저에서 지도를 다시 확인해보세요.
+NOTE: Firefox 54 같은 일부 브라우저에서는 결과 JSON을 제대로 파싱하지 못해 오류가 보고되는 경우가 있습니다. 이는 브라우저 문제이며 애플리케이션은 정상적으로 동작하고 있습니다.
+
+이제 마지막으로, 프런트엔드 앱인 parksmap URL을 방문하여 브라우저에서 지도를 다시 확인해보세요.
 
 [source,text,role="copypaste",subs="attributes"]
 ----
