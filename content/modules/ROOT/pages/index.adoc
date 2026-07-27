@@ -9,7 +9,7 @@ include::vars.adoc[]
 
 == 배우게 될 내용
 
-**OpenShift 시작하기:**
+**OpenShift 접속하기:**
 
 * OpenShift 명령줄 클라이언트와 웹 콘솔 사용하기
 * OpenShift 개발자 인터페이스를 살펴보고 핵심 개념 이해하기
