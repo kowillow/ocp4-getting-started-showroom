@@ -8,11 +8,9 @@ WARNING: 실습을 본격적으로 시작하기 전에, 이 모듈에 따라 웹
 OpenShift는 플랫폼과 상호작용하기 위한 두 가지 주요 인터페이스를 제공합니다. 시각적 관리를 위한 웹 기반 콘솔과 스크립팅 및 고급 작업을 위한 명령줄 인터페이스입니다. 이 섹션에서는 두 도구에 접근하고 효과적으로 사용하는 방법을 배운 다음, 이 두 도구로 OpenShift의 핵심 개념인 Project를 살펴봅니다.
 
 [#the_web_console]
-== 웹 콘솔
+== 실습: 웹 콘솔 접속하기
 
 OpenShift 콘솔은 Project, 애플리케이션, 클러스터 리소스를 관리할 수 있는 직관적인 그래픽 인터페이스를 제공합니다. 최신 웹 브라우저에서 접근할 수 있으며, 일반적인 관리 및 개발 작업을 간소화하도록 설계되었습니다.
-
-=== OpenShift 웹 콘솔 접속하기
 
 [.bordershadow]
 image::openshift-console-login.png[OpenShift 웹 콘솔 로그인 화면,width=500,link=self,window=blank]
@@ -34,11 +32,11 @@ TIP: 모니터 화면이 작아서 불편한 경우, 오른쪽 상단의 'Tabs'�
 image::openshift-console-dashboard.png[로그인 후 표시되는 OpenShift 웹 콘솔 기본 대시보드,link=self,window=blank]
 
 [#command_line_interface]
-== 명령줄 인터페이스
+== 실습: 명령줄 인터페이스
 
 웹 콘솔이 시각적 관리에 훌륭한 도구이긴 하지만, OpenShift CLI(``oc``)는 자동화 기능과 고급 기능에 대한 접근을 제공합니다. 이 CLI는 Go로 작성된 단일 실행 파일이며 Microsoft Windows, macOS, Linux에서 사용할 수 있습니다.
 
-=== CLI 설치 확인하기
+=== CLI로 로그인하기
 
 CLI는 워크샵 환경에 미리 설치되어 있습니다. 오른쪽에서 Terminal 탭을 눌러 사용 가능한지 확인하고 버전을 확인해 보세요.
 **오른쪽의 노란색 아이콘을 클릭하면 명령어가 복사됩니다.**
@@ -57,8 +55,6 @@ Client Version: {ocp4_starter_cli_version}
 Kustomize Version: v5.6.0
 Kubernetes Version: v1.33.x
 ----
-
-=== CLI로 로그인하기
 
 명령줄을 사용하여 OpenShift 클러스터에 인증합니다:
 
@@ -117,7 +113,7 @@ Using project "{ocp4_starter_project}" on server "{ocp4_starter_api_url}".
 훌륭합니다! 이제 웹 콘솔과 명령줄 인터페이스 모두를 통해 OpenShift에 접근할 수 있게 되었습니다. 다음으로는 이 두 도구를 사용해 OpenShift Project를 살펴보겠습니다.
 
 [#project]
-== Project 이해하기
+== 실습: Project 이해하기
 
 Project는 배포를 구성하고 관리하는 데 도움을 주는 OpenShift의 핵심 개념입니다. OpenShift Project를 사용하면 한 그룹의 사용자(또는 개인 사용자)가 다른 그룹과 분리된 상태로 자신의 콘텐츠를 구성하고 관리할 수 있습니다. 각 Project는 고유한 리소스, 정책(누가 어떤 작업을 수행할 수 있는지 정의), 제약 조건(리소스에 대한 쿼터 및 제한 등)을 가집니다.
 
