@@ -52,7 +52,7 @@ for ns in $(oc get projects -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}
 
   oc -n "$ns" set env deployment/showroom \
     --containers=content \
-    GIT_REPO_URL='https://github.com/kowillow/ocp4-getting-started-showroom' \
+    GIT_REPO_URL='https://github.com/rh-bj/ocp4-getting-started-showroom' \
     GIT_REPO_REF='showroom-4-21-console'
 done
 ```
